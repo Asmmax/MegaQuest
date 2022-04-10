@@ -1,9 +1,33 @@
-﻿# CMakeList.txt: проект CMake для MegaQuestGameplay; включите исходный код и определения,
-# укажите здесь логику для конкретного проекта.
-#
-cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required (VERSION 3.12)
 
-# Добавьте источник в исполняемый файл этого проекта.
-add_executable (MegaQuestGameplay "MegaQuestGameplay.cpp" "MegaQuestGameplay.h")
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-# TODO: Добавьте тесты и целевые объекты, если это необходимо.
+set(quest_private_dir "include/private/")
+set(quest_public_dir "include/public/")
+set(quest_src_dir "src/")
+
+set(quest_private_include 
+)
+
+set(quest_public_include 
+)
+
+set(quest_src 
+)
+
+list(TRANSFORM quest_private_include PREPEND ${quest_private_dir})
+list(TRANSFORM quest_public_include PREPEND ${quest_public_dir})
+list(TRANSFORM quest_src PREPEND ${quest_src_dir})
+
+add_library (MegaQuestGameplay SHARED 
+${quest_private_include}  
+${quest_public_include} 
+${simulations_src})
+
+target_compile_features (MegaQuestGameplay PRIVATE cxx_std_17)
+set_target_properties(MegaQuestGameplay PROPERTIES LINKER_LANGUAGE CXX)
+target_include_directories(MegaQuestGameplay PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/${quest_public_dir}")
+target_include_directories(MegaQuestGameplay PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/${quest_private_dir}")
+
+install(TARGETS MegaQuestGameplay LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(FILES ${quest_public_include} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

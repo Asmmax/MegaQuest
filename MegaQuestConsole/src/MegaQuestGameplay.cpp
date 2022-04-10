@@ -1,7 +1,7 @@
 ﻿// MegaQuestGameplay.cpp: определяет точку входа для приложения.
 //
 
-#include "MegaQuestGameplay.h"
+#include "MegaQuestGameplay.hpp"
 
 using namespace std;
 
