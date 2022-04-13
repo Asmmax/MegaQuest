@@ -11,3 +11,8 @@ std::string TextParagraph::GetQuest() const
 {
 	return _text + "\n";
 }
+
+ActionContainer& TextParagraph::GetActionContainer()
+{
+	return _container;
+}

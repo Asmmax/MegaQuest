@@ -10,20 +10,8 @@ std::string ParagraphStateMachine::GetQuest() const
 	return _state->GetQuest();
 }
 
-std::string ParagraphStateMachine::GetCases() const
+ActionContainer& ParagraphStateMachine::GetActionContainer()
 {
 	assert(_state);
-	return _state->GetCases();
-}
-
-int ParagraphStateMachine::GetCaseCount() const
-{
-	assert(_state);
-	return _state->GetCaseCount();
-}
-
-void ParagraphStateMachine::Answer(int caseID)
-{
-	assert(_state);
-	_state->Answer(caseID);
+	return _state->GetActionContainer();
 }

@@ -3,7 +3,6 @@
 using namespace QuestCore;
 
 QuestCore::AutoActionSwitcher::AutoActionSwitcher():
-	_isInited(false),
 	_finalActionId(0)
 {
 }
@@ -11,13 +10,12 @@ QuestCore::AutoActionSwitcher::AutoActionSwitcher():
 void AutoActionSwitcher::Do()
 {
 	ActionSwitcher::Do();
-	if (_isInited) {
+	if (_finalActionId) {
 		Switch(_finalActionId);
 	}
 }
 
-void AutoActionSwitcher::SetFinalAction(int actionID)
+void AutoActionSwitcher::SetFinalAction(const std::shared_ptr<IAction>& action)
 {
-	_finalActionId = actionID;
-	_isInited = true;
+	_finalActionId = action;
 }

@@ -22,10 +22,14 @@ void ActionSwitcher::Do()
 	_target->Do();
 }
 
-void QuestCore::ActionSwitcher::Switch(int actionID)
+void QuestCore::ActionSwitcher::Switch(const std::shared_ptr<IAction>& action)
 {
 	auto& actions = GetActions();
-	assert(actionID < static_cast<int>(actions.size()));
+	auto foundActionIt = std::find(actions.begin(), actions.end(), action);
 
-	_target = actions[actionID];
+	bool actionValid = foundActionIt != actions.end();
+	assert(actionValid);
+	if (actionValid) {
+		_target = action;
+	}
 }

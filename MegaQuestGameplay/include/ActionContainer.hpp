@@ -17,7 +17,6 @@ namespace QuestCore
 		void AddAction(const std::shared_ptr<IAction>& action);
 		void RemoveAction(const std::shared_ptr<IAction>& action);
 		const ActionList& GetActions() const;
-		int GetLastActionId() const;
 
 	private:
 		ActionList _actions;

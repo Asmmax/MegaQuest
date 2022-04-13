@@ -1,16 +1,17 @@
 #pragma once
 #include <string>
+#include <memory>
 
 namespace QuestCore
 {
+	class ActionContainer;
+
 	class IParagraph
 	{
 	public:
 		virtual ~IParagraph() = default;
 
 		virtual std::string GetQuest() const = 0;
-		virtual std::string GetCases() const = 0;
-		virtual int GetCaseCount() const = 0;
-		virtual void Answer(int caseID) = 0;
+		virtual ActionContainer& GetActionContainer() = 0;
 	};
 }

@@ -9,9 +9,7 @@ namespace QuestCore
 	{
 	public:
 		virtual std::string GetQuest() const override;
-		virtual std::string GetCases() const override;
-		virtual int GetCaseCount() const override;
-		virtual void Answer(int caseID) override;
+		virtual ActionContainer& GetActionContainer() override;
 
 		inline void SetState(const std::shared_ptr<IParagraph>& newState) { _state = newState; }
 	

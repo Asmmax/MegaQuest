@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <exception>
+#include <string>
 
 namespace QuestCore
 {
@@ -26,6 +27,8 @@ namespace Player
 
     private:
 		void ViewParagraph();
+		void Answer(int caseID);
+		std::string GetCases();
 
 	private:
 		std::shared_ptr<QuestCore::IRoom> _currentRoom;

@@ -26,9 +26,9 @@ std::shared_ptr<IRoom> TestRoadFactory::GetRoom()
     auto explore = std::make_shared<ParagraphChanging>("Осмотреться", paragraphSatateMachine, exploreParagraph);
 
     auto backToRoad = std::make_shared<ParagraphChanging>("Вернуться назад", paragraphSatateMachine, roadParagraph);
-    exploreParagraph->AddAction(backToRoad);
+    exploreParagraph->GetActionContainer().AddAction(backToRoad);
 
-    roadParagraph->AddAction(explore);
+    roadParagraph->GetActionContainer().AddAction(explore);
 
     auto switcher = std::make_shared<AutoActionSwitcher>();
 
@@ -39,16 +39,16 @@ std::shared_ptr<IRoom> TestRoadFactory::GetRoom()
     auto emptyTalk = std::make_shared<ParagraphChanging>("Поговорить с бродягой", paragraphSatateMachine, emptyTrump);
 
     switcher->AddAction(talk);
-    switcher->Switch(switcher->GetLastActionId());
+    switcher->Switch(talk);
     switcher->AddAction(emptyTalk);
-    switcher->SetFinalAction(switcher->GetLastActionId());
+    switcher->SetFinalAction(emptyTalk);
 
-    roadParagraph->AddAction(switcher);
+    roadParagraph->GetActionContainer().AddAction(switcher);
 
-    emptyTrump->AddAction(backToRoad);
+    emptyTrump->GetActionContainer().AddAction(backToRoad);
 
     auto group = std::make_shared<ActionGroup>();
-    talkingTrump->AddAction(group);
+    talkingTrump->GetActionContainer().AddAction(group);
     group->AddAction(backToRoad);
 
     auto gift = std::make_shared<GiftReceiving>("Забрать подарок");

@@ -3,6 +3,10 @@
 #include "IParagraph.hpp"
 #include "Player/ITextView.hpp"
 #include "Player/PlayerInventory.hpp"
+#include "ActionContainer.hpp"
+#include "IAction.hpp"
+
+#include <assert.h>
 
 using namespace Player;
 
@@ -18,11 +22,11 @@ void PlayerController::DoCommand(int answerID)
     auto paragraph = _currentRoom->GetCurrentParagraph();
 
     
-    if (caseID < 0 || caseID >= paragraph->GetCaseCount()) {
+    if (caseID < 0 || caseID >= paragraph->GetActionContainer().GetActionCount()) {
         throw AnswerNotExsistExeption();
     }
 
-    paragraph->Answer(caseID);
+    Answer(caseID);
     ViewParagraph();
 }
 
@@ -45,5 +49,25 @@ void PlayerController::SetTextView(const std::shared_ptr<ITextView>& textView)
 void PlayerController::ViewParagraph()
 {
     auto paragraph = _currentRoom->GetCurrentParagraph();
-    _textView->Write(_currentRoom->GetName() + ":\n" + paragraph->GetQuest() + paragraph->GetCases());
+    _textView->Write(_currentRoom->GetName() + ":\n" + paragraph->GetQuest() + GetCases());
+}
+
+void PlayerController::Answer(int caseID)
+{
+    auto& actions = _currentRoom->GetCurrentParagraph()->GetActionContainer().GetActions();
+    assert(caseID < static_cast<int>(actions.size()));
+
+    actions[caseID]->Do();
+}
+
+std::string PlayerController::GetCases()
+{
+    std::string caseString;
+    int id = 1;
+    auto& actions = _currentRoom->GetCurrentParagraph()->GetActionContainer().GetActions();
+    for (auto& action : actions) {
+        caseString += std::to_string(id) + " - " + action->GetName() + "\n";
+        id++;
+    }
+    return caseString;
 }

@@ -10,7 +10,7 @@ namespace QuestCore
 		virtual std::string GetName() const override;
 		virtual void Do() override;
 
-		void Switch(int actionID);
+		void Switch(const std::shared_ptr<IAction>& action);
 
 	private:
 		std::shared_ptr<IAction> _target;

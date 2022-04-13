@@ -24,8 +24,3 @@ const ActionContainer::ActionList& ActionContainer::GetActions() const
 {
 	return _actions;
 }
-
-int ActionContainer::GetLastActionId() const
-{
-	return GetActionCount() - 1;
-}

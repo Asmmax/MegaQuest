@@ -9,10 +9,9 @@ namespace QuestCore
 		AutoActionSwitcher();
 		virtual void Do() override;
 
-		void SetFinalAction(int actionID);
+		void SetFinalAction(const std::shared_ptr<IAction>& action);
 
 	private:
-		bool _isInited;
-		int _finalActionId;
+		std::shared_ptr<IAction> _finalActionId;
 	};
 }
