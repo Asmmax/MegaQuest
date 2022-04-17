@@ -1,4 +1,4 @@
-﻿#include "Player/PlayerInventory.hpp"
+﻿#include "Inventory.hpp"
 #include "Factories/TestRoadFactory.hpp"
 #include "Player/PlayerController.hpp"
 #include "IRoom.hpp"
@@ -9,7 +9,7 @@
 
 int main()
 {
-    auto inventory = std::make_shared<Player::PlayerInventory>();
+    auto inventory = std::make_shared<QuestCore::Inventory>();
     auto roomFactory = std::make_shared<TestRoadFactory>(inventory);
     auto controller = std::make_shared<Player::PlayerController>(roomFactory->GetRoom(), inventory);
 

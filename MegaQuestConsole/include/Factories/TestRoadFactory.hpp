@@ -3,15 +3,15 @@
 
 namespace QuestCore
 {
-	class IInventory;
+	class Inventory;
 }
 
 class TestRoadFactory : public QuestCore::IRoomFactory
 {
 public:
-	TestRoadFactory(const std::shared_ptr<QuestCore::IInventory>& playerInventory);
+	TestRoadFactory(const std::shared_ptr<QuestCore::Inventory>& playerInventory);
 	std::shared_ptr<QuestCore::IRoom> GetRoom() override;
 
 private:
-	std::shared_ptr<QuestCore::IInventory> _playerInventory;
+	std::shared_ptr<QuestCore::Inventory> _playerInventory;
 };

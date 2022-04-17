@@ -1,11 +1,12 @@
 #include "GiftReceiving.hpp"
-#include "IInventory.hpp"
+#include "Inventory.hpp"
+#include "ItemInfo.hpp"
 
 using namespace QuestCore;
 
-QuestCore::GiftReceiving::GiftReceiving(const std::string& name):
+GiftReceiving::GiftReceiving(const std::string& name, const std::shared_ptr<Inventory>& inventory):
 	_name(name),
-    _money(0)
+    _inventory(inventory)
 {
 }
 
@@ -20,9 +21,15 @@ void GiftReceiving::Do()
         return;
     }
 
-    _inventory->PutMoney(_money);
-
     for (auto& thing : _things) {
-        _inventory->PutThing(thing);
+        _inventory->PutItem(thing.first, thing.second);
+    }
+}
+
+void GiftReceiving::AddThings(const ItemInfoPtr& thing, int count)
+{
+    _things.emplace_back(thing, count);
+    if (thing->IsNullable()) {
+        _inventory->PutItem(thing, 0);
     }
 }

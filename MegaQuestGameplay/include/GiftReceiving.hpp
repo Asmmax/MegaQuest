@@ -5,23 +5,23 @@
 
 namespace QuestCore
 {
-	class IInventory;
+	class Inventory;
+	class ItemInfo;
 
 	class GiftReceiving: public IAction
 	{
+		using ItemInfoPtr = std::shared_ptr<ItemInfo>;
+		using Item = std::pair<ItemInfoPtr, int>;
 	public:
-		GiftReceiving(const std::string& name);
+		GiftReceiving(const std::string& name, const std::shared_ptr<Inventory>& inventory);
 		virtual std::string GetName() const override;
 		virtual void Do() override;
 
-		inline void SetMoney(int money) { _money = money; }
-		inline void SetThings(const std::vector<std::string>& things) { _things = things; }
-		inline void SetTargetInventory(const std::shared_ptr<IInventory>& inventory) { _inventory = inventory; }
+		void AddThings(const ItemInfoPtr& thing, int count);
 
 	private:
 		std::string _name;
-		int _money;
-		std::vector<std::string> _things;
-		std::shared_ptr<IInventory> _inventory;
+		std::vector<Item> _things;
+		std::shared_ptr<Inventory> _inventory;
 	};
 }

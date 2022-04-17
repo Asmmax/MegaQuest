@@ -2,7 +2,8 @@
 #include "IRoom.hpp"
 #include "IParagraph.hpp"
 #include "Player/ITextView.hpp"
-#include "Player/PlayerInventory.hpp"
+#include "Inventory.hpp"
+#include "ItemInfo.hpp"
 #include "ActionContainer.hpp"
 #include "IAction.hpp"
 
@@ -10,7 +11,7 @@
 
 using namespace Player;
 
-PlayerController::PlayerController(const std::shared_ptr<QuestCore::IRoom>& currentRoom, const std::shared_ptr<PlayerInventory>& inventory):
+PlayerController::PlayerController(const std::shared_ptr<QuestCore::IRoom>& currentRoom, const std::shared_ptr<QuestCore::Inventory>& inventory):
     _currentRoom(currentRoom),
     _inventory(inventory)
 {
@@ -32,7 +33,7 @@ void PlayerController::DoCommand(int answerID)
 
 void PlayerController::OpenInventory()
 {
-    _textView->Write(_inventory->GetContains());
+    _textView->Write(GetNullableItemsContains() + GetItemsContains());
 }
 
 void PlayerController::SetCurrentRoom(const std::shared_ptr<QuestCore::IRoom>& currentRoom)
@@ -70,4 +71,55 @@ std::string PlayerController::GetCases()
         id++;
     }
     return caseString;
+}
+
+std::string PlayerController::GetNullableItemsContains()
+{
+    auto nullableItems = _inventory->GetNullableItems();
+
+    std::string nullableItemsContains;
+    for (auto itemIt = nullableItems.begin(); itemIt != nullableItems.end(); itemIt++) {
+        if (itemIt != nullableItems.begin()) {
+            nullableItemsContains += ", ";
+        }
+        nullableItemsContains += std::to_string(itemIt->second) + " " + itemIt->first->GetContainsFor(itemIt->second);
+    }
+
+    if (!nullableItems.empty()) {
+        return "У вас " + nullableItemsContains + ".\n";
+    }
+
+    return std::string();
+}
+
+std::string PlayerController::GetItemsContains()
+{
+    auto items = _inventory->GetItems();
+
+    auto itemCount = items.size();
+    std::string prefix;
+    if (itemCount == 1)
+        prefix = "В сумке лежит ";
+    else if (itemCount > 1) {
+        prefix = "В сумке лежат ";
+    }
+
+    std::string nullableItemsContains;
+    for (auto itemIt = items.begin(); itemIt != items.end(); itemIt++) {
+        if (itemIt != items.begin()) {
+            nullableItemsContains += ", ";
+        }
+        if (itemIt->second == 1) {
+            nullableItemsContains += itemIt->first->GetContainsFor(itemIt->second);
+        }
+        else if (itemIt->second > 0) {
+            nullableItemsContains += std::to_string(itemIt->second) + " " + itemIt->first->GetContainsFor(itemIt->second);
+        }
+    }
+
+    if (!nullableItemsContains.empty()) {
+        return prefix + nullableItemsContains + ".\n";
+    }
+
+    return std::string();
 }
