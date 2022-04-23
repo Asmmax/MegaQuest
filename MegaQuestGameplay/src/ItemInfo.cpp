@@ -18,11 +18,12 @@ void ItemInfo::AddForm(const FormPtr& form)
 	_forms.emplace_back(form);
 }
 
-std::string ItemInfo::GetContainsFor(int count)
+TextString ItemInfo::GetContainsFor(int count)
 {
 	for (auto& form : _forms) {
 		if (form->HasRuleFor(count)) {
 			return form->GetForm();
 		}
 	}
+	return TextString();
 }

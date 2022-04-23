@@ -3,14 +3,14 @@
 
 using namespace QuestCore;
 
-ParagraphChanging::ParagraphChanging(const std::string& name, const std::shared_ptr<ParagraphStateMachine>& stateMachine, const std::shared_ptr<IParagraph>& nextParagraph):
+ParagraphChanging::ParagraphChanging(const TextString& name, const std::shared_ptr<ParagraphStateMachine>& stateMachine, const std::shared_ptr<IParagraph>& nextParagraph):
 	_name(name),
 	_stateMachine(stateMachine),
 	_nextParagraph(nextParagraph)
 {
 }
 
-std::string ParagraphChanging::GetName() const
+TextString ParagraphChanging::GetName() const
 {
 	return _name;
 }

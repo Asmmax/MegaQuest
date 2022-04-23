@@ -1,7 +1,7 @@
 #pragma once
 #include "Game/IInputHandler.hpp"
+#include "TextString.hpp"
 #include <memory>
-#include <string>
 
 namespace Player
 {
@@ -18,7 +18,7 @@ namespace IO
 	{
 	public:
         ConsoleInput(Game::GameLoop& gameLoop, const std::shared_ptr<Player::PlayerController>& playerController);
-        std::string GetInstructions();
+		QuestCore::TextString GetInstructions();
 		void Handle();
 
 	private:

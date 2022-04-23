@@ -1,7 +1,7 @@
 #pragma once
+#include "TextString.hpp"
 #include <memory>
 #include <exception>
-#include <string>
 
 namespace QuestCore
 {
@@ -28,9 +28,9 @@ namespace Player
     private:
 		void ViewParagraph();
 		void Answer(int caseID);
-		std::string GetCases();
-		std::string GetNullableItemsContains();
-		std::string GetItemsContains();
+		QuestCore::TextString GetCases();
+		QuestCore::TextString GetNullableItemsContains();
+		QuestCore::TextString GetItemsContains();
 
 	private:
 		std::shared_ptr<QuestCore::IRoom> _currentRoom;

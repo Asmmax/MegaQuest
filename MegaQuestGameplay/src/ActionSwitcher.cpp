@@ -4,10 +4,10 @@
 
 using namespace QuestCore;
 
-std::string ActionSwitcher::GetName() const
+TextString ActionSwitcher::GetName() const
 {
 	if (!_target) {
-		return std::string();
+		return TextString();
 	}
 
 	return _target->GetName();

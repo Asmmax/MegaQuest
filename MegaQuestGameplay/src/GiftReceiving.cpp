@@ -4,13 +4,13 @@
 
 using namespace QuestCore;
 
-GiftReceiving::GiftReceiving(const std::string& name, const std::shared_ptr<Inventory>& inventory):
+GiftReceiving::GiftReceiving(const TextString& name, const std::shared_ptr<Inventory>& inventory):
 	_name(name),
     _inventory(inventory)
 {
 }
 
-std::string GiftReceiving::GetName() const
+TextString GiftReceiving::GetName() const
 {
 	return _name;
 }

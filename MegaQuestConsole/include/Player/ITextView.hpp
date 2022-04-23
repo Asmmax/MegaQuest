@@ -1,5 +1,5 @@
 #pragma once
-#include <string>
+#include "TextString.hpp"
 
 namespace Player {
 	class ITextView
@@ -7,6 +7,6 @@ namespace Player {
 	public:
 		virtual ~ITextView() = default;
 
-		virtual void Write(const std::string& text) = 0;
+		virtual void Write(const QuestCore::TextString& text) = 0;
 	};
 }

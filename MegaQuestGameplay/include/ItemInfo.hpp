@@ -1,5 +1,5 @@
 #pragma once
-#include <string>
+#include "TextString.hpp"
 #include <memory>
 #include <vector>
 
@@ -15,7 +15,7 @@ namespace QuestCore
 
 		void ClearForms();
 		void AddForm(const FormPtr& form);
-		std::string GetContainsFor(int count);
+		TextString GetContainsFor(int count);
 
 		inline bool IsNullable() const { return _isNullable; }
 

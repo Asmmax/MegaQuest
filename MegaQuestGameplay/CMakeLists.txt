@@ -10,7 +10,7 @@ file(GLOB_RECURSE quest_src CONFIGURE_DEPENDS "${quest_src_dir}/*.cpp")
 
 add_library (MegaQuestGameplay SHARED 
 ${quest_include}  
-${quest_src})
+${quest_src} "src/TextString.cpp")
 
 target_compile_features (MegaQuestGameplay PRIVATE cxx_std_17)
 set_target_properties(MegaQuestGameplay PROPERTIES LINKER_LANGUAGE CXX)

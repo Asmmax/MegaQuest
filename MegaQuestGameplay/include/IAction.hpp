@@ -1,5 +1,5 @@
 #pragma once
-#include <string>
+#include "TextString.hpp"
 
 namespace QuestCore
 {
@@ -8,7 +8,7 @@ namespace QuestCore
 	public:
 		virtual ~IAction() = default;
 
-		virtual std::string GetName() const = 0;
+		virtual TextString GetName() const = 0;
 		virtual void Do() = 0;
 	};
 }

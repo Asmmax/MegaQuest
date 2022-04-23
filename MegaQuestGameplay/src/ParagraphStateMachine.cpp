@@ -4,7 +4,7 @@
 
 using namespace QuestCore;
 
-std::string ParagraphStateMachine::GetQuest() const
+TextString ParagraphStateMachine::GetQuest() const
 {
 	assert(_state);
 	return _state->GetQuest();

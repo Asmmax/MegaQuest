@@ -5,6 +5,7 @@
 #include <iostream>
 
 using namespace IO;
+using namespace QuestCore;
 
 ConsoleInput::ConsoleInput(Game::GameLoop& gameLoop, const std::shared_ptr<Player::PlayerController>& playerController):
 	_gameLoop(gameLoop),
@@ -12,9 +13,9 @@ ConsoleInput::ConsoleInput(Game::GameLoop& gameLoop, const std::shared_ptr<Playe
 {
 }
 
-std::string ConsoleInput::GetInstructions()
+TextString ConsoleInput::GetInstructions()
 {
-	return "”правление в игре осуществл€етс€ через цифровые кнопки и команды inventory(i) и quit(q).\n";
+	return TextString::FromUtf8(u8"”правление в игре осуществл€етс€ через цифровые кнопки и команды inventory(i) и quit(q).\n");
 }
 
 void ConsoleInput::Handle()
@@ -44,11 +45,19 @@ void ConsoleInput::Handle()
         }
         catch (const Player::AnswerNotExsistExeption& /*ex*/)
         {
+#ifdef _WIN32
+            std::wcout << L"¬водить цифру можно только из предложенных." << std::endl;
+#else
             std::cout << "¬водить цифру можно только из предложенных." << std::endl;
+#endif // _WIN32
         }
 
     }
     catch (const std::invalid_argument& /*ex*/) {
+#ifdef _WIN32
+        std::wcout << L"ќтвет может быть только цифрой, Inventory или Quit." << std::endl;
+#else
         std::cout << "ќтвет может быть только цифрой, Inventory или Quit." << std::endl;
+#endif // _WIN32
     }
 }

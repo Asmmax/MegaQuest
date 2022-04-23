@@ -2,14 +2,19 @@
 
 using namespace QuestCore;
 
-std::string ActionGroup::GetName() const
+ActionGroup::ActionGroup(const TextString& gap):
+	_gap(gap)
 {
-	std::string name;
+}
+
+TextString ActionGroup::GetName() const
+{
+	TextString name;
 
 	auto& actions = GetActions();
 	for (auto actionIt = actions.begin(); actionIt != actions.end(); actionIt++) {
 		if (actionIt != actions.begin()) {
-			name += " è ";
+			name += _gap;
 		}
 		auto& action = *actionIt;
 		name += action->GetName();

@@ -2,14 +2,14 @@
 
 using namespace QuestCore;
 
-TextParagraph::TextParagraph(const std::string& text):
+TextParagraph::TextParagraph(const TextString& text):
 	_text(text)
 {
 }
 
-std::string TextParagraph::GetQuest() const
+TextString TextParagraph::GetQuest() const
 {
-	return _text + "\n";
+	return _text;
 }
 
 ActionContainer& TextParagraph::GetActionContainer()

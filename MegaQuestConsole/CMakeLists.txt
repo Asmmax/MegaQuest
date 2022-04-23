@@ -13,4 +13,7 @@ ${console_src})
 target_compile_features (MegaQuestConsole PRIVATE cxx_std_17)
 set_target_properties(MegaQuestConsole PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(MegaQuestConsole PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/${console_include_dir}")
-target_link_libraries(MegaQuestConsole PRIVATE MegaQuestGameplay)
+target_link_libraries(MegaQuestConsole PRIVATE MegaQuestGameplay PRIVATE json)
+
+set(RESOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/assets")
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.json.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config.json)

@@ -10,11 +10,11 @@ namespace QuestCore
 	class ParagraphChanging : public IAction
 	{
 	public:
-		ParagraphChanging(const std::string& name, const std::shared_ptr<ParagraphStateMachine>& stateMachine, const std::shared_ptr<IParagraph>& nextParagraph);
-		virtual std::string GetName() const override;
+		ParagraphChanging(const TextString& name, const std::shared_ptr<ParagraphStateMachine>& stateMachine, const std::shared_ptr<IParagraph>& nextParagraph);
+		virtual TextString GetName() const override;
 		virtual void Do() override;
 	private:
-		std::string _name;
+		TextString _name;
 		std::shared_ptr<ParagraphStateMachine> _stateMachine;
 		std::shared_ptr<IParagraph> _nextParagraph;
 	};

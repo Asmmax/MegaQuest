@@ -6,7 +6,7 @@ namespace IO
 	class ConsoleView : public Player::ITextView
 	{
 	public:
-		ConsoleView(const std::string& intro);
-		virtual void Write(const std::string& text) override;
+		ConsoleView(const QuestCore::TextString& intro);
+		virtual void Write(const QuestCore::TextString& text) override;
 	};
 }

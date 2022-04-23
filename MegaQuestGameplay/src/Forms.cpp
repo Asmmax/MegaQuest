@@ -2,28 +2,38 @@
 
 using namespace QuestCore;
 
-SpecificForm::SpecificForm(int count, const std::string& text):
+SpecificForm::SpecificForm(const std::vector<int>& counts, const TextString& text):
 	FormBase(text),
-	_count(count)
+	_counts(counts)
 {
 }
 
 bool SpecificForm::HasRuleFor(int count) 
 {
-	return _count == count;
+	for (auto _count : _counts) {
+		if (_count == count) {
+			return true;
+		}
+	}
+	return false;
 }
 
 
 
 
-TailForm::TailForm(int notation, int digit, const std::string& text):
+TailForm::TailForm(int notation, const std::vector<int>& digits, const TextString& text):
 	FormBase(text),
 	_notation(notation),
-	_digit(digit)
+	_digits(digits)
 {
 }
 
 bool TailForm::HasRuleFor(int count)
 {
-	return count % _notation == _digit;
+	for (auto digit : _digits) {
+		if (count % _notation == digit) {
+			return true;
+		}
+	}
+	return false;
 }

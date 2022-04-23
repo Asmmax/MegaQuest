@@ -10,6 +10,7 @@
 #include <assert.h>
 
 using namespace Player;
+using namespace QuestCore;
 
 PlayerController::PlayerController(const std::shared_ptr<QuestCore::IRoom>& currentRoom, const std::shared_ptr<QuestCore::Inventory>& inventory):
     _currentRoom(currentRoom),
@@ -50,7 +51,7 @@ void PlayerController::SetTextView(const std::shared_ptr<ITextView>& textView)
 void PlayerController::ViewParagraph()
 {
     auto paragraph = _currentRoom->GetCurrentParagraph();
-    _textView->Write(_currentRoom->GetName() + ":\n" + paragraph->GetQuest() + GetCases());
+    _textView->Write(_currentRoom->GetName() + TextString::FromUtf8(u8":\n") + paragraph->GetQuest() + TextString::FromUtf8(u8"\n") + GetCases());
 }
 
 void PlayerController::Answer(int caseID)
@@ -61,65 +62,65 @@ void PlayerController::Answer(int caseID)
     actions[caseID]->Do();
 }
 
-std::string PlayerController::GetCases()
+TextString PlayerController::GetCases()
 {
-    std::string caseString;
+    TextString caseString;
     int id = 1;
     auto& actions = _currentRoom->GetCurrentParagraph()->GetActionContainer().GetActions();
     for (auto& action : actions) {
-        caseString += std::to_string(id) + " - " + action->GetName() + "\n";
+        caseString += TextString(id) + TextString::FromUtf8(u8" - ") + action->GetName() + TextString::FromUtf8(u8"\n");
         id++;
     }
     return caseString;
 }
 
-std::string PlayerController::GetNullableItemsContains()
+TextString PlayerController::GetNullableItemsContains()
 {
     auto nullableItems = _inventory->GetNullableItems();
 
-    std::string nullableItemsContains;
+    TextString nullableItemsContains;
     for (auto itemIt = nullableItems.begin(); itemIt != nullableItems.end(); itemIt++) {
         if (itemIt != nullableItems.begin()) {
-            nullableItemsContains += ", ";
+            nullableItemsContains += TextString::FromUtf8(u8", ");
         }
-        nullableItemsContains += std::to_string(itemIt->second) + " " + itemIt->first->GetContainsFor(itemIt->second);
+        nullableItemsContains += TextString(itemIt->second) + TextString::FromUtf8(u8" ") + itemIt->first->GetContainsFor(itemIt->second);
     }
 
     if (!nullableItems.empty()) {
-        return "У вас " + nullableItemsContains + ".\n";
+        return TextString::FromUtf8(u8"У вас ") + nullableItemsContains + TextString::FromUtf8(u8".\n");
     }
 
-    return std::string();
+    return TextString();
 }
 
-std::string PlayerController::GetItemsContains()
+TextString PlayerController::GetItemsContains()
 {
     auto items = _inventory->GetItems();
 
     auto itemCount = items.size();
-    std::string prefix;
+    TextString prefix;
     if (itemCount == 1)
-        prefix = "В сумке лежит ";
+        prefix = TextString::FromUtf8(u8"В сумке лежит ");
     else if (itemCount > 1) {
-        prefix = "В сумке лежат ";
+        prefix = TextString::FromUtf8(u8"В сумке лежат ");
     }
 
-    std::string nullableItemsContains;
+    TextString nullableItemsContains;
     for (auto itemIt = items.begin(); itemIt != items.end(); itemIt++) {
         if (itemIt != items.begin()) {
-            nullableItemsContains += ", ";
+            nullableItemsContains += TextString::FromUtf8(u8", ");
         }
         if (itemIt->second == 1) {
             nullableItemsContains += itemIt->first->GetContainsFor(itemIt->second);
         }
         else if (itemIt->second > 0) {
-            nullableItemsContains += std::to_string(itemIt->second) + " " + itemIt->first->GetContainsFor(itemIt->second);
+            nullableItemsContains += TextString(itemIt->second) + TextString::FromUtf8(u8" ") + itemIt->first->GetContainsFor(itemIt->second);
         }
     }
 
-    if (!nullableItemsContains.empty()) {
-        return prefix + nullableItemsContains + ".\n";
+    if (!nullableItemsContains.IsEmpty()) {
+        return prefix + nullableItemsContains + TextString::FromUtf8(u8".\n");
     }
 
-    return std::string();
+    return TextString();
 }

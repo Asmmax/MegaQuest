@@ -1,5 +1,5 @@
 #pragma once
-#include <string>
+#include "TextString.hpp"
 #include <memory>
 
 namespace QuestCore
@@ -11,7 +11,7 @@ namespace QuestCore
 	public:
 		virtual ~IParagraph() = default;
 
-		virtual std::string GetQuest() const = 0;
+		virtual TextString GetQuest() const = 0;
 		virtual ActionContainer& GetActionContainer() = 0;
 	};
 }

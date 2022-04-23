@@ -7,7 +7,10 @@ namespace QuestCore
 	class ActionGroup: public ActionContainer, public IAction
 	{
 	public:
-		virtual std::string GetName() const override;
+		ActionGroup(const TextString& gap);
+		virtual TextString GetName() const override;
 		virtual void Do() override;
+	private:
+		TextString _gap;
 	};
 }

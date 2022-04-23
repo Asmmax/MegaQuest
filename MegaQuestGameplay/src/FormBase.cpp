@@ -2,7 +2,7 @@
 
 using namespace QuestCore;
 
-FormBase::FormBase(const std::string& text) :
+FormBase::FormBase(const TextString& text) :
 	_text(text)
 {
 }

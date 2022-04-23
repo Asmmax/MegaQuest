@@ -13,14 +13,14 @@ namespace QuestCore
 		using ItemInfoPtr = std::shared_ptr<ItemInfo>;
 		using Item = std::pair<ItemInfoPtr, int>;
 	public:
-		GiftReceiving(const std::string& name, const std::shared_ptr<Inventory>& inventory);
-		virtual std::string GetName() const override;
+		GiftReceiving(const TextString& name, const std::shared_ptr<Inventory>& inventory);
+		virtual TextString GetName() const override;
 		virtual void Do() override;
 
 		void AddThings(const ItemInfoPtr& thing, int count);
 
 	private:
-		std::string _name;
+		TextString _name;
 		std::vector<Item> _things;
 		std::shared_ptr<Inventory> _inventory;
 	};

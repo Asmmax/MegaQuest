@@ -3,14 +3,26 @@
 #include <locale>
 
 using namespace IO;
+using namespace QuestCore;
 
-ConsoleView::ConsoleView(const std::string& intro)
+ConsoleView::ConsoleView(const TextString& intro)
 {
-    setlocale(LC_ALL, "Russian");
-	std::cout << intro;
+    std::setlocale(LC_ALL, "");
+
+#ifdef _WIN32
+    std::wcout << intro.ToUtf16();
+#else
+    std::cout << intro.ToUtf8();
+#endif // _WIN32
 }
-void ConsoleView::Write(const std::string& text)
+
+void ConsoleView::Write(const TextString& text)
 {
+#ifdef _WIN32
+    std::wcout << std::endl;
+    std::wcout << text.ToUtf16();
+#else
     std::cout << std::endl;
-    std::cout << text;
+    std::cout << text.ToUtf8();
+#endif // _WIN32
 }

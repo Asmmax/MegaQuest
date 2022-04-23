@@ -7,12 +7,12 @@ namespace QuestCore
 	class TextParagraph : public IParagraph
 	{
 	public:
-		TextParagraph(const std::string& text);
-		virtual std::string GetQuest() const override;
+		TextParagraph(const TextString& text);
+		virtual TextString GetQuest() const override;
 		virtual ActionContainer& GetActionContainer() override;
 
 	private:
-		std::string _text;
+		TextString _text;
 		ActionContainer _container;
 	};
 }
