@@ -7,20 +7,15 @@ namespace QuestCore
 {
 	class FormBase;
 
-	class ItemInfo
+	class FormatedString
 	{
 		using FormPtr = std::shared_ptr<FormBase>;
 	public:
-		ItemInfo(bool isNullable = false);
-
 		void ClearForms();
 		void AddForm(const FormPtr& form);
-		TextString GetContainsFor(int count);
-
-		inline bool IsNullable() const { return _isNullable; }
+		TextString GetContainsFor(int count) const;
 
 	private:
 		std::vector<FormPtr> _forms;
-		bool _isNullable;
 	};
 }

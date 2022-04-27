@@ -12,7 +12,7 @@ TextString TextParagraph::GetQuest() const
 	return _text;
 }
 
-ActionContainer& TextParagraph::GetActionContainer()
+ActionMap& TextParagraph::GetActionContainer()
 {
 	return _container;
 }

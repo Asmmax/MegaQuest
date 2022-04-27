@@ -9,7 +9,7 @@ namespace QuestCore
 	{
 	public:
 		virtual TextString GetQuest() const override;
-		virtual ActionContainer& GetActionContainer() override;
+		virtual ActionMap& GetActionContainer() override;
 
 		inline void SetState(const std::shared_ptr<IParagraph>& newState) { _state = newState; }
 	

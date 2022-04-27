@@ -1,59 +1,77 @@
 {
-	"itemInfos": [
+	"hotKeys":["inventory"],
+	"items": [
 	{
 		"id":"coin",
 		"isNullable":true,
-		"forms":[
+		"text":
 		{
-			"type":"SpecificForm",
-			"counts":[11,12,13,14],
-			"text":"монет"
-		},
-		{
-			"type":"TailForm",
-			"notation":10,
-			"digits":[1],
-			"text":"монета"
-		},
-		{
-			"type":"TailForm",
-			"notation":10,
-			"digits":[2,3,4],
-			"text":"монеты"
-		},
-		{
-			"type":"TailForm",
-			"notation":10,
-			"digits":[0,5,6,7,8,9],
-			"text":"монет"
+			"forms":[
+			{
+				"type":"SpecificForm",
+				"counts":[11,12,13,14],
+				"text":"монет"
+			},
+			{
+				"type":"TailForm",
+				"notation":10,
+				"digits":[1],
+				"text":"монета"
+			},
+			{
+				"type":"TailForm",
+				"notation":10,
+				"digits":[2,3,4],
+				"text":"монеты"
+			},
+			{
+				"type":"TailForm",
+				"notation":10,
+				"digits":[0,5,6,7,8,9],
+				"text":"монет"
+			}
+			]
 		}
-		]
 	},
 	{
 		"id":"medalion",
-		"forms":[
+		"text":
 		{
-			"type":"SpecificForm",
-			"counts":[11,12,13,14],
-			"text":"медальонов"
-		},
+			"forms":[
+			{
+				"type":"SpecificForm",
+				"counts":[11,12,13,14],
+				"text":"медальонов"
+			},
+			{
+				"type":"TailForm",
+				"notation":10,
+				"digits":[1],
+				"text":"медальон"
+			},
+			{
+				"type":"TailForm",
+				"notation":10,
+				"digit":[2,3,4],
+				"text":"медальона"
+			},
+			{
+				"type":"TailForm",
+				"notation":10,
+				"digit":[0,5,6,7,8,9],
+				"text":"медальонов"
+			}
+			]
+		}
+	}
+	],
+	"inventories":[
+	{
+		"id":"player",
+		"items":[
 		{
-			"type":"TailForm",
-			"notation":10,
-			"digits":[1],
-			"text":"медальон"
-		},
-		{
-			"type":"TailForm",
-			"notation":10,
-			"digit":[2,3,4],
-			"text":"медальона"
-		},
-		{
-			"type":"TailForm",
-			"notation":10,
-			"digit":[0,5,6,7,8,9],
-			"text":"медальонов"
+			"id":"coin",
+			"count":0
 		}
 		]
 	}
@@ -62,7 +80,34 @@
 	{
 		"type":"ParagraphStateMachine",
 		"id":"root",
+		"target":"world"
+	},
+	{
+		"type":"ParagraphGroup",
+		"id":"world",
+		"paragraphs":["world_root", "to_inventory"]
+	},
+	{
+		"type":"ParagraphStateMachine",
+		"id":"world_root",
 		"target":"road"
+	},
+	{
+		"type":"TextParagraph",
+		"id":"to_inventory",
+		"text":"",
+		"actions":[
+		{
+			"key":"inventory",
+			"action":
+			{
+				"type":"StateChanging",
+				"text":"Открыть инвентарь",
+				"stateMachine":"root",
+				"target":"inventory"
+			}
+		}
+		]
 	},
 	{
 		"type":"TextParagraph",
@@ -70,29 +115,35 @@
 		"text":"Перед вами дорога",
 		"actions":[
 		{
-			"type":"StateChanging",
-			"text":"Осмотреть",
-			"stateMachine":"root",
-			"target":"explored_road"
+			"action":
+			{
+				"type":"StateChanging",
+				"text":"Осмотреть",
+				"stateMachine":"world_root",
+				"target":"explored_road"
+			}
 		},
 		{
-			"type":"AutoActionSwitcher",
-			"switch":1,
-			"final":0,
-			"actions":[
+			"action":
 			{
-				"type":"StateChanging",
-				"text":"Поговорить с путником",
-				"stateMachine":"root",
-				"target":"empty_trump"
-			},
-			{
-				"type":"StateChanging",
-				"text":"Поговорить с путником",
-				"stateMachine":"root",
-				"target":"talked_trump"
+				"type":"AutoActionSwitcher",
+				"switch":1,
+				"final":0,
+				"actions":[
+				{
+					"type":"StateChanging",
+					"text":"Поговорить с путником",
+					"stateMachine":"world_root",
+					"target":"empty_trump"
+				},
+				{
+					"type":"StateChanging",
+					"text":"Поговорить с путником",
+					"stateMachine":"world_root",
+					"target":"talked_trump"
+				}
+				]
 			}
-			]
 		}
 		]
 	},
@@ -102,10 +153,13 @@
 		"text":"Вы видите перед собой дорогу, а на дороге путника.",
 		"actions":[
 		{
-			"type":"StateChanging",
-			"text":"Вернуться назад",
-			"stateMachine":"root",
-			"target":"road"
+			"action":
+			{
+				"type":"StateChanging",
+				"text":"Вернуться назад",
+				"stateMachine":"world_root",
+				"target":"road"
+			}
 		}
 		]
 	},
@@ -115,10 +169,13 @@
 		"text":"Здравствуй незнакомец, а я тебе уже всё отдал.",
 		"actions":[
 		{
-			"type":"StateChanging",
-			"text":"Вернуться назад",
-			"stateMachine":"root",
-			"target":"road"
+			"action":
+			{
+				"type":"StateChanging",
+				"text":"Вернуться назад",
+				"stateMachine":"world_root",
+				"target":"road"
+			}
 		}
 		]
 	},
@@ -128,31 +185,72 @@
 		"text":"Здравствуй незнакомец, на вот те за просто так 50 монет и медальон.",
 		"actions":[
 		{
-			"type":"ActionGroup",
-			"text":" и ",
-			"actions":[
+			"action":
 			{
-				"type":"GiftReceiving",
-				"text":"Забрать подарок",
-				"inventory":"player",
-				"items":[
+				"type":"ActionGroup",
+				"text":" и ",
+				"actions":[
 				{
-					"id":"coin",
-					"count":50
+					"type":"GiftReceiving",
+					"text":"Забрать подарок",
+					"inventory":"player",
+					"items":[
+					{
+						"id":"coin",
+						"count":50
+					},
+					{
+						"id":"medalion",
+						"count":1
+					}
+					]
 				},
 				{
-					"id":"medalion",
-					"count":1
+					"type":"StateChanging",
+					"text":"Вернуться назад",
+					"stateMachine":"world_root",
+					"target":"road"
 				}
 				]
+			}
+		}
+		]
+	},
+	{
+		"type":"InventoryParagraph",
+		"id":"inventory",
+		"prefix":{
+			"forms":[
+			{
+				"type":"SpecificForm",
+				"counts":[1],
+				"text":"В сумке лежит "
 			},
 			{
-				"type":"StateChanging",
-				"text":"Вернуться назад",
-				"stateMachine":"root",
-				"target":"road"
+				"type":"DefaultForm",
+				"text":"В сумке лежат "
 			}
 			]
+		},
+		"postfix":{
+			"forms":[
+			{
+				"type":"DefaultForm",
+				"text":"."
+			}
+			]
+		},
+		"gap":", ",
+		"inventory":"player",
+		"actions":[
+		{
+			"action":
+			{
+				"type":"StateChanging",
+				"text":"Назад",
+				"stateMachine":"root",
+				"target":"world"
+			}
 		}
 		]
 	}

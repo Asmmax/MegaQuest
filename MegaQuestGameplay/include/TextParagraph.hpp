@@ -1,5 +1,5 @@
 #pragma once
-#include "ActionContainer.hpp"
+#include "ActionMap.hpp"
 #include "IParagraph.hpp"
 
 namespace QuestCore
@@ -9,10 +9,10 @@ namespace QuestCore
 	public:
 		TextParagraph(const TextString& text);
 		virtual TextString GetQuest() const override;
-		virtual ActionContainer& GetActionContainer() override;
+		virtual ActionMap& GetActionContainer() override;
 
 	private:
 		TextString _text;
-		ActionContainer _container;
+		ActionMap _container;
 	};
 }

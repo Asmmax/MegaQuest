@@ -1,29 +1,34 @@
 #pragma once
 #include "Factories/IRoomFactory.hpp"
 #include "TextString.hpp"
+#include "FormatedString.hpp"
 #include <map>
+#include <vector>
 #include <string>
 #include "json.hpp"
 
 namespace QuestCore
 {
-	class Inventory;
-	class ItemInfo;
+	class Item;
 	class IParagraph;
 	class FormBase;
 	class IAction;
+	class Inventory;
+	class ActionMap;
 }
 
 class JsonRoomFactory : public QuestCore::IRoomFactory
 {
 public:
-	JsonRoomFactory(const std::string& filename, const std::shared_ptr<QuestCore::Inventory>& playerInventory);
+	JsonRoomFactory(const std::string& filename);
 	std::shared_ptr<QuestCore::IRoom> GetRoom() override;
 
 private:
+	void ReadHotKeys(const nlohmann::json& keysNode);
 	void ReadItems(const nlohmann::json& itemsNode);
-	void ReadForms(const nlohmann::json& formsNode, const std::shared_ptr<QuestCore::ItemInfo>& itemInfo);
+	void ReadForms(const nlohmann::json& formStrNode, QuestCore::FormatedString& formString);
 	std::shared_ptr<QuestCore::FormBase> ReadForm(const nlohmann::json& formNode);
+	void ReadInventory(const nlohmann::json& inventoriesNode);
 	void CreateParagraphs(const nlohmann::json& paragraphsNode);
 	void ReadParagraphs(const nlohmann::json& paragraphsNode);
 
@@ -31,10 +36,11 @@ private:
 	void InitParagraph(const std::shared_ptr<QuestCore::IParagraph>& paragraph, const nlohmann::json& paragraphNode);
 
 	std::vector<std::shared_ptr<QuestCore::IAction>> ReadActions(const nlohmann::json& actionsNode);
+	void ReadActions(const nlohmann::json& actionsNode, QuestCore::ActionMap& actions);
 	std::shared_ptr<QuestCore::IAction> ReadAction(const nlohmann::json& actionNode);
 
-	std::map<std::shared_ptr<QuestCore::ItemInfo>, int> ReadGiftItems(const nlohmann::json& itemsNode);
-	std::pair<std::shared_ptr<QuestCore::ItemInfo>, int> ReadGiftItem(const nlohmann::json& itemNode);
+	std::map<std::shared_ptr<QuestCore::Item>, int> ReadGiftItems(const nlohmann::json& itemsNode);
+	std::pair<std::shared_ptr<QuestCore::Item>, int> ReadGiftItem(const nlohmann::json& itemNode);
 
 	template<typename T> T Read(const nlohmann::json& node, const std::string& key, const T& defValue);
 	template<> QuestCore::TextString Read(const nlohmann::json& node, const std::string& key, const QuestCore::TextString& defValue);
@@ -43,9 +49,10 @@ private:
 
 private:
 	std::string _filename;
-	std::shared_ptr<QuestCore::Inventory> _playerInventory;
-	std::map<std::string, std::shared_ptr<QuestCore::ItemInfo>> _items;
+	std::vector<std::string> _hotKeys;
+	std::map<std::string, std::shared_ptr<QuestCore::Item>> _items;
 	std::map<std::string, std::shared_ptr<QuestCore::IParagraph>> _paragraphs;
+	std::map<std::string, std::shared_ptr<QuestCore::Inventory>> _inventories;
 };
 
 

@@ -6,18 +6,18 @@
 #include "AutoActionSwitcher.hpp"
 #include "ActionGroup.hpp"
 #include "GiftReceiving.hpp"
-#include "ItemInfo.hpp"
+#include "Item.hpp"
 #include "Forms.hpp"
 
 using namespace QuestCore;
 
-TestRoadFactory::TestRoadFactory(const std::shared_ptr<Inventory>& playerInventory):
-	_playerInventory(playerInventory)
-{
-}
-
 std::shared_ptr<IRoom> TestRoadFactory::GetRoom()
 {
+    std::vector<std::string> hotKeys;
+    auto paragraphSatateMachine = std::make_shared<ParagraphStateMachine>();
+    return std::make_shared<SimpleRoom>(TextString::FromUtf8(u8"Дорога"), paragraphSatateMachine, hotKeys);
+
+    /*
     auto paragraphSatateMachine = std::make_shared<ParagraphStateMachine>();
     auto road = std::make_shared<SimpleRoom>(TextString::FromUtf8(u8"Дорога"), paragraphSatateMachine);
 
@@ -82,4 +82,5 @@ std::shared_ptr<IRoom> TestRoadFactory::GetRoom()
     group->AddAction(gift);
 
     return road;
+    */
 }

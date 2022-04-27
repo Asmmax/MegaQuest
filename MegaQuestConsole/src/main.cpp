@@ -1,5 +1,4 @@
-﻿#include "Inventory.hpp"
-#include "Config/Settings.hpp"
+﻿#include "Config/Settings.hpp"
 #include "Factories/JsonRoomFactory.hpp"
 #include "Player/PlayerController.hpp"
 #include "IRoom.hpp"
@@ -10,10 +9,9 @@
 
 int main()
 {
-    auto inventory = std::make_shared<QuestCore::Inventory>();
     auto& settings = Config::Settings::Instance();
-    auto roomFactory = std::make_shared<JsonRoomFactory>(settings.GetResourcePath() + "testquest.json", inventory);
-    auto controller = std::make_shared<Player::PlayerController>(roomFactory->GetRoom(), inventory);
+    auto roomFactory = std::make_shared<JsonRoomFactory>(settings.GetResourcePath() + "testquest.json");
+    auto controller = std::make_shared<Player::PlayerController>(roomFactory->GetRoom());
 
     Game::GameLoop game;
     auto input = std::make_shared<IO::ConsoleInput>(game, controller);

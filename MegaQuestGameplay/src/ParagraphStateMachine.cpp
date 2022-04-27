@@ -10,7 +10,7 @@ TextString ParagraphStateMachine::GetQuest() const
 	return _state->GetQuest();
 }
 
-ActionContainer& ParagraphStateMachine::GetActionContainer()
+ActionMap& ParagraphStateMachine::GetActionContainer()
 {
 	assert(_state);
 	return _state->GetActionContainer();

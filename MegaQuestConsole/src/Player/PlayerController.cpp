@@ -2,9 +2,7 @@
 #include "IRoom.hpp"
 #include "IParagraph.hpp"
 #include "Player/ITextView.hpp"
-#include "Inventory.hpp"
-#include "ItemInfo.hpp"
-#include "ActionContainer.hpp"
+#include "ActionMap.hpp"
 #include "IAction.hpp"
 
 #include <assert.h>
@@ -12,9 +10,8 @@
 using namespace Player;
 using namespace QuestCore;
 
-PlayerController::PlayerController(const std::shared_ptr<QuestCore::IRoom>& currentRoom, const std::shared_ptr<QuestCore::Inventory>& inventory):
-    _currentRoom(currentRoom),
-    _inventory(inventory)
+PlayerController::PlayerController(const std::shared_ptr<QuestCore::IRoom>& currentRoom):
+    _currentRoom(currentRoom)
 {
 }
 
@@ -32,11 +29,6 @@ void PlayerController::DoCommand(int answerID)
     ViewParagraph();
 }
 
-void PlayerController::OpenInventory()
-{
-    _textView->Write(GetNullableItemsContains() + GetItemsContains());
-}
-
 void PlayerController::SetCurrentRoom(const std::shared_ptr<QuestCore::IRoom>& currentRoom)
 {
     _currentRoom = currentRoom;
@@ -48,6 +40,21 @@ void PlayerController::SetTextView(const std::shared_ptr<ITextView>& textView)
     ViewParagraph();
 }
 
+void PlayerController::OpenInventory()
+{
+    auto& hotKeys = _currentRoom->GetHotKeys();
+    auto hotKeyIt = std::find(hotKeys.begin(), hotKeys.end(), "inventory");
+    if (hotKeyIt == hotKeys.end()) {
+        return;
+    }
+
+    if (auto inventoryAction = _currentRoom->GetCurrentParagraph()->GetActionContainer().GetAction(*hotKeyIt)) {
+        inventoryAction->Do();
+    }
+
+    ViewParagraph();
+}
+
 void PlayerController::ViewParagraph()
 {
     auto paragraph = _currentRoom->GetCurrentParagraph();
@@ -56,71 +63,53 @@ void PlayerController::ViewParagraph()
 
 void PlayerController::Answer(int caseID)
 {
-    auto& actions = _currentRoom->GetCurrentParagraph()->GetActionContainer().GetActions();
+    auto actions = GetActions();
     assert(caseID < static_cast<int>(actions.size()));
 
     actions[caseID]->Do();
+}
+
+std::vector<std::shared_ptr<QuestCore::IAction>> PlayerController::GetActions()
+{
+    auto& actions = _currentRoom->GetCurrentParagraph()->GetActionContainer().GetActions();
+    auto& hotKeys = _currentRoom->GetHotKeys();
+
+    std::vector<std::shared_ptr<QuestCore::IAction>> hotActions;
+    for (auto& hotKey : hotKeys) {
+        if (auto hotAction = _currentRoom->GetCurrentParagraph()->GetActionContainer().GetAction(hotKey)) {
+            hotActions.push_back(hotAction);
+        }
+    }
+
+    std::vector<std::shared_ptr<QuestCore::IAction>> result;
+
+
+    for (auto& action : actions) {
+
+        bool ignore = false;
+        for (auto& hotAction : hotActions) {
+            if (hotAction == action) {
+                ignore = true;
+            }
+        }
+        if (ignore) {
+            continue;
+        }
+
+        result.push_back(action);
+    }
+
+    return result;
 }
 
 TextString PlayerController::GetCases()
 {
     TextString caseString;
     int id = 1;
-    auto& actions = _currentRoom->GetCurrentParagraph()->GetActionContainer().GetActions();
+    auto actions = GetActions();
     for (auto& action : actions) {
         caseString += TextString(id) + TextString::FromUtf8(u8" - ") + action->GetName() + TextString::FromUtf8(u8"\n");
         id++;
     }
     return caseString;
-}
-
-TextString PlayerController::GetNullableItemsContains()
-{
-    auto nullableItems = _inventory->GetNullableItems();
-
-    TextString nullableItemsContains;
-    for (auto itemIt = nullableItems.begin(); itemIt != nullableItems.end(); itemIt++) {
-        if (itemIt != nullableItems.begin()) {
-            nullableItemsContains += TextString::FromUtf8(u8", ");
-        }
-        nullableItemsContains += TextString(itemIt->second) + TextString::FromUtf8(u8" ") + itemIt->first->GetContainsFor(itemIt->second);
-    }
-
-    if (!nullableItems.empty()) {
-        return TextString::FromUtf8(u8"У вас ") + nullableItemsContains + TextString::FromUtf8(u8".\n");
-    }
-
-    return TextString();
-}
-
-TextString PlayerController::GetItemsContains()
-{
-    auto items = _inventory->GetItems();
-
-    auto itemCount = items.size();
-    TextString prefix;
-    if (itemCount == 1)
-        prefix = TextString::FromUtf8(u8"В сумке лежит ");
-    else if (itemCount > 1) {
-        prefix = TextString::FromUtf8(u8"В сумке лежат ");
-    }
-
-    TextString nullableItemsContains;
-    for (auto itemIt = items.begin(); itemIt != items.end(); itemIt++) {
-        if (itemIt != items.begin()) {
-            nullableItemsContains += TextString::FromUtf8(u8", ");
-        }
-        if (itemIt->second == 1) {
-            nullableItemsContains += itemIt->first->GetContainsFor(itemIt->second);
-        }
-        else if (itemIt->second > 0) {
-            nullableItemsContains += TextString(itemIt->second) + TextString::FromUtf8(u8" ") + itemIt->first->GetContainsFor(itemIt->second);
-        }
-    }
-
-    if (!nullableItemsContains.IsEmpty()) {
-        return prefix + nullableItemsContains + TextString::FromUtf8(u8".\n");
-    }
-
-    return TextString();
 }

@@ -6,22 +6,22 @@
 namespace QuestCore
 {
 	class Inventory;
-	class ItemInfo;
+	class Item;
 
 	class GiftReceiving: public IAction
 	{
-		using ItemInfoPtr = std::shared_ptr<ItemInfo>;
-		using Item = std::pair<ItemInfoPtr, int>;
+		using ItemPtr = std::shared_ptr<Item>;
+		using ItemQuery = std::pair<ItemPtr, int>;
 	public:
 		GiftReceiving(const TextString& name, const std::shared_ptr<Inventory>& inventory);
 		virtual TextString GetName() const override;
 		virtual void Do() override;
 
-		void AddThings(const ItemInfoPtr& thing, int count);
+		void AddThings(const ItemPtr& thing, int count);
 
 	private:
 		TextString _name;
-		std::vector<Item> _things;
+		std::vector<ItemQuery> _things;
 		std::shared_ptr<Inventory> _inventory;
 	};
 }

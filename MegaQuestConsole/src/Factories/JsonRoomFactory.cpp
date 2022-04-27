@@ -6,17 +6,20 @@
 #include "AutoActionSwitcher.hpp"
 #include "ActionGroup.hpp"
 #include "GiftReceiving.hpp"
-#include "ItemInfo.hpp"
+#include "Item.hpp"
 #include "Forms.hpp"
+#include "Inventory.hpp"
+#include "InventoryParagraph.hpp"
+#include "ParagraphGroup.hpp"
+#include "ActionMap.hpp"
 
 #include <fstream>
 #include <iostream>
 
 using namespace QuestCore;
 
-JsonRoomFactory::JsonRoomFactory(const std::string& filename, const std::shared_ptr<Inventory>& playerInventory) :
-    _filename(filename),
-    _playerInventory(playerInventory)
+JsonRoomFactory::JsonRoomFactory(const std::string& filename) :
+    _filename(filename)
 {
 }
 
@@ -49,9 +52,19 @@ std::shared_ptr<IRoom> JsonRoomFactory::GetRoom()
         return nullptr;
     }
 
-    auto foundIt = root.find("itemInfos");
+    auto foundIt = root.find("hotKeys");
+    if (foundIt != root.end()) {
+        ReadHotKeys(*foundIt);
+    }
+
+    foundIt = root.find("items");
     if (foundIt != root.end()) {
         ReadItems(*foundIt);
+    }
+
+    foundIt = root.find("inventories");
+    if (foundIt != root.end()) {
+        ReadInventory(*foundIt);
     }
 
     foundIt = root.find("paragraphs");
@@ -61,8 +74,23 @@ std::shared_ptr<IRoom> JsonRoomFactory::GetRoom()
     }
 
     auto startParagraph = GetRootParagraph();
-    auto road = std::make_shared<SimpleRoom>(TextString::FromUtf8(u8"Custom"), startParagraph);
+    auto road = std::make_shared<SimpleRoom>(TextString::FromUtf8(u8"Custom"), startParagraph, _hotKeys);
     return road;
+}
+
+void JsonRoomFactory::ReadHotKeys(const nlohmann::json& keysNode)
+{
+    if (!keysNode.is_array()) {
+        return;
+    }
+
+    for (auto& jsonKey : keysNode) {
+        auto key = jsonKey.get<std::string>();
+        _hotKeys.push_back(key);
+    }
+
+    auto lastIt = std::unique(_hotKeys.begin(), _hotKeys.end());
+    _hotKeys.erase(lastIt, _hotKeys.end());
 }
 
 void JsonRoomFactory::ReadItems(const nlohmann::json& itemsNode)
@@ -71,32 +99,37 @@ void JsonRoomFactory::ReadItems(const nlohmann::json& itemsNode)
         return;
     }
 
-    for (auto& jsonItemInfo : itemsNode) {
-        auto isNullable = Read<bool>(jsonItemInfo, "isNullable", false);
-        auto id = Read<std::string>(jsonItemInfo, "id", std::string());
-        auto itemInfo = std::make_shared<QuestCore::ItemInfo>(isNullable);
-        auto res = _items.emplace(id, itemInfo);
+    for (auto& jsonItem : itemsNode) {
+        auto isNullable = Read<bool>(jsonItem, "isNullable", false);
+        auto id = Read<std::string>(jsonItem, "id", std::string());
 
-        if (!res.second) {
-            continue;
+        FormatedString forms;
+        auto foundIt = jsonItem.find("text");
+        if (foundIt != jsonItem.end()) {
+            ReadForms(*foundIt, forms);
         }
 
-        auto foundIt = jsonItemInfo.find("forms");
-        if (foundIt != jsonItemInfo.end()) {
-            ReadForms(*foundIt, itemInfo);
-        }
+        auto item = std::make_shared<QuestCore::Item>(forms, isNullable);
+        _items.emplace(id, item);
     }
 }
 
-void JsonRoomFactory::ReadForms(const nlohmann::json& formsNode, const std::shared_ptr<QuestCore::ItemInfo>& itemInfo)
+void JsonRoomFactory::ReadForms(const nlohmann::json& formStrNode, FormatedString& forms)
 {
+    auto foundIt = formStrNode.find("forms");
+    if (foundIt == formStrNode.end()) {
+        return;
+    }
+
+    auto& formsNode = *foundIt;
+
     if (!formsNode.is_array()) {
         return;
     }
 
     for (auto& jsonForm : formsNode) {
         auto form = ReadForm(jsonForm);
-        itemInfo->AddForm(form);
+        forms.AddForm(form);
     }
 }
 
@@ -120,6 +153,28 @@ std::shared_ptr<QuestCore::FormBase> JsonRoomFactory::ReadForm(const nlohmann::j
     }
 
     return nullptr;
+}
+
+void JsonRoomFactory::ReadInventory(const nlohmann::json& inventoriesNode)
+{
+    if (!inventoriesNode.is_array()) {
+        return;
+    }
+
+    for (auto& jsonInventory : inventoriesNode) {
+        auto id = Read<std::string>(jsonInventory, "id", std::string());
+
+        auto inventory = std::make_shared<QuestCore::Inventory>();
+        _inventories.emplace(id, inventory);
+
+        auto foundIt = jsonInventory.find("items");
+        if (foundIt != jsonInventory.end()) {
+            auto items = ReadGiftItems(*foundIt);
+            for (auto& item : items) {
+                inventory->PutItem(item.first, item.second);
+            }
+        }
+    }
 }
 
 void JsonRoomFactory::CreateParagraphs(const nlohmann::json& paragraphsNode)
@@ -160,6 +215,37 @@ std::shared_ptr<QuestCore::IParagraph> JsonRoomFactory::CreateParagraph(const nl
         TextString text = Read(paragraphNode, "text", TextString());
         return std::make_shared<TextParagraph>(text);
     }
+    else if (typeId == "InventoryParagraph") {
+        std::shared_ptr<QuestCore::Inventory> inventory;
+        std::string inventoryId = Read(paragraphNode, "inventory", std::string());
+
+        auto foundItInventory = _inventories.find(inventoryId);
+        assert(foundItInventory != _inventories.end());
+
+        if (foundItInventory != _inventories.end()) {
+            inventory = foundItInventory->second;
+        }
+
+        FormatedString prefix;
+        auto foundIt = paragraphNode.find("prefix");
+        if (foundIt != paragraphNode.end()) {
+            ReadForms(*foundIt, prefix);
+        }
+
+        FormatedString postfix;
+        foundIt = paragraphNode.find("postfix");
+        if (foundIt != paragraphNode.end()) {
+            ReadForms(*foundIt, postfix);
+        }
+
+        TextString gap = Read(paragraphNode, "gap", TextString());
+
+        return std::make_shared<InventoryParagraph>(prefix, gap, postfix, inventory);
+    }
+    else if (typeId == "ParagraphGroup"){
+        TextString gap = Read(paragraphNode, "gap", TextString());
+        return std::make_shared<ParagraphGroup>(gap);
+    }
 
     return nullptr;
 }
@@ -168,7 +254,7 @@ void JsonRoomFactory::InitParagraph(const std::shared_ptr<QuestCore::IParagraph>
 {
     std::string typeId = Read(paragraphNode, "type", std::string());
     if (typeId == "ParagraphStateMachine") {
-        auto stateMachine = std::static_pointer_cast<QuestCore::ParagraphStateMachine>(paragraph);
+        auto stateMachine = std::static_pointer_cast<ParagraphStateMachine>(paragraph);
         std::string target = Read(paragraphNode, "target", std::string());
         auto foundIt = _paragraphs.find(target);
         assert(foundIt != _paragraphs.end());
@@ -180,9 +266,34 @@ void JsonRoomFactory::InitParagraph(const std::shared_ptr<QuestCore::IParagraph>
     else if (typeId == "TextParagraph") {
         auto foundIt = paragraphNode.find("actions");
         if (foundIt != paragraphNode.end()) {
-            auto actions = ReadActions(*foundIt);
-            for (auto& action : actions) {
-                paragraph->GetActionContainer().AddAction(action);
+            ReadActions(*foundIt, paragraph->GetActionContainer());
+        }
+    }
+    else if (typeId == "InventoryParagraph") {
+        auto foundIt = paragraphNode.find("actions");
+        if (foundIt != paragraphNode.end()) {
+            ReadActions(*foundIt, paragraph->GetActionContainer());
+        }
+    }
+    else if (typeId == "ParagraphGroup") {
+        auto group = std::static_pointer_cast<ParagraphGroup>(paragraph);
+
+        auto foundIt = paragraphNode.find("paragraphs");
+        if (foundIt != paragraphNode.end()) {
+            auto& childrenNode = *foundIt;
+            if (!childrenNode.is_array()) {
+                return;
+            }
+
+            for (auto& jsonChild : childrenNode) {
+                auto paragraphId = jsonChild.get<std::string>();
+                auto paragraphIt = _paragraphs.find(paragraphId);
+                assert(paragraphIt != _paragraphs.end());
+
+                if (paragraphIt != _paragraphs.end()) {
+                    group->AddParagraph(paragraphIt->second);
+                }
+
             }
         }
     }
@@ -201,6 +312,32 @@ std::vector<std::shared_ptr<QuestCore::IAction>> JsonRoomFactory::ReadActions(co
         result.push_back(action);
     }
     return result;
+}
+
+void JsonRoomFactory::ReadActions(const nlohmann::json& actionsNode, QuestCore::ActionMap& actions)
+{
+    if (!actionsNode.is_array()) {
+        return;
+    }
+
+    for (auto& jsonAction : actionsNode) {
+
+        auto foundIt = jsonAction.find("action");
+        if (foundIt == jsonAction.end()) {
+            continue;
+        }
+
+        std::string key = Read(jsonAction, "key", std::string());
+        auto action = ReadAction(*foundIt);
+
+        if (key.empty()) {
+            actions.AddAction(action);
+        }
+        else {
+            assert(std::find(_hotKeys.begin(), _hotKeys.end(), key) != _hotKeys.end());
+            actions.AddHotAction(key, action);
+        }
+    }
 }
 
 std::shared_ptr<QuestCore::IAction> JsonRoomFactory::ReadAction(const nlohmann::json& actionNode)
@@ -275,8 +412,12 @@ std::shared_ptr<QuestCore::IAction> JsonRoomFactory::ReadAction(const nlohmann::
 
         std::shared_ptr<QuestCore::Inventory> inventory;
         std::string inventoryId = Read(actionNode, "inventory", std::string());
-        if (inventoryId == "player") {
-            inventory = _playerInventory;
+
+        auto foundItInventory = _inventories.find(inventoryId);
+        assert(foundItInventory != _inventories.end());
+
+        if (foundItInventory != _inventories.end()) {
+            inventory = foundItInventory->second;
         }
 
         TextString text = Read(actionNode, "text", TextString());
@@ -284,7 +425,6 @@ std::shared_ptr<QuestCore::IAction> JsonRoomFactory::ReadAction(const nlohmann::
         auto gift = std::make_shared<QuestCore::GiftReceiving>(text, inventory);
         
         auto foundIt = actionNode.find("items");
-        assert(foundIt != actionNode.end());
         if (foundIt != actionNode.end()) {
             auto items = ReadGiftItems(*foundIt);
             for (auto& item : items) {
@@ -298,9 +438,9 @@ std::shared_ptr<QuestCore::IAction> JsonRoomFactory::ReadAction(const nlohmann::
     return nullptr;
 }
 
-std::map<std::shared_ptr<QuestCore::ItemInfo>, int> JsonRoomFactory::ReadGiftItems(const nlohmann::json& itemsNode)
+std::map<std::shared_ptr<QuestCore::Item>, int> JsonRoomFactory::ReadGiftItems(const nlohmann::json& itemsNode)
 {
-    std::map<std::shared_ptr<QuestCore::ItemInfo>, int> result;
+    std::map<std::shared_ptr<QuestCore::Item>, int> result;
     
     if (!itemsNode.is_array()) {
         return result;
@@ -314,9 +454,9 @@ std::map<std::shared_ptr<QuestCore::ItemInfo>, int> JsonRoomFactory::ReadGiftIte
     return result;
 }
 
-std::pair<std::shared_ptr<QuestCore::ItemInfo>, int> JsonRoomFactory::ReadGiftItem(const nlohmann::json& itemNode)
+std::pair<std::shared_ptr<QuestCore::Item>, int> JsonRoomFactory::ReadGiftItem(const nlohmann::json& itemNode)
 {
-    std::pair<std::shared_ptr<QuestCore::ItemInfo>, int> item;
+    std::pair<std::shared_ptr<QuestCore::Item>, int> item;
     std::string id = Read(itemNode, "id", std::string());
 
     auto foundIt = _items.find(id);

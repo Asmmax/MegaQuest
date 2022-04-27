@@ -2,11 +2,12 @@
 #include "TextString.hpp"
 #include <memory>
 #include <exception>
+#include <vector>
 
 namespace QuestCore
 {
 	class IRoom;
-	class Inventory;
+	class IAction;
 }
 
 namespace Player 
@@ -18,23 +19,21 @@ namespace Player
 	class PlayerController
 	{
 	public:
-        PlayerController(const std::shared_ptr<QuestCore::IRoom>& currentRoom, const std::shared_ptr<QuestCore::Inventory>& inventory);
+        PlayerController(const std::shared_ptr<QuestCore::IRoom>& currentRoom);
 
         void DoCommand(int answerID);
-        void OpenInventory();
         void SetCurrentRoom(const std::shared_ptr<QuestCore::IRoom>& currentRoom);
         void SetTextView(const std::shared_ptr<ITextView>& textView);
+		void OpenInventory();
 
     private:
 		void ViewParagraph();
 		void Answer(int caseID);
+		std::vector<std::shared_ptr<QuestCore::IAction>> GetActions();
 		QuestCore::TextString GetCases();
-		QuestCore::TextString GetNullableItemsContains();
-		QuestCore::TextString GetItemsContains();
 
 	private:
 		std::shared_ptr<QuestCore::IRoom> _currentRoom;
 		std::shared_ptr<ITextView> _textView;
-		std::shared_ptr<QuestCore::Inventory> _inventory;
 	};
 }

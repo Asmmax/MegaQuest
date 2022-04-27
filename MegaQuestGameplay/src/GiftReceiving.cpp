@@ -1,6 +1,6 @@
 #include "GiftReceiving.hpp"
 #include "Inventory.hpp"
-#include "ItemInfo.hpp"
+#include "Item.hpp"
 
 using namespace QuestCore;
 
@@ -26,10 +26,7 @@ void GiftReceiving::Do()
     }
 }
 
-void GiftReceiving::AddThings(const ItemInfoPtr& thing, int count)
+void GiftReceiving::AddThings(const ItemPtr& thing, int count)
 {
     _things.emplace_back(thing, count);
-    if (thing->IsNullable()) {
-        _inventory->PutItem(thing, 0);
-    }
 }

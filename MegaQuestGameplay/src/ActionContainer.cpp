@@ -2,6 +2,11 @@
 
 using namespace QuestCore;
 
+void ActionContainer::Clear()
+{
+	_actions.clear();
+}
+
 int ActionContainer::GetActionCount() const
 {
 	return static_cast<int>(_actions.size());
@@ -24,3 +29,12 @@ const ActionContainer::ActionList& ActionContainer::GetActions() const
 {
 	return _actions;
 }
+
+ActionContainer& ActionContainer::operator+=(const ActionContainer& other)
+{
+	for (auto& action : other._actions) {
+		_actions.push_back(action);
+	}
+	return *this;
+}
+

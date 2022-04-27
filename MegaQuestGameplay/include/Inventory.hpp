@@ -4,18 +4,17 @@
 
 namespace QuestCore
 {
-	class ItemInfo;
+	class Item;
 
 	class Inventory
 	{
-		using ItemInfoPtr = std::shared_ptr<ItemInfo>;
+		using ItemPtr = std::shared_ptr<Item>;
 	public:
-		void PutItem(const ItemInfoPtr& item, int count);
-		void ThrowItem(const ItemInfoPtr& item, int count);
-		std::map<ItemInfoPtr, int> GetNullableItems() const;
-		std::map<ItemInfoPtr, int> GetItems() const;
+		void PutItem(const ItemPtr& item, int count);
+		void ThrowItem(const ItemPtr& item, int count);
+		inline const std::map<ItemPtr, int>& GetItems() const { return _items; }
 
 	private:
-		std::map<ItemInfoPtr, int> _items;
+		std::map<ItemPtr, int> _items;
 	};
 }
