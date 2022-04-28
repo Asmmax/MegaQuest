@@ -2,14 +2,15 @@
 
 using namespace QuestCore;
 
-ActionGroup::ActionGroup(const TextString& gap):
+ActionGroup::ActionGroup(const TextString& prefix, const TextString& gap):
+	_prefix(prefix),
 	_gap(gap)
 {
 }
 
 TextString ActionGroup::GetName() const
 {
-	TextString name;
+	TextString name = _prefix;
 
 	auto& actions = GetActions();
 	for (auto actionIt = actions.begin(); actionIt != actions.end(); actionIt++) {

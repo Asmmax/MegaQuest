@@ -58,7 +58,7 @@ void PlayerController::OpenInventory()
 void PlayerController::ViewParagraph()
 {
     auto paragraph = _currentRoom->GetCurrentParagraph();
-    _textView->Write(_currentRoom->GetName() + TextString::FromUtf8(u8":\n") + paragraph->GetQuest() + TextString::FromUtf8(u8"\n") + GetCases());
+    _textView->Write(paragraph->GetQuest() + TextString::FromUtf8(u8"\n") + GetCases());
 }
 
 void PlayerController::Answer(int caseID)

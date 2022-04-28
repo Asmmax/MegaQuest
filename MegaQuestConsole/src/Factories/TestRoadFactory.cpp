@@ -3,7 +3,6 @@
 #include "SimpleRoom.hpp"
 #include "TextParagraph.hpp"
 #include "ParagraphChanging.hpp"
-#include "AutoActionSwitcher.hpp"
 #include "ActionGroup.hpp"
 #include "GiftReceiving.hpp"
 #include "Item.hpp"
@@ -15,7 +14,7 @@ std::shared_ptr<IRoom> TestRoadFactory::GetRoom()
 {
     std::vector<std::string> hotKeys;
     auto paragraphSatateMachine = std::make_shared<ParagraphStateMachine>();
-    return std::make_shared<SimpleRoom>(TextString::FromUtf8(u8"Дорога"), paragraphSatateMachine, hotKeys);
+    return std::make_shared<SimpleRoom>(paragraphSatateMachine, hotKeys);
 
     /*
     auto paragraphSatateMachine = std::make_shared<ParagraphStateMachine>();

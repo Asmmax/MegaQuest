@@ -85,7 +85,12 @@
 	{
 		"type":"ParagraphGroup",
 		"id":"world",
-		"paragraphs":["world_root", "to_inventory"]
+		"paragraphs":["world_prefix", "world_root", "to_inventory"]
+	},
+	{
+		"type":"TextParagraph",
+		"id":"world_prefix",
+		"text":"Дорога:\n"
 	},
 	{
 		"type":"ParagraphStateMachine",
@@ -126,23 +131,10 @@
 		{
 			"action":
 			{
-				"type":"AutoActionSwitcher",
-				"switch":1,
-				"final":0,
-				"actions":[
-				{
-					"type":"StateChanging",
-					"text":"Поговорить с путником",
-					"stateMachine":"world_root",
-					"target":"empty_trump"
-				},
-				{
-					"type":"StateChanging",
-					"text":"Поговорить с путником",
-					"stateMachine":"world_root",
-					"target":"talked_trump"
-				}
-				]
+				"type":"StateChanging",
+				"text":"Поговорить с путником",
+				"stateMachine":"world_root",
+				"target":"trump"
 			}
 		}
 		]
@@ -162,6 +154,11 @@
 			}
 		}
 		]
+	},
+	{
+		"type":"ParagraphStateMachine",
+		"id":"trump",
+		"target":"talked_trump"
 	},
 	{
 		"type":"TextParagraph",
@@ -188,11 +185,10 @@
 			"action":
 			{
 				"type":"ActionGroup",
-				"text":" и ",
+				"text":"Забрать подарок и вернуться назад",
 				"actions":[
 				{
 					"type":"GiftReceiving",
-					"text":"Забрать подарок",
 					"inventory":"player",
 					"items":[
 					{
@@ -207,9 +203,13 @@
 				},
 				{
 					"type":"StateChanging",
-					"text":"Вернуться назад",
 					"stateMachine":"world_root",
 					"target":"road"
+				},
+				{
+					"type":"StateChanging",
+					"stateMachine":"trump",
+					"target":"empty_trump"
 				}
 				]
 			}
@@ -217,8 +217,18 @@
 		]
 	},
 	{
-		"type":"InventoryParagraph",
+		"type":"ParagraphGroup",
 		"id":"inventory",
+		"paragraphs":["inventory_prefix", "inventory_root"]
+	},
+	{
+		"type":"TextParagraph",
+		"id":"inventory_prefix",
+		"text":"Инвентарь:\n"
+	},
+	{
+		"type":"InventoryParagraph",
+		"id":"inventory_root",
 		"prefix":{
 			"forms":[
 			{

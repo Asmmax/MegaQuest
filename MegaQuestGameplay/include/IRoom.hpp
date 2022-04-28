@@ -12,7 +12,6 @@ namespace QuestCore
 	public:
 		virtual ~IRoom() = default;
 
-		virtual const TextString& GetName() const = 0;
 		virtual const std::shared_ptr<IParagraph>& GetCurrentParagraph() const = 0;
 		virtual std::vector<std::string> GetHotKeys() const = 0;
 	};

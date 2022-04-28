@@ -3,7 +3,6 @@
 #include "SimpleRoom.hpp"
 #include "TextParagraph.hpp"
 #include "ParagraphChanging.hpp"
-#include "AutoActionSwitcher.hpp"
 #include "ActionGroup.hpp"
 #include "GiftReceiving.hpp"
 #include "Item.hpp"
@@ -74,7 +73,7 @@ std::shared_ptr<IRoom> JsonRoomFactory::GetRoom()
     }
 
     auto startParagraph = GetRootParagraph();
-    auto road = std::make_shared<SimpleRoom>(TextString::FromUtf8(u8"Custom"), startParagraph, _hotKeys);
+    auto road = std::make_shared<SimpleRoom>(startParagraph, _hotKeys);
     return road;
 }
 
@@ -369,36 +368,11 @@ std::shared_ptr<QuestCore::IAction> JsonRoomFactory::ReadAction(const nlohmann::
 
         return std::make_shared<QuestCore::ParagraphChanging>(text, stateMachine, foundIt->second);
     }
-    else if (typeId == "AutoActionSwitcher") {
-        auto autoSwitcher = std::make_shared<QuestCore::AutoActionSwitcher>();
-        auto foundIt = actionNode.find("actions");
-        if (foundIt != actionNode.end()) {
-            auto actions = ReadActions(*foundIt);
-            for (auto& action : actions) {
-                autoSwitcher->AddAction(action);
-            }
-        }
-
-        auto actions = autoSwitcher->GetActions();
-
-        size_t _switch = Read<int>(actionNode, "switch", 0);
-        assert(_switch < actions.size());
-        if (_switch < actions.size()) {
-            autoSwitcher->Switch(actions[_switch]);
-        }
-
-        size_t _final = Read<int>(actionNode, "final", 0);
-        assert(_final < actions.size());
-        if (_final < actions.size()) {
-            autoSwitcher->SetFinalAction(actions[_final]);
-        }
-
-        return autoSwitcher;
-    }
     else if (typeId == "ActionGroup") {
         TextString text = Read(actionNode, "text", TextString());
+        TextString gap = Read(actionNode, "gap", TextString());
 
-        auto actionGroup = std::make_shared<QuestCore::ActionGroup>(text);
+        auto actionGroup = std::make_shared<QuestCore::ActionGroup>(text, gap);
         auto foundIt = actionNode.find("actions");
         if (foundIt != actionNode.end()) {
             auto actions = ReadActions(*foundIt);
