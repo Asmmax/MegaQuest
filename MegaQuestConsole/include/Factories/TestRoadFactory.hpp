@@ -1,5 +1,5 @@
 #pragma once
-#include "Factories/IRoomFactory.hpp"
+#include "IRoomFactory.hpp"
 
 class TestRoadFactory : public QuestCore::IRoomFactory
 {

@@ -1,4 +1,4 @@
-#include "ParagraphGroup.hpp"
+#include "Paragraphs/ParagraphGroup.hpp"
 
 using namespace QuestCore;
 
@@ -10,7 +10,7 @@ ParagraphGroup::ParagraphGroup(const TextString& gap):
 void ParagraphGroup::ClearParagraphs()
 {
 	_paragraphs.clear();
-	_actions.Clear();
+	_cases.Clear();
 }
 
 void ParagraphGroup::AddParagraph(const std::shared_ptr<IParagraph>& paragraph)
@@ -18,11 +18,11 @@ void ParagraphGroup::AddParagraph(const std::shared_ptr<IParagraph>& paragraph)
 	_paragraphs.emplace_back(paragraph);
 }
 
-void ParagraphGroup::UpdateActions()
+void ParagraphGroup::UpdateCases()
 {
-	_actions.Clear();
+	_cases.Clear();
 	for (auto& paragraph : _paragraphs) {
-		_actions += paragraph->GetActionContainer();
+		_cases += paragraph->GetCaseContainer();
 	}
 }
 
@@ -39,8 +39,8 @@ TextString ParagraphGroup::GetQuest() const
 	return result;
 }
 
-ActionMap& ParagraphGroup::GetActionContainer()
+CaseContainer& ParagraphGroup::GetCaseContainer()
 {
-	UpdateActions();
-	return _actions;
+	UpdateCases();
+	return _cases;
 }

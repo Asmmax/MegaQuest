@@ -1,6 +1,6 @@
 #pragma once
 #include "IParagraph.hpp"
-
+#include "CaseContainer.hpp"
 #include <memory>
 
 namespace QuestCore
@@ -9,7 +9,7 @@ namespace QuestCore
 	{
 	public:
 		virtual TextString GetQuest() const override;
-		virtual ActionMap& GetActionContainer() override;
+		virtual CaseContainer& GetCaseContainer() override;
 
 		inline void SetState(const std::shared_ptr<IParagraph>& newState) { _state = newState; }
 	

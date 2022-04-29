@@ -100,14 +100,13 @@
 	{
 		"type":"TextParagraph",
 		"id":"to_inventory",
-		"text":"",
-		"actions":[
+		"cases":[
 		{
 			"key":"inventory",
+			"text":"Открыть инвентарь",
 			"action":
 			{
 				"type":"StateChanging",
-				"text":"Открыть инвентарь",
 				"stateMachine":"root",
 				"target":"inventory"
 			}
@@ -118,21 +117,21 @@
 		"type":"TextParagraph",
 		"id":"road",
 		"text":"Перед вами дорога",
-		"actions":[
+		"cases":[
 		{
+			"text":"Осмотреть",
 			"action":
 			{
 				"type":"StateChanging",
-				"text":"Осмотреть",
 				"stateMachine":"world_root",
 				"target":"explored_road"
 			}
 		},
 		{
+			"text":"Поговорить с путником",
 			"action":
 			{
 				"type":"StateChanging",
-				"text":"Поговорить с путником",
 				"stateMachine":"world_root",
 				"target":"trump"
 			}
@@ -143,12 +142,12 @@
 		"type":"TextParagraph",
 		"id":"explored_road",
 		"text":"Вы видите перед собой дорогу, а на дороге путника.",
-		"actions":[
+		"cases":[
 		{
+			"text":"Вернуться назад",
 			"action":
 			{
 				"type":"StateChanging",
-				"text":"Вернуться назад",
 				"stateMachine":"world_root",
 				"target":"road"
 			}
@@ -164,12 +163,12 @@
 		"type":"TextParagraph",
 		"id":"empty_trump",
 		"text":"Здравствуй незнакомец, а я тебе уже всё отдал.",
-		"actions":[
+		"cases":[
 		{
+			"text":"Вернуться назад",
 			"action":
 			{
 				"type":"StateChanging",
-				"text":"Вернуться назад",
 				"stateMachine":"world_root",
 				"target":"road"
 			}
@@ -180,12 +179,12 @@
 		"type":"TextParagraph",
 		"id":"talked_trump",
 		"text":"Здравствуй незнакомец, на вот те за просто так 50 монет и медальон.",
-		"actions":[
+		"cases":[
 		{
+			"text":"Забрать подарок и вернуться назад",
 			"action":
 			{
 				"type":"ActionGroup",
-				"text":"Забрать подарок и вернуться назад",
 				"actions":[
 				{
 					"type":"GiftReceiving",
@@ -252,12 +251,12 @@
 		},
 		"gap":", ",
 		"inventory":"player",
-		"actions":[
+		"cases":[
 		{
+			"text":"Назад",
 			"action":
 			{
 				"type":"StateChanging",
-				"text":"Назад",
 				"stateMachine":"root",
 				"target":"world"
 			}

@@ -1,5 +1,5 @@
 #pragma once
-#include "Factories/IRoomFactory.hpp"
+#include "IRoomFactory.hpp"
 #include "TextString.hpp"
 #include "FormatedString.hpp"
 #include <map>
@@ -14,7 +14,7 @@ namespace QuestCore
 	class FormBase;
 	class IAction;
 	class Inventory;
-	class ActionMap;
+	class CaseContainer;
 }
 
 class JsonRoomFactory : public QuestCore::IRoomFactory
@@ -35,8 +35,8 @@ private:
 	std::shared_ptr<QuestCore::IParagraph> CreateParagraph(const nlohmann::json& paragraphNode);
 	void InitParagraph(const std::shared_ptr<QuestCore::IParagraph>& paragraph, const nlohmann::json& paragraphNode);
 
+	void ReadCases(const nlohmann::json& casesNode, QuestCore::CaseContainer& cases);
 	std::vector<std::shared_ptr<QuestCore::IAction>> ReadActions(const nlohmann::json& actionsNode);
-	void ReadActions(const nlohmann::json& actionsNode, QuestCore::ActionMap& actions);
 	std::shared_ptr<QuestCore::IAction> ReadAction(const nlohmann::json& actionNode);
 
 	std::map<std::shared_ptr<QuestCore::Item>, int> ReadGiftItems(const nlohmann::json& itemsNode);

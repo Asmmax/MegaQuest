@@ -1,18 +1,12 @@
-#include "GiftReceiving.hpp"
+#include "Actions/GiftReceiving.hpp"
 #include "Inventory.hpp"
 #include "Item.hpp"
 
 using namespace QuestCore;
 
-GiftReceiving::GiftReceiving(const TextString& name, const std::shared_ptr<Inventory>& inventory):
-	_name(name),
+GiftReceiving::GiftReceiving(const std::shared_ptr<Inventory>& inventory):
     _inventory(inventory)
 {
-}
-
-TextString GiftReceiving::GetName() const
-{
-	return _name;
 }
 
 void GiftReceiving::Do()

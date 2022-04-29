@@ -2,7 +2,7 @@
 #include "IRoom.hpp"
 #include "IParagraph.hpp"
 #include "Player/ITextView.hpp"
-#include "ActionMap.hpp"
+#include "CaseContainer.hpp"
 #include "IAction.hpp"
 
 #include <assert.h>
@@ -21,7 +21,7 @@ void PlayerController::DoCommand(int answerID)
     auto paragraph = _currentRoom->GetCurrentParagraph();
 
     
-    if (caseID < 0 || caseID >= paragraph->GetActionContainer().GetActionCount()) {
+    if (caseID < 0 || caseID >= paragraph->GetCaseContainer().GetCaseCount()) {
         throw AnswerNotExsistExeption();
     }
 
@@ -48,7 +48,12 @@ void PlayerController::OpenInventory()
         return;
     }
 
-    if (auto inventoryAction = _currentRoom->GetCurrentParagraph()->GetActionContainer().GetAction(*hotKeyIt)) {
+    auto inventoryCases = _currentRoom->GetCurrentParagraph()->GetCaseContainer().GetCases(*hotKeyIt);
+    if (inventoryCases.empty()) {
+        return;
+    }
+
+    if (auto inventoryAction = inventoryCases.front().action) {
         inventoryAction->Do();
     }
 
@@ -58,57 +63,29 @@ void PlayerController::OpenInventory()
 void PlayerController::ViewParagraph()
 {
     auto paragraph = _currentRoom->GetCurrentParagraph();
-    _textView->Write(paragraph->GetQuest() + TextString::FromUtf8(u8"\n") + GetCases());
+    _textView->Write(paragraph->GetQuest() + TextString::FromUtf8(u8"\n") + GetCasesContain());
 }
 
 void PlayerController::Answer(int caseID)
 {
-    auto actions = GetActions();
-    assert(caseID < static_cast<int>(actions.size()));
+    auto cases = GetCases();
+    assert(caseID < static_cast<int>(cases.size()));
 
-    actions[caseID]->Do();
+    cases[caseID].action->Do();
 }
 
-std::vector<std::shared_ptr<QuestCore::IAction>> PlayerController::GetActions()
+std::vector<QuestCore::Case> PlayerController::GetCases()
 {
-    auto& actions = _currentRoom->GetCurrentParagraph()->GetActionContainer().GetActions();
-    auto& hotKeys = _currentRoom->GetHotKeys();
-
-    std::vector<std::shared_ptr<QuestCore::IAction>> hotActions;
-    for (auto& hotKey : hotKeys) {
-        if (auto hotAction = _currentRoom->GetCurrentParagraph()->GetActionContainer().GetAction(hotKey)) {
-            hotActions.push_back(hotAction);
-        }
-    }
-
-    std::vector<std::shared_ptr<QuestCore::IAction>> result;
-
-
-    for (auto& action : actions) {
-
-        bool ignore = false;
-        for (auto& hotAction : hotActions) {
-            if (hotAction == action) {
-                ignore = true;
-            }
-        }
-        if (ignore) {
-            continue;
-        }
-
-        result.push_back(action);
-    }
-
-    return result;
+    return _currentRoom->GetCurrentParagraph()->GetCaseContainer().GetCases();
 }
 
-TextString PlayerController::GetCases()
+TextString PlayerController::GetCasesContain()
 {
     TextString caseString;
     int id = 1;
-    auto actions = GetActions();
-    for (auto& action : actions) {
-        caseString += TextString(id) + TextString::FromUtf8(u8" - ") + action->GetName() + TextString::FromUtf8(u8"\n");
+    auto cases = GetCases();
+    for (auto& _case : cases) {
+        caseString += TextString(id) + TextString::FromUtf8(u8" - ") + _case.name + TextString::FromUtf8(u8"\n");
         id++;
     }
     return caseString;

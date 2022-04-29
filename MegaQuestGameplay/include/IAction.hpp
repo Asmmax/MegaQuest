@@ -8,7 +8,6 @@ namespace QuestCore
 	public:
 		virtual ~IAction() = default;
 
-		virtual TextString GetName() const = 0;
 		virtual void Do() = 0;
 	};
 }

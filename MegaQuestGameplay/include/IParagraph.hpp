@@ -3,7 +3,7 @@
 
 namespace QuestCore
 {
-	class ActionMap;
+	class CaseContainer;
 
 	class IParagraph
 	{
@@ -11,6 +11,6 @@ namespace QuestCore
 		virtual ~IParagraph() = default;
 
 		virtual TextString GetQuest() const = 0;
-		virtual ActionMap& GetActionContainer() = 0;
+		virtual CaseContainer& GetCaseContainer() = 0;
 	};
 }

@@ -1,6 +1,6 @@
 #pragma once
-#include "ActionMap.hpp"
 #include "IParagraph.hpp"
+#include "CaseContainer.hpp"
 
 namespace QuestCore
 {
@@ -9,10 +9,10 @@ namespace QuestCore
 	public:
 		TextParagraph(const TextString& text);
 		virtual TextString GetQuest() const override;
-		virtual ActionMap& GetActionContainer() override;
+		virtual CaseContainer& GetCaseContainer() override;
 
 	private:
 		TextString _text;
-		ActionMap _container;
+		CaseContainer _cases;
 	};
 }

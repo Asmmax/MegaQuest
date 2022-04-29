@@ -1,16 +1,16 @@
 #include "Factories/JsonRoomFactory.hpp"
-#include "ParagraphStateMachine.hpp"
+#include "Paragraphs/ParagraphStateMachine.hpp"
 #include "SimpleRoom.hpp"
-#include "TextParagraph.hpp"
-#include "ParagraphChanging.hpp"
-#include "ActionGroup.hpp"
-#include "GiftReceiving.hpp"
+#include "Paragraphs/TextParagraph.hpp"
+#include "Actions/ParagraphChanging.hpp"
+#include "Actions/ActionGroup.hpp"
+#include "Actions/GiftReceiving.hpp"
 #include "Item.hpp"
 #include "Forms.hpp"
 #include "Inventory.hpp"
-#include "InventoryParagraph.hpp"
-#include "ParagraphGroup.hpp"
-#include "ActionMap.hpp"
+#include "Paragraphs/InventoryParagraph.hpp"
+#include "Paragraphs/ParagraphGroup.hpp"
+#include "CaseContainer.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -263,15 +263,15 @@ void JsonRoomFactory::InitParagraph(const std::shared_ptr<QuestCore::IParagraph>
         }
     }
     else if (typeId == "TextParagraph") {
-        auto foundIt = paragraphNode.find("actions");
+        auto foundIt = paragraphNode.find("cases");
         if (foundIt != paragraphNode.end()) {
-            ReadActions(*foundIt, paragraph->GetActionContainer());
+            ReadCases(*foundIt, paragraph->GetCaseContainer());
         }
     }
     else if (typeId == "InventoryParagraph") {
-        auto foundIt = paragraphNode.find("actions");
+        auto foundIt = paragraphNode.find("cases");
         if (foundIt != paragraphNode.end()) {
-            ReadActions(*foundIt, paragraph->GetActionContainer());
+            ReadCases(*foundIt, paragraph->GetCaseContainer());
         }
     }
     else if (typeId == "ParagraphGroup") {
@@ -313,28 +313,30 @@ std::vector<std::shared_ptr<QuestCore::IAction>> JsonRoomFactory::ReadActions(co
     return result;
 }
 
-void JsonRoomFactory::ReadActions(const nlohmann::json& actionsNode, QuestCore::ActionMap& actions)
+void JsonRoomFactory::ReadCases(const nlohmann::json& casesNode, QuestCore::CaseContainer& cases)
 {
-    if (!actionsNode.is_array()) {
+    if (!casesNode.is_array()) {
         return;
     }
 
-    for (auto& jsonAction : actionsNode) {
+    for (auto& jsonCase : casesNode) {
 
-        auto foundIt = jsonAction.find("action");
-        if (foundIt == jsonAction.end()) {
+        auto foundIt = jsonCase.find("action");
+        if (foundIt == jsonCase.end()) {
             continue;
         }
 
-        std::string key = Read(jsonAction, "key", std::string());
+        TextString text = Read(jsonCase, "text", TextString());
         auto action = ReadAction(*foundIt);
+        Case _case{ text, action };
 
+        std::string key = Read(jsonCase, "key", std::string());
         if (key.empty()) {
-            actions.AddAction(action);
+            cases.AddCase(_case);
         }
         else {
             assert(std::find(_hotKeys.begin(), _hotKeys.end(), key) != _hotKeys.end());
-            actions.AddHotAction(key, action);
+            cases.AddCase(key, _case);
         }
     }
 }
@@ -364,15 +366,10 @@ std::shared_ptr<QuestCore::IAction> JsonRoomFactory::ReadAction(const nlohmann::
             return nullptr;
         }
 
-        TextString text = Read(actionNode, "text", TextString());
-
-        return std::make_shared<QuestCore::ParagraphChanging>(text, stateMachine, foundIt->second);
+        return std::make_shared<QuestCore::ParagraphChanging>(stateMachine, foundIt->second);
     }
     else if (typeId == "ActionGroup") {
-        TextString text = Read(actionNode, "text", TextString());
-        TextString gap = Read(actionNode, "gap", TextString());
-
-        auto actionGroup = std::make_shared<QuestCore::ActionGroup>(text, gap);
+        auto actionGroup = std::make_shared<QuestCore::ActionGroup>();
         auto foundIt = actionNode.find("actions");
         if (foundIt != actionNode.end()) {
             auto actions = ReadActions(*foundIt);
@@ -394,9 +391,7 @@ std::shared_ptr<QuestCore::IAction> JsonRoomFactory::ReadAction(const nlohmann::
             inventory = foundItInventory->second;
         }
 
-        TextString text = Read(actionNode, "text", TextString());
-
-        auto gift = std::make_shared<QuestCore::GiftReceiving>(text, inventory);
+        auto gift = std::make_shared<QuestCore::GiftReceiving>(inventory);
         
         auto foundIt = actionNode.find("items");
         if (foundIt != actionNode.end()) {

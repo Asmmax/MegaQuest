@@ -1,4 +1,4 @@
-#include "ParagraphStateMachine.hpp"
+#include "Paragraphs/ParagraphStateMachine.hpp"
 
 #include <assert.h>
 
@@ -10,8 +10,8 @@ TextString ParagraphStateMachine::GetQuest() const
 	return _state->GetQuest();
 }
 
-ActionMap& ParagraphStateMachine::GetActionContainer()
+CaseContainer& ParagraphStateMachine::GetCaseContainer()
 {
 	assert(_state);
-	return _state->GetActionContainer();
+	return _state->GetCaseContainer();
 }

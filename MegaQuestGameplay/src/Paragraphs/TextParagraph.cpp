@@ -1,4 +1,4 @@
-#include "TextParagraph.hpp"
+#include "Paragraphs/TextParagraph.hpp"
 
 using namespace QuestCore;
 
@@ -12,7 +12,7 @@ TextString TextParagraph::GetQuest() const
 	return _text;
 }
 
-ActionMap& TextParagraph::GetActionContainer()
+CaseContainer& TextParagraph::GetCaseContainer()
 {
-	return _container;
+	return _cases;
 }

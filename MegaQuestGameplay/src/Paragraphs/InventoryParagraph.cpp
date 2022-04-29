@@ -1,4 +1,4 @@
-#include "InventoryParagraph.hpp"
+#include "Paragraphs/InventoryParagraph.hpp"
 #include "Inventory.hpp"
 #include "Item.hpp"
 
@@ -39,7 +39,7 @@ TextString InventoryParagraph::GetQuest() const
 	return prefix + contains + postfix;
 }
 
-ActionMap& InventoryParagraph::GetActionContainer()
+CaseContainer& InventoryParagraph::GetCaseContainer()
 {
-	return _container;
+	return _cases;
 }

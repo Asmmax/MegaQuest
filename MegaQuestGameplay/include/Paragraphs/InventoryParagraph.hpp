@@ -1,7 +1,7 @@
 #pragma once
 #include "IParagraph.hpp"
-#include "ActionMap.hpp"
 #include "FormatedString.hpp"
+#include "CaseContainer.hpp"
 #include <vector>
 
 namespace QuestCore
@@ -18,10 +18,10 @@ namespace QuestCore
 			const std::shared_ptr<Inventory>& inventory);
 
 		virtual TextString GetQuest() const override;
-		virtual ActionMap& GetActionContainer() override;
+		virtual CaseContainer& GetCaseContainer() override;
 
 	private:
-		ActionMap _container;
+		CaseContainer _cases;
 		FormatedString _prefix;
 		TextString _gap;
 		FormatedString _postfix;
