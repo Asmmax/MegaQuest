@@ -25,6 +25,7 @@ public:
 
 private:
 	void ReadHotKeys(const nlohmann::json& keysNode);
+	void ReadInputs(const nlohmann::json& inputsNode);
 	void ReadItems(const nlohmann::json& itemsNode);
 	void ReadForms(const nlohmann::json& formStrNode, QuestCore::FormatedString& formString);
 	std::shared_ptr<QuestCore::FormBase> ReadForm(const nlohmann::json& formNode);
@@ -50,6 +51,7 @@ private:
 private:
 	std::string _filename;
 	std::vector<std::string> _hotKeys;
+	std::map<std::string, std::shared_ptr<QuestCore::IParagraph>> _inputs;
 	std::map<std::string, std::shared_ptr<QuestCore::Item>> _items;
 	std::map<std::string, std::shared_ptr<QuestCore::IParagraph>> _paragraphs;
 	std::map<std::string, std::shared_ptr<QuestCore::Inventory>> _inventories;

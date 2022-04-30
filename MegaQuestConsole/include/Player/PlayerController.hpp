@@ -8,6 +8,7 @@ namespace QuestCore
 {
 	class IRoom;
 	class IAction;
+	class IParagraph;
 	struct Case;
 }
 
@@ -30,8 +31,9 @@ namespace Player
     private:
 		void ViewParagraph();
 		void Answer(int caseID);
-		std::vector<QuestCore::Case> GetCases();
-		QuestCore::TextString GetCasesContain();
+		std::vector<QuestCore::Case> GetCases() const;
+		QuestCore::TextString GetCasesContain() const;
+		std::shared_ptr<QuestCore::IParagraph> GetCurrentParagraph() const;
 
 	private:
 		std::shared_ptr<QuestCore::IRoom> _currentRoom;

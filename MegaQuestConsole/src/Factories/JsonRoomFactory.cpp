@@ -72,8 +72,12 @@ std::shared_ptr<IRoom> JsonRoomFactory::GetRoom()
         ReadParagraphs(*foundIt);
     }
 
-    auto startParagraph = GetRootParagraph();
-    auto road = std::make_shared<SimpleRoom>(startParagraph, _hotKeys);
+    foundIt = root.find("inputs");
+    if (foundIt != root.end()) {
+        ReadInputs(*foundIt);
+    }
+
+    auto road = std::make_shared<SimpleRoom>(_inputs, _hotKeys);
     return road;
 }
 
@@ -90,6 +94,26 @@ void JsonRoomFactory::ReadHotKeys(const nlohmann::json& keysNode)
 
     auto lastIt = std::unique(_hotKeys.begin(), _hotKeys.end());
     _hotKeys.erase(lastIt, _hotKeys.end());
+}
+
+void JsonRoomFactory::ReadInputs(const nlohmann::json& inputsNode)
+{
+    if (!inputsNode.is_array()) {
+        return;
+    }
+
+    for (auto& jsonInput : inputsNode) {
+        std::string key = Read(jsonInput, "key", std::string());
+        
+        std::string paragraphId = Read(jsonInput, "paragraph", std::string());
+        auto paragraphIt = _paragraphs.find(paragraphId);
+        assert(paragraphIt != _paragraphs.end());
+
+        if (paragraphIt != _paragraphs.end()) {
+            _inputs.emplace(key, paragraphIt->second);
+        }
+
+    }
 }
 
 void JsonRoomFactory::ReadItems(const nlohmann::json& itemsNode)

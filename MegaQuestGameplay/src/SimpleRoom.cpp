@@ -2,15 +2,15 @@
 
 using namespace QuestCore;
 
-SimpleRoom::SimpleRoom(const std::shared_ptr<IParagraph>& startParagraph, const std::vector<std::string>& hotKeys):
+SimpleRoom::SimpleRoom(const InputList& inputs, const std::vector<std::string>& hotKeys):
 	_hotKeys(hotKeys),
-	_currentParagraph(startParagraph)
+	_paragraphs(inputs)
 {
 }
 
-const std::shared_ptr<IParagraph>& SimpleRoom::GetCurrentParagraph() const
+const std::shared_ptr<IParagraph>& SimpleRoom::GetParagraph(const std::string& key) const
 {
-	return _currentParagraph;
+	return _paragraphs[key];
 }
 
 std::vector<std::string> SimpleRoom::GetHotKeys() const

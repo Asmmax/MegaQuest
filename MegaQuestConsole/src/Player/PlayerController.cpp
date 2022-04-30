@@ -18,7 +18,7 @@ PlayerController::PlayerController(const std::shared_ptr<QuestCore::IRoom>& curr
 void PlayerController::DoCommand(int answerID)
 {
     int caseID = answerID - 1;
-    auto paragraph = _currentRoom->GetCurrentParagraph();
+    auto paragraph = GetCurrentParagraph();
 
     
     if (caseID < 0 || caseID >= paragraph->GetCaseContainer().GetCaseCount()) {
@@ -48,7 +48,7 @@ void PlayerController::OpenInventory()
         return;
     }
 
-    auto inventoryCases = _currentRoom->GetCurrentParagraph()->GetCaseContainer().GetCases(*hotKeyIt);
+    auto inventoryCases = GetCurrentParagraph()->GetCaseContainer().GetCases(*hotKeyIt);
     if (inventoryCases.empty()) {
         return;
     }
@@ -62,7 +62,7 @@ void PlayerController::OpenInventory()
 
 void PlayerController::ViewParagraph()
 {
-    auto paragraph = _currentRoom->GetCurrentParagraph();
+    auto paragraph = GetCurrentParagraph();
     _textView->Write(paragraph->GetQuest() + TextString::FromUtf8(u8"\n") + GetCasesContain());
 }
 
@@ -74,12 +74,12 @@ void PlayerController::Answer(int caseID)
     cases[caseID].action->Do();
 }
 
-std::vector<QuestCore::Case> PlayerController::GetCases()
+std::vector<QuestCore::Case> PlayerController::GetCases() const
 {
-    return _currentRoom->GetCurrentParagraph()->GetCaseContainer().GetCases();
+    return GetCurrentParagraph()->GetCaseContainer().GetCases();
 }
 
-TextString PlayerController::GetCasesContain()
+TextString PlayerController::GetCasesContain() const
 {
     TextString caseString;
     int id = 1;
@@ -89,4 +89,9 @@ TextString PlayerController::GetCasesContain()
         id++;
     }
     return caseString;
+}
+
+std::shared_ptr<IParagraph> PlayerController::GetCurrentParagraph() const
+{
+    return _currentRoom->GetParagraph("root");
 }
