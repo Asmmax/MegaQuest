@@ -77,7 +77,7 @@ std::shared_ptr<IRoom> JsonRoomFactory::GetRoom()
         ReadInputs(*foundIt);
     }
 
-    auto road = std::make_shared<SimpleRoom>(_inputs, _hotKeys);
+    auto road = std::make_shared<SimpleRoom>(_inputs, _hotKeys, _items, _inventories);
     return road;
 }
 

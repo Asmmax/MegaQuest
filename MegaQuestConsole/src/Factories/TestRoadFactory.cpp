@@ -13,10 +13,12 @@ using namespace QuestCore;
 std::shared_ptr<IRoom> TestRoadFactory::GetRoom()
 {
     std::vector<std::string> hotKeys;
-    std::map<std::string, std::shared_ptr<IParagraph>> _inputs;
+    std::map<std::string, std::shared_ptr<IParagraph>> inputs;
+    std::map<std::string, std::shared_ptr<Item>> items;
+    std::map<std::string, std::shared_ptr<Inventory>> inventories;
     auto paragraphSatateMachine = std::make_shared<ParagraphStateMachine>();
-    _inputs.emplace("root", paragraphSatateMachine);
-    return std::make_shared<SimpleRoom>(_inputs, hotKeys);
+    inputs.emplace("root", paragraphSatateMachine);
+    return std::make_shared<SimpleRoom>(inputs, hotKeys, items, inventories);
 
     /*
     auto paragraphSatateMachine = std::make_shared<ParagraphStateMachine>();
