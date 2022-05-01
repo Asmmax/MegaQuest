@@ -1,20 +1,20 @@
 #pragma once
+#include "Item.hpp"
 #include <memory>
 #include <map>
 
 namespace QuestCore
 {
-	class Item;
-
 	class Inventory
 	{
 		using ItemPtr = std::shared_ptr<Item>;
+		using ItemContainer = std::map<ItemPtr, int, ItemComparator>;
 	public:
 		void PutItem(const ItemPtr& item, int count);
 		void ThrowItem(const ItemPtr& item, int count);
-		inline const std::map<ItemPtr, int>& GetItems() const { return _items; }
+		inline const ItemContainer& GetItems() const { return _items; }
 
 	private:
-		std::map<ItemPtr, int> _items;
+		ItemContainer _items;
 	};
 }

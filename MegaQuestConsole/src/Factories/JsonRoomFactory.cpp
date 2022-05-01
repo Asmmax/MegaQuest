@@ -4,7 +4,7 @@
 #include "Paragraphs/TextParagraph.hpp"
 #include "Actions/ParagraphChanging.hpp"
 #include "Actions/ActionGroup.hpp"
-#include "Actions/GiftReceiving.hpp"
+#include "Actions/Transfer.hpp"
 #include "Item.hpp"
 #include "Forms.hpp"
 #include "Inventory.hpp"
@@ -137,7 +137,7 @@ void JsonRoomFactory::ReadItems(const nlohmann::json& itemsNode)
             ReadForms(*foundIt, forms);
         }
 
-        auto item = std::make_shared<QuestCore::Item>(forms, isNullable);
+        auto item = std::make_shared<QuestCore::Item>(id, forms, isNullable);
         _items.emplace(id, item);
     }
 }
@@ -442,29 +442,43 @@ std::shared_ptr<QuestCore::IAction> JsonRoomFactory::ReadAction(const nlohmann::
         }
         return actionGroup;
     }
-    else if (typeId == "GiftReceiving") {
+    else if (typeId == "Transfer") {
 
-        std::shared_ptr<QuestCore::Inventory> inventory;
-        std::string inventoryId = Read(actionNode, "inventory", std::string());
+        std::shared_ptr<QuestCore::Inventory> source;
+        std::string sourceId = Read(actionNode, "source", std::string());
 
-        auto foundItInventory = _inventories.find(inventoryId);
-        assert(foundItInventory != _inventories.end());
+        if (!sourceId.empty()) {
+            auto foundItSource = _inventories.find(sourceId);
+            assert(foundItSource != _inventories.end());
 
-        if (foundItInventory != _inventories.end()) {
-            inventory = foundItInventory->second;
+            if (foundItSource != _inventories.end()) {
+                source = foundItSource->second;
+            }
         }
 
-        auto gift = std::make_shared<QuestCore::GiftReceiving>(inventory);
+        std::shared_ptr<QuestCore::Inventory> target;
+        std::string targetId = Read(actionNode, "target", std::string());
+
+        if (!targetId.empty()) {
+            auto foundItTarget = _inventories.find(targetId);
+            assert(foundItTarget != _inventories.end());
+
+            if (foundItTarget != _inventories.end()) {
+                target = foundItTarget->second;
+            }
+        }
+
+        auto transfer = std::make_shared<Transfer>(source, target);
         
         auto foundIt = actionNode.find("items");
         if (foundIt != actionNode.end()) {
             auto items = ReadGiftItems(*foundIt);
             for (auto& item : items) {
-                gift->AddThings(item.first, item.second);
+                transfer->AddThings(item.first, item.second);
             }
         }
 
-        return gift;
+        return transfer;
     }
     else if (typeId == "ClearInventory") {
 
@@ -611,9 +625,9 @@ QuestCore::Operation JsonRoomFactory::ReadOperation(const nlohmann::json& opNode
     return Operation::None;
 }
 
-std::map<std::shared_ptr<QuestCore::Item>, int> JsonRoomFactory::ReadGiftItems(const nlohmann::json& itemsNode)
+std::vector<std::pair<std::shared_ptr<QuestCore::Item>, int>> JsonRoomFactory::ReadGiftItems(const nlohmann::json& itemsNode)
 {
-    std::map<std::shared_ptr<QuestCore::Item>, int> result;
+    std::vector<std::pair<std::shared_ptr<QuestCore::Item>, int>> result;
     
     if (!itemsNode.is_array()) {
         return result;
@@ -621,7 +635,7 @@ std::map<std::shared_ptr<QuestCore::Item>, int> JsonRoomFactory::ReadGiftItems(c
 
     for (auto& jsonItem : itemsNode) {
         auto item = ReadGiftItem(jsonItem);
-        result.insert(item);
+        result.push_back(item);
     }
 
     return result;

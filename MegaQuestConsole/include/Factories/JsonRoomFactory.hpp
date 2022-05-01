@@ -48,7 +48,7 @@ private:
 	std::shared_ptr<QuestCore::Value> ReadValue(const nlohmann::json& valueNode);
 	QuestCore::Operation ReadOperation(const nlohmann::json& opNode);
 
-	std::map<std::shared_ptr<QuestCore::Item>, int> ReadGiftItems(const nlohmann::json& itemsNode);
+	std::vector<std::pair<std::shared_ptr<QuestCore::Item>, int>> ReadGiftItems(const nlohmann::json& itemsNode);
 	std::pair<std::shared_ptr<QuestCore::Item>, int> ReadGiftItem(const nlohmann::json& itemNode);
 
 	template<typename T> T Read(const nlohmann::json& node, const std::string& key, const T& defValue);

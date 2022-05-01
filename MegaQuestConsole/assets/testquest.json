@@ -135,7 +135,7 @@
 			"operation":"Greater",
 			"right":{
 				"type":"Simple",
-				"value":20
+				"value":40
 			}
 		}
 		]
@@ -171,12 +171,27 @@
 		"id":"road_next",
 		"cases":[
 		{
-			"text":"Отправиться дальше по дороге",
+			"text":"Заплатить 40 монет и отправиться дальше по дороге",
 			"action":
 			{
-				"type":"StateChanging",
-				"stateMachine":"world_root",
-				"target":"next"
+				"type":"ActionGroup",
+				"actions":[
+				{
+					"type":"Transfer",
+					"source":"player",
+					"items":[
+					{
+						"id":"coin",
+						"count":40
+					}
+					]
+				},
+				{
+					"type":"StateChanging",
+					"stateMachine":"world_root",
+					"target":"next"
+				}
+				]
 			}
 		}
 		]
@@ -235,8 +250,8 @@
 				"type":"ActionGroup",
 				"actions":[
 				{
-					"type":"GiftReceiving",
-					"inventory":"player",
+					"type":"Transfer",
+					"target":"player",
 					"items":[
 					{
 						"id":"coin",

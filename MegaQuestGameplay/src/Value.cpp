@@ -27,7 +27,7 @@ int InventoryValue::Get() const
 		return 0;
 	}
 
-	auto items = _inventory->GetItems();
+	auto& items = _inventory->GetItems();
 	auto foundIt = items.find(_item);
 	if (foundIt == items.end()) {
 		return 0;

@@ -1,5 +1,4 @@
 #include "Inventory.hpp"
-#include "Item.hpp"
 
 using namespace QuestCore;
 

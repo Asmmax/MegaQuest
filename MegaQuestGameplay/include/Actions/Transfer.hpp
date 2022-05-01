@@ -8,18 +8,20 @@ namespace QuestCore
 	class Inventory;
 	class Item;
 
-	class GiftReceiving: public IAction
+	class Transfer: public IAction
 	{
 		using ItemPtr = std::shared_ptr<Item>;
 		using ItemQuery = std::pair<ItemPtr, int>;
 	public:
-		GiftReceiving(const std::shared_ptr<Inventory>& inventory);
+		Transfer(const std::shared_ptr<Inventory>& source, const std::shared_ptr<Inventory>& target);
 		virtual void Do() override;
 
 		void AddThings(const ItemPtr& thing, int count);
+		std::vector<ItemQuery> BoudThingsBy(const std::shared_ptr<Inventory>& inventory);
 
 	private:
 		std::vector<ItemQuery> _things;
-		std::shared_ptr<Inventory> _inventory;
+		std::shared_ptr<Inventory> _source;
+		std::shared_ptr<Inventory> _target;
 	};
 }

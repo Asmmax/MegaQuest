@@ -4,7 +4,7 @@
 #include "Paragraphs/TextParagraph.hpp"
 #include "Actions/ParagraphChanging.hpp"
 #include "Actions/ActionGroup.hpp"
-#include "Actions/GiftReceiving.hpp"
+#include "Actions/Transfer.hpp"
 #include "Item.hpp"
 #include "Forms.hpp"
 
