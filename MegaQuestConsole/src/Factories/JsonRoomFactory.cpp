@@ -14,6 +14,8 @@
 #include "Paragraphs/ConditionalParagraph.hpp"
 #include "Value.hpp"
 #include "Conditions/Comparison.hpp"
+#include "Actions/ClearInventory.hpp"
+#include "Actions/CopyInventory.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -463,6 +465,44 @@ std::shared_ptr<QuestCore::IAction> JsonRoomFactory::ReadAction(const nlohmann::
         }
 
         return gift;
+    }
+    else if (typeId == "ClearInventory") {
+
+        std::shared_ptr<QuestCore::Inventory> inventory;
+        std::string inventoryId = Read(actionNode, "inventory", std::string());
+
+        auto foundItInventory = _inventories.find(inventoryId);
+        assert(foundItInventory != _inventories.end());
+
+        if (foundItInventory != _inventories.end()) {
+            inventory = foundItInventory->second;
+        }
+
+        return std::make_shared<ClearInventory>(inventory);
+    }
+    else if (typeId == "CopyInventory") {
+
+        std::shared_ptr<QuestCore::Inventory> source;
+        std::string sourceId = Read(actionNode, "source", std::string());
+
+        auto foundItSource = _inventories.find(sourceId);
+        assert(foundItSource != _inventories.end());
+
+        if (foundItSource != _inventories.end()) {
+            source = foundItSource->second;
+        }
+
+        std::shared_ptr<QuestCore::Inventory> target;
+        std::string targetId = Read(actionNode, "target", std::string());
+
+        auto foundItTarget = _inventories.find(targetId);
+        assert(foundItTarget != _inventories.end());
+
+        if (foundItTarget != _inventories.end()) {
+            target = foundItTarget->second;
+        }
+
+        return std::make_shared<CopyInventory>(source, target);
     }
 
     return nullptr;

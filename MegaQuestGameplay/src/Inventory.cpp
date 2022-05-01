@@ -1,4 +1,5 @@
 #include "Inventory.hpp"
+#include "Item.hpp"
 
 using namespace QuestCore;
 
@@ -18,4 +19,7 @@ void Inventory::ThrowItem(const ItemPtr& item, int count)
     }
 
     foundItemIt->second = std::max(foundItemIt->second - count, 0);
+    if (!foundItemIt->first->IsNullable() && foundItemIt->second == 0) {
+        _items.erase(foundItemIt);
+    }
 }
