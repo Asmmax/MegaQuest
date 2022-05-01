@@ -11,6 +11,9 @@
 #include "Paragraphs/InventoryParagraph.hpp"
 #include "Paragraphs/ParagraphGroup.hpp"
 #include "CaseContainer.hpp"
+#include "Paragraphs/ConditionalParagraph.hpp"
+#include "Value.hpp"
+#include "Conditions/Comparison.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -269,6 +272,9 @@ std::shared_ptr<QuestCore::IParagraph> JsonRoomFactory::CreateParagraph(const nl
         TextString gap = Read(paragraphNode, "gap", TextString());
         return std::make_shared<ParagraphGroup>(gap);
     }
+    else if (typeId == "ConditionalParagraph") {
+        return std::make_shared<ConditionalParagraph>();
+    }
 
     return nullptr;
 }
@@ -317,6 +323,37 @@ void JsonRoomFactory::InitParagraph(const std::shared_ptr<QuestCore::IParagraph>
                     group->AddParagraph(paragraphIt->second);
                 }
 
+            }
+        }
+    }
+    else if (typeId == "ConditionalParagraph") {
+        auto conditional = std::static_pointer_cast<ConditionalParagraph>(paragraph);
+
+        std::string thenParagraph = Read(paragraphNode, "then", std::string());
+        if (!thenParagraph.empty()) {
+            auto foundIt = _paragraphs.find(thenParagraph);
+            assert(foundIt != _paragraphs.end());
+
+            if (foundIt != _paragraphs.end()) {
+                conditional->SetThenParagraph(foundIt->second);
+            }
+        }
+
+        std::string elseParagraph = Read(paragraphNode, "else", std::string());
+        if (!elseParagraph.empty()) {
+            auto foundIt = _paragraphs.find(elseParagraph);
+            assert(foundIt != _paragraphs.end());
+
+            if (foundIt != _paragraphs.end()) {
+                conditional->SetElseParagraph(foundIt->second);
+            }
+        }
+
+        auto foundIt = paragraphNode.find("conditions");
+        if (foundIt != paragraphNode.end()) {
+            auto conditions = ReadConditions(*foundIt);
+            for (auto& condition : conditions) {
+                conditional->AddCondition(condition);
             }
         }
     }
@@ -429,6 +466,109 @@ std::shared_ptr<QuestCore::IAction> JsonRoomFactory::ReadAction(const nlohmann::
     }
 
     return nullptr;
+}
+
+std::vector<std::shared_ptr<QuestCore::ICondition>> JsonRoomFactory::ReadConditions(const nlohmann::json& conditionsNode)
+{
+    std::vector<std::shared_ptr<QuestCore::ICondition>> result;
+
+    if (!conditionsNode.is_array()) {
+        return result;
+    }
+
+    for (auto& jsonCondition : conditionsNode) {
+        auto condition = ReadCondition(jsonCondition);
+        result.push_back(condition);
+    }
+    return result;
+}
+
+std::shared_ptr<QuestCore::ICondition> JsonRoomFactory::ReadCondition(const nlohmann::json& conditionNode)
+{
+    std::string typeId = Read(conditionNode, "type", std::string());
+    if (typeId == "Comparison") {
+
+        auto leftPtr = std::shared_ptr<Value>();
+        auto foundIt = conditionNode.find("left");
+        if (foundIt != conditionNode.end()) {
+            leftPtr = ReadValue(*foundIt);
+        }
+        assert(leftPtr);
+
+        auto rightPtr = std::shared_ptr<Value>();
+        foundIt = conditionNode.find("right");
+        if (foundIt != conditionNode.end()) {
+            rightPtr = ReadValue(*foundIt);
+        }
+        assert(rightPtr);
+
+        Operation op = Operation::None;
+        auto foundOpIt = conditionNode.find("operation");
+        if (foundOpIt != conditionNode.end()) {
+            op = ReadOperation(*foundOpIt);
+        }
+
+        return std::make_shared<QuestCore::Comparison>(leftPtr, rightPtr, op);
+    }
+
+    return nullptr;
+}
+
+std::shared_ptr<QuestCore::Value> JsonRoomFactory::ReadValue(const nlohmann::json& valueNode)
+{
+    std::string typeId = Read(valueNode, "type", std::string());
+    if (typeId == "Simple") {
+        int value = Read(valueNode, "value", 0);
+        return std::make_shared<SimpleValue>(value);
+    }
+    else if (typeId == "Inventory") {
+        
+        std::shared_ptr<QuestCore::Item> item;
+        std::string itemId = Read(valueNode, "item", std::string());
+        auto foundIt = _items.find(itemId);
+        assert(foundIt != _items.end());
+        if (foundIt != _items.end()) {
+            item = foundIt->second;
+        }
+        
+        std::shared_ptr<QuestCore::Inventory> inventory;
+        std::string inventoryId = Read(valueNode, "inventory", std::string());
+        auto foundInventoryIt = _inventories.find(inventoryId);
+        assert(foundInventoryIt != _inventories.end());
+        if (foundInventoryIt != _inventories.end()) {
+            inventory = foundInventoryIt->second;
+        }
+        
+        return std::make_shared<InventoryValue>(item, inventory);
+    }
+
+    return nullptr;
+}
+
+QuestCore::Operation JsonRoomFactory::ReadOperation(const nlohmann::json& opNode)
+{
+    std::string opType = opNode.get<std::string>();
+
+    if (opType == "Less") {
+        return Operation::Less;
+    }
+    else if (opType == "Greater") {
+        return Operation::Greater;
+    }
+    else if (opType == "Equal") {
+        return Operation::Equal;
+    }
+    else if (opType == "NotLess") {
+        return Operation::NotLess;
+    }
+    else if (opType == "NotGreater") {
+        return Operation::NotGreater;
+    }
+    else if (opType == "NotEqual") {
+        return Operation::NotEqual;
+    }
+
+    return Operation::None;
 }
 
 std::map<std::shared_ptr<QuestCore::Item>, int> JsonRoomFactory::ReadGiftItems(const nlohmann::json& itemsNode)

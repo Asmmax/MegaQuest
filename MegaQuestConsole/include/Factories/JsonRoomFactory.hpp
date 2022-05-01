@@ -15,6 +15,9 @@ namespace QuestCore
 	class IAction;
 	class Inventory;
 	class CaseContainer;
+	class ICondition;
+	class Value;
+	enum class Operation;
 }
 
 class JsonRoomFactory : public QuestCore::IRoomFactory
@@ -39,6 +42,11 @@ private:
 	void ReadCases(const nlohmann::json& casesNode, QuestCore::CaseContainer& cases);
 	std::vector<std::shared_ptr<QuestCore::IAction>> ReadActions(const nlohmann::json& actionsNode);
 	std::shared_ptr<QuestCore::IAction> ReadAction(const nlohmann::json& actionNode);
+
+	std::vector<std::shared_ptr<QuestCore::ICondition>> ReadConditions(const nlohmann::json& conditionsNode);
+	std::shared_ptr<QuestCore::ICondition> ReadCondition(const nlohmann::json& conditionNode);
+	std::shared_ptr<QuestCore::Value> ReadValue(const nlohmann::json& valueNode);
+	QuestCore::Operation ReadOperation(const nlohmann::json& opNode);
 
 	std::map<std::shared_ptr<QuestCore::Item>, int> ReadGiftItems(const nlohmann::json& itemsNode);
 	std::pair<std::shared_ptr<QuestCore::Item>, int> ReadGiftItem(const nlohmann::json& itemNode);

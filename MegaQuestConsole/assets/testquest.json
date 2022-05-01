@@ -120,8 +120,29 @@
 		]
 	},
 	{
-		"type":"TextParagraph",
+		"type":"ConditionalParagraph",
 		"id":"road",
+		"then":"road_next",
+		"else":"road_need_coins",
+		"conditions":[
+		{
+			"type":"Comparison",
+			"left":{
+				"type":"Inventory",
+				"inventory":"player",
+				"item":"coin"
+			},
+			"operation":"Greater",
+			"right":{
+				"type":"Simple",
+				"value":20
+			}
+		}
+		]
+	},
+	{
+		"type":"TextParagraph",
+		"id":"road_need_coins",
 		"text":"Перед вами дорога",
 		"cases":[
 		{
@@ -143,6 +164,27 @@
 			}
 		}
 		]
+	},
+	{
+		"type":"TextParagraph",
+		"text":"Теперь у нас есть достаточно золота, чтобы поехать дальше",
+		"id":"road_next",
+		"cases":[
+		{
+			"text":"Отправиться дальше по дороге",
+			"action":
+			{
+				"type":"StateChanging",
+				"stateMachine":"world_root",
+				"target":"next"
+			}
+		}
+		]
+	},
+	{
+		"type":"TextParagraph",
+		"text":"Вы прошли этот квест!",
+		"id":"next"
 	},
 	{
 		"type":"TextParagraph",
