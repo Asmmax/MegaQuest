@@ -1,6 +1,7 @@
 #include "Paragraphs/InventoryParagraph.hpp"
 #include "Inventory.hpp"
 #include "Item.hpp"
+#include <algorithm>
 
 using namespace QuestCore;
 
@@ -19,7 +20,7 @@ InventoryParagraph::InventoryParagraph(const FormatedString& prefix,
 TextString InventoryParagraph::GetQuest() const
 {
 	int countItems = 0;
-	auto& items = _inventory->GetItems();
+	auto items = GetOrderedItems();
 	for (auto& item : items)
 	{
 		countItems += item.second;
@@ -42,4 +43,46 @@ TextString InventoryParagraph::GetQuest() const
 CaseContainer& InventoryParagraph::GetCaseContainer()
 {
 	return _cases;
+}
+
+void QuestCore::InventoryParagraph::SetItemOrder(const ItemPtr& item, int order)
+{
+	auto res = _itemOrders.emplace(item, order);
+	if (!res.second) {
+		res.first->second = order;
+	}
+}
+
+std::vector<std::pair<InventoryParagraph::ItemPtr, int>> InventoryParagraph::GetOrderedItems() const
+{
+	std::map<ItemPtr, int> shiftItemOrders(_itemOrders);
+	for (auto& shiftOrder : shiftItemOrders) {
+		if (shiftOrder.second >= 0) {
+			shiftOrder.second++;
+		}
+	}
+
+	std::vector<std::pair<ItemPtr, int>> orderedItems;
+	auto items = _inventory->GetItems();
+	for (auto& item : items) {
+		orderedItems.emplace_back(item);
+	}
+
+	std::sort(orderedItems.begin(), orderedItems.end(), [shiftItemOrders](const auto& left, const auto& right) {
+		int leftOrder = 0;
+		auto foundIt = shiftItemOrders.find(left.first);
+		if (foundIt != shiftItemOrders.end()) {
+			leftOrder = foundIt->second;
+		}
+
+		int rightOrder = 0;
+		foundIt = shiftItemOrders.find(right.first);
+		if (foundIt != shiftItemOrders.end()) {
+			rightOrder = foundIt->second;
+		}
+
+		return leftOrder < rightOrder;
+		});
+
+	return orderedItems;
 }

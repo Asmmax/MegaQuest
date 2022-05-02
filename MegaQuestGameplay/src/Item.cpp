@@ -2,8 +2,7 @@
 
 using namespace QuestCore;
 
-Item::Item(const std::string& id, const FormatedString& text, bool isNullable):
-	_id(id),
+Item::Item(const FormatedString& text, bool isNullable):
 	_text(text),
 	_isNullable(isNullable)
 {
@@ -20,9 +19,4 @@ TextString Item::GetContains(int count) const
 	}
 
 	return TextString(count) + TextString::FromUtf8(u8" ") + _text.GetContainsFor(count);
-}
-
-bool Item::operator<(const Item& other) const
-{
-	return _id < other._id;
 }

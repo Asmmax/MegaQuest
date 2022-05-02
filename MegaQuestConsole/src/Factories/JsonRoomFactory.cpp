@@ -137,7 +137,7 @@ void JsonRoomFactory::ReadItems(const nlohmann::json& itemsNode)
             ReadForms(*foundIt, forms);
         }
 
-        auto item = std::make_shared<QuestCore::Item>(id, forms, isNullable);
+        auto item = std::make_shared<QuestCore::Item>(forms, isNullable);
         _items.emplace(id, item);
     }
 }
@@ -301,9 +301,17 @@ void JsonRoomFactory::InitParagraph(const std::shared_ptr<QuestCore::IParagraph>
         }
     }
     else if (typeId == "InventoryParagraph") {
+        auto inventory = std::static_pointer_cast<InventoryParagraph>(paragraph);
         auto foundIt = paragraphNode.find("cases");
         if (foundIt != paragraphNode.end()) {
-            ReadCases(*foundIt, paragraph->GetCaseContainer());
+            ReadCases(*foundIt, inventory->GetCaseContainer());
+        }
+        foundIt = paragraphNode.find("itemOrders");
+        if (foundIt != paragraphNode.end()) {
+            auto orders = ReadItemOrders(*foundIt);
+            for (auto& order : orders) {
+                inventory->SetItemOrder(order.first, order.second);
+            }
         }
     }
     else if (typeId == "ParagraphGroup") {
@@ -655,6 +663,41 @@ std::pair<std::shared_ptr<QuestCore::Item>, int> JsonRoomFactory::ReadGiftItem(c
     item.first = foundIt->second;
 
     int count = Read(itemNode, "count", 0);
+    item.second = count;
+
+    return item;
+}
+
+std::vector<std::pair<std::shared_ptr<QuestCore::Item>, int>> JsonRoomFactory::ReadItemOrders(const nlohmann::json& itemsNode)
+{
+    std::vector<std::pair<std::shared_ptr<QuestCore::Item>, int>> result;
+
+    if (!itemsNode.is_array()) {
+        return result;
+    }
+
+    for (auto& jsonItem : itemsNode) {
+        auto item = ReadItemOrder(jsonItem);
+        result.push_back(item);
+    }
+
+    return result;
+}
+
+std::pair<std::shared_ptr<QuestCore::Item>, int> JsonRoomFactory::ReadItemOrder(const nlohmann::json& itemNode)
+{
+    std::pair<std::shared_ptr<QuestCore::Item>, int> item;
+    std::string id = Read(itemNode, "id", std::string());
+
+    auto foundIt = _items.find(id);
+    assert(foundIt != _items.end());
+    if (foundIt == _items.end()) {
+        return item;
+    }
+
+    item.first = foundIt->second;
+
+    int count = Read(itemNode, "order", 0);
     item.second = count;
 
     return item;

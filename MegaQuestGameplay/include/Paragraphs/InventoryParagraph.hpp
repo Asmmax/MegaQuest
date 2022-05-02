@@ -7,10 +7,12 @@
 namespace QuestCore
 {
 	class Inventory;
+	class Item;
 
 	class InventoryParagraph: public IParagraph
 	{
 		using FormPtr = std::shared_ptr<FormBase>;
+		using ItemPtr = std::shared_ptr<Item>;
 	public:
 		InventoryParagraph(const FormatedString& prefix,
 			const TextString& gap,
@@ -19,6 +21,10 @@ namespace QuestCore
 
 		virtual TextString GetQuest() const override;
 		virtual CaseContainer& GetCaseContainer() override;
+		void SetItemOrder(const ItemPtr& item, int order);
+
+	private:
+		std::vector<std::pair<ItemPtr, int>> GetOrderedItems() const;
 
 	private:
 		CaseContainer _cases;
@@ -26,5 +32,6 @@ namespace QuestCore
 		TextString _gap;
 		FormatedString _postfix;
 		std::shared_ptr<Inventory> _inventory;
+		std::map<ItemPtr, int> _itemOrders;
 	};
 }

@@ -314,6 +314,12 @@
 		},
 		"gap":", ",
 		"inventory":"player",
+		"itemOrders":[
+		{
+			"id":"coin",
+			"order":-100
+		}
+		],
 		"cases":[
 		{
 			"text":"Назад",
