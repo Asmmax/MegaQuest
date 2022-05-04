@@ -1,10 +1,7 @@
-#include "Factories/JsonRoomFactory.hpp"
+#include "Factories/JsonQuestFactory.hpp"
+#include "Factories//JsonQuest.hpp"
 #include "Paragraphs/ParagraphStateMachine.hpp"
-#include "SimpleRoom.hpp"
 #include "Paragraphs/TextParagraph.hpp"
-#include "Actions/ParagraphChanging.hpp"
-#include "Actions/ActionGroup.hpp"
-#include "Actions/Transfer.hpp"
 #include "Item.hpp"
 #include "Forms.hpp"
 #include "Inventory.hpp"
@@ -14,27 +11,28 @@
 #include "Paragraphs/ConditionalParagraph.hpp"
 #include "Value.hpp"
 #include "Conditions/Comparison.hpp"
-#include "Actions/ClearInventory.hpp"
-#include "Actions/CopyInventory.hpp"
+#include "Actions/Switching.hpp"
+#include "Actions/ActionGroup.hpp"
+#include "Actions/Transfer.hpp"
+#include "Actions/Clearing.hpp"
+#include "Actions/Copying.hpp"
 
 #include <fstream>
 #include <iostream>
 
 using namespace QuestCore;
 
-JsonRoomFactory::JsonRoomFactory(const std::string& filename) :
+JsonQuestFactory::JsonQuestFactory(const std::string& filename) :
     _filename(filename)
 {
 }
 
-using namespace std;
-
-std::shared_ptr<IRoom> JsonRoomFactory::GetRoom()
+std::shared_ptr<QuestCore::IQuest> JsonQuestFactory::GetQuest()
 {
     std::fstream file;
     file.open(_filename, std::ios::in);
     if (!file.is_open()) {
-        return nullptr;
+        return std::shared_ptr<QuestCore::IQuest>();
     }
     
     std::string input;
@@ -53,7 +51,7 @@ std::shared_ptr<IRoom> JsonRoomFactory::GetRoom()
     catch (nlohmann::json::parse_error& ex)
     {
         std::cerr << ex.what() << std::endl;
-        return nullptr;
+        return false;
     }
 
     auto foundIt = root.find("hotKeys");
@@ -82,11 +80,10 @@ std::shared_ptr<IRoom> JsonRoomFactory::GetRoom()
         ReadInputs(*foundIt);
     }
 
-    auto road = std::make_shared<SimpleRoom>(_inputs, _hotKeys, _items, _inventories);
-    return road;
+    return std::make_shared<JsonQuest>(_inputs, _hotKeys, _items, _inventories);
 }
 
-void JsonRoomFactory::ReadHotKeys(const nlohmann::json& keysNode)
+void JsonQuestFactory::ReadHotKeys(const nlohmann::json& keysNode)
 {
     if (!keysNode.is_array()) {
         return;
@@ -101,7 +98,7 @@ void JsonRoomFactory::ReadHotKeys(const nlohmann::json& keysNode)
     _hotKeys.erase(lastIt, _hotKeys.end());
 }
 
-void JsonRoomFactory::ReadInputs(const nlohmann::json& inputsNode)
+void JsonQuestFactory::ReadInputs(const nlohmann::json& inputsNode)
 {
     if (!inputsNode.is_array()) {
         return;
@@ -121,7 +118,7 @@ void JsonRoomFactory::ReadInputs(const nlohmann::json& inputsNode)
     }
 }
 
-void JsonRoomFactory::ReadItems(const nlohmann::json& itemsNode)
+void JsonQuestFactory::ReadItems(const nlohmann::json& itemsNode)
 {
     if (!itemsNode.is_array()) {
         return;
@@ -142,7 +139,7 @@ void JsonRoomFactory::ReadItems(const nlohmann::json& itemsNode)
     }
 }
 
-void JsonRoomFactory::ReadForms(const nlohmann::json& formStrNode, FormatedString& forms)
+void JsonQuestFactory::ReadForms(const nlohmann::json& formStrNode, FormatedString& forms)
 {
     auto foundIt = formStrNode.find("forms");
     if (foundIt == formStrNode.end()) {
@@ -161,7 +158,7 @@ void JsonRoomFactory::ReadForms(const nlohmann::json& formStrNode, FormatedStrin
     }
 }
 
-std::shared_ptr<QuestCore::FormBase> JsonRoomFactory::ReadForm(const nlohmann::json& formNode)
+std::shared_ptr<QuestCore::FormBase> JsonQuestFactory::ReadForm(const nlohmann::json& formNode)
 {
     std::string typeId = Read(formNode, "type", std::string());
     if(typeId == "SpecificForm") {
@@ -183,7 +180,7 @@ std::shared_ptr<QuestCore::FormBase> JsonRoomFactory::ReadForm(const nlohmann::j
     return nullptr;
 }
 
-void JsonRoomFactory::ReadInventory(const nlohmann::json& inventoriesNode)
+void JsonQuestFactory::ReadInventory(const nlohmann::json& inventoriesNode)
 {
     if (!inventoriesNode.is_array()) {
         return;
@@ -205,7 +202,7 @@ void JsonRoomFactory::ReadInventory(const nlohmann::json& inventoriesNode)
     }
 }
 
-void JsonRoomFactory::CreateParagraphs(const nlohmann::json& paragraphsNode)
+void JsonQuestFactory::CreateParagraphs(const nlohmann::json& paragraphsNode)
 {
     if (!paragraphsNode.is_array()) {
         return;
@@ -218,7 +215,7 @@ void JsonRoomFactory::CreateParagraphs(const nlohmann::json& paragraphsNode)
     }
 }
 
-void JsonRoomFactory::ReadParagraphs(const nlohmann::json& paragraphsNode)
+void JsonQuestFactory::ReadParagraphs(const nlohmann::json& paragraphsNode)
 {
     if (!paragraphsNode.is_array()) {
         return;
@@ -233,17 +230,17 @@ void JsonRoomFactory::ReadParagraphs(const nlohmann::json& paragraphsNode)
     }
 }
 
-std::shared_ptr<QuestCore::IParagraph> JsonRoomFactory::CreateParagraph(const nlohmann::json& paragraphNode)
+std::shared_ptr<QuestCore::IParagraph> JsonQuestFactory::CreateParagraph(const nlohmann::json& paragraphNode)
 {
     std::string typeId = Read(paragraphNode, "type", std::string());
-    if (typeId == "ParagraphStateMachine") {
+    if (typeId == "StateMachine") {
         return std::make_shared<ParagraphStateMachine>();
     }
-    else if (typeId == "TextParagraph") {
+    else if (typeId == "Text") {
         TextString text = Read(paragraphNode, "text", TextString());
         return std::make_shared<TextParagraph>(text);
     }
-    else if (typeId == "InventoryParagraph") {
+    else if (typeId == "Inventory") {
         std::shared_ptr<QuestCore::Inventory> inventory;
         std::string inventoryId = Read(paragraphNode, "inventory", std::string());
 
@@ -270,21 +267,21 @@ std::shared_ptr<QuestCore::IParagraph> JsonRoomFactory::CreateParagraph(const nl
 
         return std::make_shared<InventoryParagraph>(prefix, gap, postfix, inventory);
     }
-    else if (typeId == "ParagraphGroup"){
+    else if (typeId == "Group"){
         TextString gap = Read(paragraphNode, "gap", TextString());
         return std::make_shared<ParagraphGroup>(gap);
     }
-    else if (typeId == "ConditionalParagraph") {
+    else if (typeId == "Condition") {
         return std::make_shared<ConditionalParagraph>();
     }
 
     return nullptr;
 }
 
-void JsonRoomFactory::InitParagraph(const std::shared_ptr<QuestCore::IParagraph>& paragraph, const nlohmann::json& paragraphNode)
+void JsonQuestFactory::InitParagraph(const std::shared_ptr<QuestCore::IParagraph>& paragraph, const nlohmann::json& paragraphNode)
 {
     std::string typeId = Read(paragraphNode, "type", std::string());
-    if (typeId == "ParagraphStateMachine") {
+    if (typeId == "StateMachine") {
         auto stateMachine = std::static_pointer_cast<ParagraphStateMachine>(paragraph);
         std::string target = Read(paragraphNode, "target", std::string());
         auto foundIt = _paragraphs.find(target);
@@ -294,13 +291,13 @@ void JsonRoomFactory::InitParagraph(const std::shared_ptr<QuestCore::IParagraph>
             stateMachine->SetState(foundIt->second);
         }
     }
-    else if (typeId == "TextParagraph") {
+    else if (typeId == "Text") {
         auto foundIt = paragraphNode.find("cases");
         if (foundIt != paragraphNode.end()) {
             ReadCases(*foundIt, paragraph->GetCaseContainer());
         }
     }
-    else if (typeId == "InventoryParagraph") {
+    else if (typeId == "Inventory") {
         auto inventory = std::static_pointer_cast<InventoryParagraph>(paragraph);
         auto foundIt = paragraphNode.find("cases");
         if (foundIt != paragraphNode.end()) {
@@ -314,7 +311,7 @@ void JsonRoomFactory::InitParagraph(const std::shared_ptr<QuestCore::IParagraph>
             }
         }
     }
-    else if (typeId == "ParagraphGroup") {
+    else if (typeId == "Group") {
         auto group = std::static_pointer_cast<ParagraphGroup>(paragraph);
 
         auto foundIt = paragraphNode.find("paragraphs");
@@ -336,7 +333,7 @@ void JsonRoomFactory::InitParagraph(const std::shared_ptr<QuestCore::IParagraph>
             }
         }
     }
-    else if (typeId == "ConditionalParagraph") {
+    else if (typeId == "Condition") {
         auto conditional = std::static_pointer_cast<ConditionalParagraph>(paragraph);
 
         std::string thenParagraph = Read(paragraphNode, "then", std::string());
@@ -369,7 +366,7 @@ void JsonRoomFactory::InitParagraph(const std::shared_ptr<QuestCore::IParagraph>
     }
 }
 
-std::vector<std::shared_ptr<QuestCore::IAction>> JsonRoomFactory::ReadActions(const nlohmann::json& actionsNode)
+std::vector<std::shared_ptr<QuestCore::IAction>> JsonQuestFactory::ReadActions(const nlohmann::json& actionsNode)
 {
     std::vector<std::shared_ptr<QuestCore::IAction>> result;
 
@@ -384,7 +381,7 @@ std::vector<std::shared_ptr<QuestCore::IAction>> JsonRoomFactory::ReadActions(co
     return result;
 }
 
-void JsonRoomFactory::ReadCases(const nlohmann::json& casesNode, QuestCore::CaseContainer& cases)
+void JsonQuestFactory::ReadCases(const nlohmann::json& casesNode, QuestCore::CaseContainer& cases)
 {
     if (!casesNode.is_array()) {
         return;
@@ -412,10 +409,10 @@ void JsonRoomFactory::ReadCases(const nlohmann::json& casesNode, QuestCore::Case
     }
 }
 
-std::shared_ptr<QuestCore::IAction> JsonRoomFactory::ReadAction(const nlohmann::json& actionNode)
+std::shared_ptr<QuestCore::IAction> JsonQuestFactory::ReadAction(const nlohmann::json& actionNode)
 {
     std::string typeId = Read(actionNode, "type", std::string());
-    if (typeId == "StateChanging") {
+    if (typeId == "Switching") {
 
         std::string stateMachineId = Read(actionNode, "stateMachine", std::string());
         auto foundIt = _paragraphs.find(stateMachineId);
@@ -437,9 +434,9 @@ std::shared_ptr<QuestCore::IAction> JsonRoomFactory::ReadAction(const nlohmann::
             return nullptr;
         }
 
-        return std::make_shared<QuestCore::ParagraphChanging>(stateMachine, foundIt->second);
+        return std::make_shared<QuestCore::Switching>(stateMachine, foundIt->second);
     }
-    else if (typeId == "ActionGroup") {
+    else if (typeId == "Group") {
         auto actionGroup = std::make_shared<QuestCore::ActionGroup>();
         auto foundIt = actionNode.find("actions");
         if (foundIt != actionNode.end()) {
@@ -488,7 +485,7 @@ std::shared_ptr<QuestCore::IAction> JsonRoomFactory::ReadAction(const nlohmann::
 
         return transfer;
     }
-    else if (typeId == "ClearInventory") {
+    else if (typeId == "Clearing") {
 
         std::shared_ptr<QuestCore::Inventory> inventory;
         std::string inventoryId = Read(actionNode, "inventory", std::string());
@@ -500,9 +497,9 @@ std::shared_ptr<QuestCore::IAction> JsonRoomFactory::ReadAction(const nlohmann::
             inventory = foundItInventory->second;
         }
 
-        return std::make_shared<ClearInventory>(inventory);
+        return std::make_shared<Clearing>(inventory);
     }
-    else if (typeId == "CopyInventory") {
+    else if (typeId == "Copying") {
 
         std::shared_ptr<QuestCore::Inventory> source;
         std::string sourceId = Read(actionNode, "source", std::string());
@@ -524,13 +521,13 @@ std::shared_ptr<QuestCore::IAction> JsonRoomFactory::ReadAction(const nlohmann::
             target = foundItTarget->second;
         }
 
-        return std::make_shared<CopyInventory>(source, target);
+        return std::make_shared<Copying>(source, target);
     }
 
     return nullptr;
 }
 
-std::vector<std::shared_ptr<QuestCore::ICondition>> JsonRoomFactory::ReadConditions(const nlohmann::json& conditionsNode)
+std::vector<std::shared_ptr<QuestCore::ICondition>> JsonQuestFactory::ReadConditions(const nlohmann::json& conditionsNode)
 {
     std::vector<std::shared_ptr<QuestCore::ICondition>> result;
 
@@ -545,7 +542,7 @@ std::vector<std::shared_ptr<QuestCore::ICondition>> JsonRoomFactory::ReadConditi
     return result;
 }
 
-std::shared_ptr<QuestCore::ICondition> JsonRoomFactory::ReadCondition(const nlohmann::json& conditionNode)
+std::shared_ptr<QuestCore::ICondition> JsonQuestFactory::ReadCondition(const nlohmann::json& conditionNode)
 {
     std::string typeId = Read(conditionNode, "type", std::string());
     if (typeId == "Comparison") {
@@ -576,7 +573,7 @@ std::shared_ptr<QuestCore::ICondition> JsonRoomFactory::ReadCondition(const nloh
     return nullptr;
 }
 
-std::shared_ptr<QuestCore::Value> JsonRoomFactory::ReadValue(const nlohmann::json& valueNode)
+std::shared_ptr<QuestCore::Value> JsonQuestFactory::ReadValue(const nlohmann::json& valueNode)
 {
     std::string typeId = Read(valueNode, "type", std::string());
     if (typeId == "Simple") {
@@ -607,7 +604,7 @@ std::shared_ptr<QuestCore::Value> JsonRoomFactory::ReadValue(const nlohmann::jso
     return nullptr;
 }
 
-QuestCore::Operation JsonRoomFactory::ReadOperation(const nlohmann::json& opNode)
+QuestCore::Operation JsonQuestFactory::ReadOperation(const nlohmann::json& opNode)
 {
     std::string opType = opNode.get<std::string>();
 
@@ -633,7 +630,7 @@ QuestCore::Operation JsonRoomFactory::ReadOperation(const nlohmann::json& opNode
     return Operation::None;
 }
 
-std::vector<std::pair<std::shared_ptr<QuestCore::Item>, int>> JsonRoomFactory::ReadGiftItems(const nlohmann::json& itemsNode)
+std::vector<std::pair<std::shared_ptr<QuestCore::Item>, int>> JsonQuestFactory::ReadGiftItems(const nlohmann::json& itemsNode)
 {
     std::vector<std::pair<std::shared_ptr<QuestCore::Item>, int>> result;
     
@@ -649,7 +646,7 @@ std::vector<std::pair<std::shared_ptr<QuestCore::Item>, int>> JsonRoomFactory::R
     return result;
 }
 
-std::pair<std::shared_ptr<QuestCore::Item>, int> JsonRoomFactory::ReadGiftItem(const nlohmann::json& itemNode)
+std::pair<std::shared_ptr<QuestCore::Item>, int> JsonQuestFactory::ReadGiftItem(const nlohmann::json& itemNode)
 {
     std::pair<std::shared_ptr<QuestCore::Item>, int> item;
     std::string id = Read(itemNode, "id", std::string());
@@ -668,7 +665,7 @@ std::pair<std::shared_ptr<QuestCore::Item>, int> JsonRoomFactory::ReadGiftItem(c
     return item;
 }
 
-std::vector<std::pair<std::shared_ptr<QuestCore::Item>, int>> JsonRoomFactory::ReadItemOrders(const nlohmann::json& itemsNode)
+std::vector<std::pair<std::shared_ptr<QuestCore::Item>, int>> JsonQuestFactory::ReadItemOrders(const nlohmann::json& itemsNode)
 {
     std::vector<std::pair<std::shared_ptr<QuestCore::Item>, int>> result;
 
@@ -684,7 +681,7 @@ std::vector<std::pair<std::shared_ptr<QuestCore::Item>, int>> JsonRoomFactory::R
     return result;
 }
 
-std::pair<std::shared_ptr<QuestCore::Item>, int> JsonRoomFactory::ReadItemOrder(const nlohmann::json& itemNode)
+std::pair<std::shared_ptr<QuestCore::Item>, int> JsonQuestFactory::ReadItemOrder(const nlohmann::json& itemNode)
 {
     std::pair<std::shared_ptr<QuestCore::Item>, int> item;
     std::string id = Read(itemNode, "id", std::string());
@@ -701,13 +698,4 @@ std::pair<std::shared_ptr<QuestCore::Item>, int> JsonRoomFactory::ReadItemOrder(
     item.second = count;
 
     return item;
-}
-
-std::shared_ptr<QuestCore::IParagraph> JsonRoomFactory::GetRootParagraph()
-{
-    auto foundIt = _paragraphs.find("root");
-    if (foundIt != _paragraphs.end()) {
-        return foundIt->second;
-    }
-    return std::shared_ptr<QuestCore::IParagraph>();
 }

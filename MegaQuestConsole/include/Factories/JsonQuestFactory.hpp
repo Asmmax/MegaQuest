@@ -1,14 +1,12 @@
 #pragma once
-#include "IRoomFactory.hpp"
+#include "IQuestFactory.hpp"
 #include "TextString.hpp"
 #include "FormatedString.hpp"
-#include <map>
-#include <vector>
-#include <string>
 #include "json.hpp"
 
 namespace QuestCore
 {
+	class IQuest;
 	class Item;
 	class IParagraph;
 	class FormBase;
@@ -20,11 +18,11 @@ namespace QuestCore
 	enum class Operation;
 }
 
-class JsonRoomFactory : public QuestCore::IRoomFactory
+class JsonQuestFactory : public QuestCore::IQuestFactory
 {
 public:
-	JsonRoomFactory(const std::string& filename);
-	std::shared_ptr<QuestCore::IRoom> GetRoom() override;
+	JsonQuestFactory(const std::string& filename);
+	virtual std::shared_ptr<QuestCore::IQuest> GetQuest() override;
 
 private:
 	void ReadHotKeys(const nlohmann::json& keysNode);
@@ -57,8 +55,6 @@ private:
 	template<typename T> T Read(const nlohmann::json& node, const std::string& key, const T& defValue);
 	template<> QuestCore::TextString Read(const nlohmann::json& node, const std::string& key, const QuestCore::TextString& defValue);
 
-	std::shared_ptr<QuestCore::IParagraph> GetRootParagraph();
-
 private:
 	std::string _filename;
 	std::vector<std::string> _hotKeys;
@@ -70,7 +66,7 @@ private:
 
 
 template<typename T>
-T JsonRoomFactory::Read(const nlohmann::json& node, const std::string& key, const T& defValue)
+T JsonQuestFactory::Read(const nlohmann::json& node, const std::string& key, const T& defValue)
 {
 	auto foundIt = node.find(key);
 	if (foundIt == node.end()) {
@@ -81,7 +77,7 @@ T JsonRoomFactory::Read(const nlohmann::json& node, const std::string& key, cons
 }
 
 template<>
-QuestCore::TextString JsonRoomFactory::Read(const nlohmann::json& node, const std::string& key, const QuestCore::TextString& defValue)
+QuestCore::TextString JsonQuestFactory::Read(const nlohmann::json& node, const std::string& key, const QuestCore::TextString& defValue)
 {
 	std::string rawDefValue = defValue.ToUtf8();
 	return QuestCore::TextString::FromUtf8(Read(node,key, rawDefValue));

@@ -84,27 +84,27 @@
 	],
 	"paragraphs":[
 	{
-		"type":"ParagraphStateMachine",
+		"type":"StateMachine",
 		"id":"root",
 		"target":"world"
 	},
 	{
-		"type":"ParagraphGroup",
+		"type":"Group",
 		"id":"world",
 		"paragraphs":["world_prefix", "world_root", "to_inventory"]
 	},
 	{
-		"type":"TextParagraph",
+		"type":"Text",
 		"id":"world_prefix",
 		"text":"Дорога:\n"
 	},
 	{
-		"type":"ParagraphStateMachine",
+		"type":"StateMachine",
 		"id":"world_root",
 		"target":"road"
 	},
 	{
-		"type":"TextParagraph",
+		"type":"Text",
 		"id":"to_inventory",
 		"cases":[
 		{
@@ -112,7 +112,7 @@
 			"text":"Открыть инвентарь",
 			"action":
 			{
-				"type":"StateChanging",
+				"type":"Switching",
 				"stateMachine":"root",
 				"target":"inventory"
 			}
@@ -120,7 +120,7 @@
 		]
 	},
 	{
-		"type":"ConditionalParagraph",
+		"type":"Condition",
 		"id":"road",
 		"then":"road_next",
 		"else":"road_need_coins",
@@ -141,7 +141,7 @@
 		]
 	},
 	{
-		"type":"TextParagraph",
+		"type":"Text",
 		"id":"road_need_coins",
 		"text":"Перед вами дорога",
 		"cases":[
@@ -149,7 +149,7 @@
 			"text":"Осмотреть",
 			"action":
 			{
-				"type":"StateChanging",
+				"type":"Switching",
 				"stateMachine":"world_root",
 				"target":"explored_road"
 			}
@@ -158,7 +158,7 @@
 			"text":"Поговорить с путником",
 			"action":
 			{
-				"type":"StateChanging",
+				"type":"Switching",
 				"stateMachine":"world_root",
 				"target":"trump"
 			}
@@ -166,7 +166,7 @@
 		]
 	},
 	{
-		"type":"TextParagraph",
+		"type":"Text",
 		"text":"Теперь у нас есть достаточно золота, чтобы поехать дальше",
 		"id":"road_next",
 		"cases":[
@@ -174,7 +174,7 @@
 			"text":"Заплатить 40 монет и отправиться дальше по дороге",
 			"action":
 			{
-				"type":"ActionGroup",
+				"type":"Group",
 				"actions":[
 				{
 					"type":"Transfer",
@@ -187,7 +187,7 @@
 					]
 				},
 				{
-					"type":"StateChanging",
+					"type":"Switching",
 					"stateMachine":"world_root",
 					"target":"next"
 				}
@@ -197,12 +197,12 @@
 		]
 	},
 	{
-		"type":"TextParagraph",
+		"type":"Text",
 		"text":"Вы прошли этот квест!",
 		"id":"next"
 	},
 	{
-		"type":"TextParagraph",
+		"type":"Text",
 		"id":"explored_road",
 		"text":"Вы видите перед собой дорогу, а на дороге путника.",
 		"cases":[
@@ -210,7 +210,7 @@
 			"text":"Вернуться назад",
 			"action":
 			{
-				"type":"StateChanging",
+				"type":"Switching",
 				"stateMachine":"world_root",
 				"target":"road"
 			}
@@ -218,12 +218,12 @@
 		]
 	},
 	{
-		"type":"ParagraphStateMachine",
+		"type":"StateMachine",
 		"id":"trump",
 		"target":"talked_trump"
 	},
 	{
-		"type":"TextParagraph",
+		"type":"Text",
 		"id":"empty_trump",
 		"text":"Здравствуй незнакомец, а я тебе уже всё отдал.",
 		"cases":[
@@ -231,7 +231,7 @@
 			"text":"Вернуться назад",
 			"action":
 			{
-				"type":"StateChanging",
+				"type":"Switching",
 				"stateMachine":"world_root",
 				"target":"road"
 			}
@@ -239,7 +239,7 @@
 		]
 	},
 	{
-		"type":"TextParagraph",
+		"type":"Text",
 		"id":"talked_trump",
 		"text":"Здравствуй незнакомец, на вот те за просто так 50 монет и медальон.",
 		"cases":[
@@ -247,7 +247,7 @@
 			"text":"Забрать подарок и вернуться назад",
 			"action":
 			{
-				"type":"ActionGroup",
+				"type":"Group",
 				"actions":[
 				{
 					"type":"Transfer",
@@ -264,12 +264,12 @@
 					]
 				},
 				{
-					"type":"StateChanging",
+					"type":"Switching",
 					"stateMachine":"world_root",
 					"target":"road"
 				},
 				{
-					"type":"StateChanging",
+					"type":"Switching",
 					"stateMachine":"trump",
 					"target":"empty_trump"
 				}
@@ -279,17 +279,17 @@
 		]
 	},
 	{
-		"type":"ParagraphGroup",
+		"type":"Group",
 		"id":"inventory",
 		"paragraphs":["inventory_prefix", "inventory_root"]
 	},
 	{
-		"type":"TextParagraph",
+		"type":"Text",
 		"id":"inventory_prefix",
 		"text":"Инвентарь:\n"
 	},
 	{
-		"type":"InventoryParagraph",
+		"type":"Inventory",
 		"id":"inventory_root",
 		"prefix":{
 			"forms":[
@@ -325,7 +325,7 @@
 			"text":"Назад",
 			"action":
 			{
-				"type":"StateChanging",
+				"type":"Switching",
 				"stateMachine":"root",
 				"target":"world"
 			}

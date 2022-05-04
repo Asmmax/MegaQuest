@@ -1,7 +1,6 @@
 ﻿#include "Config/Settings.hpp"
-#include "Factories/JsonRoomFactory.hpp"
+#include "Factories/JsonQuestFactory.hpp"
 #include "Player/PlayerController.hpp"
-#include "IRoom.hpp"
 #include "Game/GameLoop.hpp"
 #include "IO/ConsoleInput.hpp"
 #include "IO/ConsoleView.hpp"
@@ -10,8 +9,8 @@
 int main()
 {
     auto& settings = Config::Settings::Instance();
-    auto roomFactory = std::make_shared<JsonRoomFactory>(settings.GetResourcePath() + "testquest.json");
-    auto controller = std::make_shared<Player::PlayerController>(roomFactory->GetRoom());
+    auto questFactory = std::make_shared<JsonQuestFactory>(settings.GetResourcePath() + "testquest.json");
+    auto controller = std::make_shared<Player::PlayerController>(questFactory->GetQuest());
 
     Game::GameLoop game;
     auto input = std::make_shared<IO::ConsoleInput>(game, controller);

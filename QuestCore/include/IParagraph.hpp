@@ -1,5 +1,6 @@
 #pragma once
 #include "TextString.hpp"
+#include <memory>
 
 namespace QuestCore
 {
@@ -8,6 +9,8 @@ namespace QuestCore
 	class IParagraph
 	{
 	public:
+		using Ptr = std::shared_ptr<IParagraph>;
+
 		virtual ~IParagraph() = default;
 
 		virtual TextString GetQuest() const = 0;

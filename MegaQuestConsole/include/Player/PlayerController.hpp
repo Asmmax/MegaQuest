@@ -6,8 +6,7 @@
 
 namespace QuestCore
 {
-	class IRoom;
-	class IAction;
+	class IQuest;
 	class IParagraph;
 	struct Case;
 }
@@ -21,10 +20,9 @@ namespace Player
 	class PlayerController
 	{
 	public:
-        PlayerController(const std::shared_ptr<QuestCore::IRoom>& currentRoom);
+        PlayerController(const std::shared_ptr<QuestCore::IQuest>& quest);
 
         void DoCommand(int answerID);
-        void SetCurrentRoom(const std::shared_ptr<QuestCore::IRoom>& currentRoom);
         void SetTextView(const std::shared_ptr<ITextView>& textView);
 		void OpenInventory();
 
@@ -36,7 +34,7 @@ namespace Player
 		std::shared_ptr<QuestCore::IParagraph> GetCurrentParagraph() const;
 
 	private:
-		std::shared_ptr<QuestCore::IRoom> _currentRoom;
+		std::shared_ptr<QuestCore::IQuest> _quest;
 		std::shared_ptr<ITextView> _textView;
 	};
 }

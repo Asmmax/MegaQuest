@@ -1,17 +1,17 @@
 #include "Player/PlayerController.hpp"
-#include "IRoom.hpp"
 #include "IParagraph.hpp"
 #include "Player/ITextView.hpp"
 #include "CaseContainer.hpp"
 #include "IAction.hpp"
+#include "IQuest.hpp"
 
 #include <assert.h>
 
 using namespace Player;
 using namespace QuestCore;
 
-PlayerController::PlayerController(const std::shared_ptr<QuestCore::IRoom>& currentRoom):
-    _currentRoom(currentRoom)
+PlayerController::PlayerController(const std::shared_ptr<QuestCore::IQuest>& quest):
+    _quest(quest)
 {
 }
 
@@ -29,11 +29,6 @@ void PlayerController::DoCommand(int answerID)
     ViewParagraph();
 }
 
-void PlayerController::SetCurrentRoom(const std::shared_ptr<QuestCore::IRoom>& currentRoom)
-{
-    _currentRoom = currentRoom;
-}
-
 void PlayerController::SetTextView(const std::shared_ptr<ITextView>& textView)
 {
     _textView = textView;
@@ -42,7 +37,7 @@ void PlayerController::SetTextView(const std::shared_ptr<ITextView>& textView)
 
 void PlayerController::OpenInventory()
 {
-    auto& hotKeys = _currentRoom->GetHotKeys();
+    auto& hotKeys = _quest->GetHotKeys();
     auto hotKeyIt = std::find(hotKeys.begin(), hotKeys.end(), "inventory");
     if (hotKeyIt == hotKeys.end()) {
         return;
@@ -93,5 +88,10 @@ TextString PlayerController::GetCasesContain() const
 
 std::shared_ptr<IParagraph> PlayerController::GetCurrentParagraph() const
 {
-    return _currentRoom->GetParagraph("root");
+    auto& roots = _quest->GetRoots();
+    auto foundIt = roots.find("root");
+    if (foundIt == roots.end()) {
+        std::shared_ptr<IParagraph>();
+    }
+    return foundIt->second;
 }

@@ -1,15 +1,15 @@
-#include "Actions/CopyInventory.hpp"
+#include "Actions/Copying.hpp"
 #include "Inventory.hpp"
 
 using namespace QuestCore;
 
-CopyInventory::CopyInventory(const std::shared_ptr<Inventory>& source, const std::shared_ptr<Inventory>& target):
+Copying::Copying(const std::shared_ptr<Inventory>& source, const std::shared_ptr<Inventory>& target):
 	_source(source),
 	_target(target)
 {
 }
 
-void CopyInventory::Do()
+void Copying::Do()
 {
 	auto& items = _source->GetItems();
 	for (auto& item : items) {

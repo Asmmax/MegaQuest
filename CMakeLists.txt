@@ -10,6 +10,6 @@ endif()
 
 set(BUILD_SHARED_LIBS on)
 
-add_subdirectory ("MegaQuestGameplay")
+add_subdirectory ("QuestCore")
 add_subdirectory ("MegaQuestConsole")
 add_subdirectory ("deps/json")

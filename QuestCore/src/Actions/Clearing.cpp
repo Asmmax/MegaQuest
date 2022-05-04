@@ -1,14 +1,14 @@
-#include "Actions/ClearInventory.hpp"
+#include "Actions/Clearing.hpp"
 #include "Inventory.hpp"
 
 using namespace  QuestCore;
 
-ClearInventory::ClearInventory(const std::shared_ptr<Inventory>& inventory):
+Clearing::Clearing(const std::shared_ptr<Inventory>& inventory):
 	_inventory(inventory)
 {
 }
 
-void ClearInventory::Do()
+void Clearing::Do()
 {
 	auto& items = _inventory->GetItems();
 	for (auto& item : items) {
