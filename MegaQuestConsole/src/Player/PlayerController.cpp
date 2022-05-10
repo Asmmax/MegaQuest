@@ -48,9 +48,7 @@ void PlayerController::OpenInventory()
         return;
     }
 
-    if (auto inventoryAction = inventoryCases.front().action) {
-        inventoryAction->Do();
-    }
+    inventoryCases.front().Do();
 
     ViewParagraph();
 }
@@ -66,7 +64,7 @@ void PlayerController::Answer(int caseID)
     auto cases = GetCases();
     assert(caseID < static_cast<int>(cases.size()));
 
-    cases[caseID].action->Do();
+    cases[caseID].Do();
 }
 
 std::vector<QuestCore::Case> PlayerController::GetCases() const

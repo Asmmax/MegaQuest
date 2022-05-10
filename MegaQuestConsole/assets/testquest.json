@@ -227,22 +227,18 @@
 		{
 			"key":"inventory",
 			"text":"Открыть инвентарь",
-			"action":
+			"actions":[
 			{
-				"type":"Group",
-				"actions":[
-				{
-					"type":"ParagraphSwitching",
-					"stateMachine":"root",
-					"target":"inventory"
-				},
-				{
-					"type":"CasesSwitching",
-					"stateMachine":"root",
-					"target":"inventory"
-				}
-				]
+				"type":"ParagraphSwitching",
+				"stateMachine":"root",
+				"target":"inventory"
+			},
+			{
+				"type":"CasesSwitching",
+				"stateMachine":"root",
+				"target":"inventory"
 			}
+			]
 		}
 		]
 	},
@@ -273,41 +269,33 @@
 		"cases":[
 		{
 			"text":"Осмотреть",
-			"action":
+			"actions":[
 			{
-				"type":"Group",
-				"actions":[
-				{
-					"type":"ParagraphSwitching",
-					"stateMachine":"world_root",
-					"target":"explored_road"
-				},
-				{
-					"type":"CasesSwitching",
-					"stateMachine":"world_root",
-					"target":"explored_road"
-				}
-				]
+				"type":"ParagraphSwitching",
+				"stateMachine":"world_root",
+				"target":"explored_road"
+			},
+			{
+				"type":"CasesSwitching",
+				"stateMachine":"world_root",
+				"target":"explored_road"
 			}
+			]
 		},
 		{
 			"text":"Поговорить с путником",
-			"action":
+			"actions":[
 			{
-				"type":"Group",
-				"actions":[
-				{
-					"type":"ParagraphSwitching",
-					"stateMachine":"world_root",
-					"target":"trump"
-				},
-				{
-					"type":"CasesSwitching",
-					"stateMachine":"world_root",
-					"target":"trump"
-				}
-				]
+				"type":"ParagraphSwitching",
+				"stateMachine":"world_root",
+				"target":"trump"
+			},
+			{
+				"type":"CasesSwitching",
+				"stateMachine":"world_root",
+				"target":"trump"
 			}
+			]
 		}
 		]
 	},
@@ -317,32 +305,28 @@
 		"cases":[
 		{
 			"text":"Заплатить 40 монет и отправиться дальше по дороге",
-			"action":
+			"actions":[
 			{
-				"type":"Group",
-				"actions":[
+				"type":"Transfer",
+				"source":"player",
+				"items":[
 				{
-					"type":"Transfer",
-					"source":"player",
-					"items":[
-					{
-						"id":"coin",
-						"count":40
-					}
-					]
-				},
-				{
-					"type":"ParagraphSwitching",
-					"stateMachine":"world_root",
-					"target":"next"
-				},
-				{
-					"type":"CasesSwitching",
-					"stateMachine":"world_root",
-					"target":"next"
+					"id":"coin",
+					"count":40
 				}
 				]
+			},
+			{
+				"type":"ParagraphSwitching",
+				"stateMachine":"world_root",
+				"target":"next"
+			},
+			{
+				"type":"CasesSwitching",
+				"stateMachine":"world_root",
+				"target":"next"
 			}
+			]
 		}
 		]
 	},
@@ -356,22 +340,18 @@
 		"cases":[
 		{
 			"text":"Вернуться назад",
-			"action":
+			"actions":[
 			{
-				"type":"Group",
-				"actions":[
-				{
-					"type":"ParagraphSwitching",
-					"stateMachine":"world_root",
-					"target":"road"
-				},
-				{
-					"type":"CasesSwitching",
-					"stateMachine":"world_root",
-					"target":"road"
-				}
-				]
+				"type":"ParagraphSwitching",
+				"stateMachine":"world_root",
+				"target":"road"
+			},
+			{
+				"type":"CasesSwitching",
+				"stateMachine":"world_root",
+				"target":"road"
 			}
+			]
 		}
 		]
 	},
@@ -386,22 +366,18 @@
 		"cases":[
 		{
 			"text":"Вернуться назад",
-			"action":
+			"actions":[
 			{
-				"type":"Group",
-				"actions":[
-				{
-					"type":"ParagraphSwitching",
-					"stateMachine":"world_root",
-					"target":"road"
-				},
-				{
-					"type":"CasesSwitching",
-					"stateMachine":"world_root",
-					"target":"road"
-				}
-				]
+				"type":"ParagraphSwitching",
+				"stateMachine":"world_root",
+				"target":"road"
+			},
+			{
+				"type":"CasesSwitching",
+				"stateMachine":"world_root",
+				"target":"road"
 			}
+			]
 		}
 		]
 	},
@@ -411,46 +387,42 @@
 		"cases":[
 		{
 			"text":"Забрать подарок и вернуться назад",
-			"action":
+			"actions":[
 			{
-				"type":"Group",
-				"actions":[
+				"type":"Transfer",
+				"target":"player",
+				"items":[
 				{
-					"type":"Transfer",
-					"target":"player",
-					"items":[
-					{
-						"id":"coin",
-						"count":50
-					},
-					{
-						"id":"medalion",
-						"count":1
-					}
-					]
+					"id":"coin",
+					"count":50
 				},
 				{
-					"type":"ParagraphSwitching",
-					"stateMachine":"world_root",
-					"target":"road"
-				},
-				{
-					"type":"CasesSwitching",
-					"stateMachine":"world_root",
-					"target":"road"
-				},
-				{
-					"type":"ParagraphSwitching",
-					"stateMachine":"trump",
-					"target":"empty_trump"
-				},
-				{
-					"type":"CasesSwitching",
-					"stateMachine":"trump",
-					"target":"empty_trump"
+					"id":"medalion",
+					"count":1
 				}
 				]
+			},
+			{
+				"type":"ParagraphSwitching",
+				"stateMachine":"world_root",
+				"target":"road"
+			},
+			{
+				"type":"CasesSwitching",
+				"stateMachine":"world_root",
+				"target":"road"
+			},
+			{
+				"type":"ParagraphSwitching",
+				"stateMachine":"trump",
+				"target":"empty_trump"
+			},
+			{
+				"type":"CasesSwitching",
+				"stateMachine":"trump",
+				"target":"empty_trump"
 			}
+			]
 		}
 		]
 	},
@@ -465,22 +437,18 @@
 		"cases":[
 		{
 			"text":"Назад",
-			"action":
+			"actions":[
 			{
-				"type":"Group",
-				"actions":[
-				{
-					"type":"ParagraphSwitching",
-					"stateMachine":"root",
-					"target":"world"
-				},
-				{
-					"type":"CasesSwitching",
-					"stateMachine":"root",
-					"target":"world"
-				}
-				]
+				"type":"ParagraphSwitching",
+				"stateMachine":"root",
+				"target":"world"
+			},
+			{
+				"type":"CasesSwitching",
+				"stateMachine":"root",
+				"target":"world"
 			}
+			]
 		}
 		]
 	}

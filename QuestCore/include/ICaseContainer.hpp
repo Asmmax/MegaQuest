@@ -1,22 +1,11 @@
 #pragma once
-#include "TextString.hpp"
+#include "Case.hpp"
+#include <string>
 #include <memory>
 #include <vector>
 
 namespace QuestCore
 {
-	class IAction;
-
-	struct Case
-	{
-	private:
-		using ActionPtr = std::shared_ptr<IAction>;
-
-	public:
-		TextString name;
-		ActionPtr action;
-	};
-
 	class ICaseContainer
 	{
 	public:

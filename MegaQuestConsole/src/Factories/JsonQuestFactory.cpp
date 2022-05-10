@@ -16,7 +16,6 @@
 #include "Conditions/Comparison.hpp"
 #include "Actions/ParagraphSwitching.hpp"
 #include "Actions/CaseContainerSwitching.hpp"
-#include "Actions/ActionGroup.hpp"
 #include "Actions/Transfer.hpp"
 #include "Actions/Clearing.hpp"
 #include "Actions/Copying.hpp"
@@ -455,13 +454,15 @@ void JsonQuestFactory::InitContainer(const std::shared_ptr<QuestCore::ICaseConta
             for (auto& jsonCase : casesNode) {
                 std::string key = Read(jsonCase, "key", std::string());
                 auto _case = ReadCase(jsonCase);
-                if (_case.action) {
-                    if (key.empty()) {
-                        simple->AddCase(_case);
-                    }
-                    else {
-                        simple->AddCase(key, _case);
-                    }
+                if (_case.actions.empty()) {
+                    continue;
+                }
+
+                if (key.empty()) {
+                    simple->AddCase(_case);
+                }
+                else {
+                    simple->AddCase(key, _case);
                 }
 
             }
@@ -541,12 +542,12 @@ Case JsonQuestFactory::ReadCase(const nlohmann::json& caseNode)
 {
     Case _case;
 
-    auto foundIt = caseNode.find("action");
+    auto foundIt = caseNode.find("actions");
     if (foundIt == caseNode.end()) {
         return _case;
     }
 
-    _case.action = ReadAction(*foundIt);
+    _case.actions = ReadActions(*foundIt);
     _case.name = Read(caseNode, "text", TextString());
 
     return _case;
@@ -602,17 +603,6 @@ std::shared_ptr<QuestCore::IAction> JsonQuestFactory::ReadAction(const nlohmann:
         }
 
         return std::make_shared<QuestCore::CaseContainerSwitching>(stateMachine, foundIt->second);
-    }
-    else if (typeId == "Group") {
-        auto actionGroup = std::make_shared<QuestCore::ActionGroup>();
-        auto foundIt = actionNode.find("actions");
-        if (foundIt != actionNode.end()) {
-            auto actions = ReadActions(*foundIt);
-            for (auto& action : actions) {
-                actionGroup->AddAction(action);
-            }
-        }
-        return actionGroup;
     }
     else if (typeId == "Transfer") {
 
