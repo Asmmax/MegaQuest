@@ -1,49 +1,30 @@
 #include "Paragraphs/ConditionalParagraph.hpp"
-#include "CaseContainer.hpp"
 #include "ICondition.hpp"
+#include "TextString.hpp"
 
 using namespace QuestCore;
 
-TextString ConditionalParagraph::GetQuest() const
+TextString ConditionalParagraph::GetText() const
 {
-	static TextString defaultQuest;
-
 	if (IsAllowed()) {
 		if (!_thenParagraph) {
-			return defaultQuest;
+			return TextString();
 		}
-		return _thenParagraph->GetQuest();
+		return _thenParagraph->GetText();
 	}
 
 	if (!_elseParagraph) {
-		return defaultQuest;
+		return TextString();
 	}
-	return _elseParagraph->GetQuest();
+	return _elseParagraph->GetText();
 }
 
-CaseContainer& ConditionalParagraph::GetCaseContainer()
-{
-	static CaseContainer defaultContainer;
-
-	if (IsAllowed()) {
-		if (!_thenParagraph) {
-			return defaultContainer;
-		}
-		return _thenParagraph->GetCaseContainer();
-	}
-
-	if (!_elseParagraph) {
-		return defaultContainer;
-	}
-	return _elseParagraph->GetCaseContainer();
-}
-
-void ConditionalParagraph::SetThenParagraph(const std::shared_ptr<IParagraph>& thenParagraph)
+void ConditionalParagraph::SetThenParagraph(const IParagraph::Ptr& thenParagraph)
 {
 	_thenParagraph = thenParagraph;
 }
 
-void ConditionalParagraph::SetElseParagraph(const std::shared_ptr<IParagraph>& elseParagraph)
+void ConditionalParagraph::SetElseParagraph(const IParagraph::Ptr& elseParagraph)
 {
 	_elseParagraph = elseParagraph;
 }
@@ -53,7 +34,7 @@ void ConditionalParagraph::ClearConditions()
 	_conditions.clear();
 }
 
-void ConditionalParagraph::AddCondition(const std::shared_ptr<ICondition>& condition)
+void ConditionalParagraph::AddCondition(const ICondition::Ptr& condition)
 {
 	_conditions.push_back(condition);
 }

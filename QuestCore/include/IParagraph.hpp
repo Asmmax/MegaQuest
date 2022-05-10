@@ -1,10 +1,9 @@
 #pragma once
-#include "TextString.hpp"
 #include <memory>
 
 namespace QuestCore
 {
-	class CaseContainer;
+	class TextString;
 
 	class IParagraph
 	{
@@ -13,7 +12,6 @@ namespace QuestCore
 
 		virtual ~IParagraph() = default;
 
-		virtual TextString GetQuest() const = 0;
-		virtual CaseContainer& GetCaseContainer() = 0;
+		virtual TextString GetText() const = 0;
 	};
 }

@@ -2,16 +2,20 @@
 #include "Factories//JsonQuest.hpp"
 #include "Paragraphs/ParagraphStateMachine.hpp"
 #include "Paragraphs/TextParagraph.hpp"
+#include "Paragraphs/InventoryParagraph.hpp"
+#include "Paragraphs/ParagraphGroup.hpp"
+#include "Paragraphs/ConditionalParagraph.hpp"
+#include "CaseContainers/CaseContainerStateMachine.hpp"
+#include "CaseContainers/SimpleCaseContainer.hpp"
+#include "CaseContainers/CaseContainerGroup.hpp"
+#include "CaseContainers/ConditionalCaseContainer.hpp"
 #include "Item.hpp"
 #include "Forms.hpp"
 #include "Inventory.hpp"
-#include "Paragraphs/InventoryParagraph.hpp"
-#include "Paragraphs/ParagraphGroup.hpp"
-#include "CaseContainer.hpp"
-#include "Paragraphs/ConditionalParagraph.hpp"
 #include "Value.hpp"
 #include "Conditions/Comparison.hpp"
-#include "Actions/Switching.hpp"
+#include "Actions/ParagraphSwitching.hpp"
+#include "Actions/CaseContainerSwitching.hpp"
 #include "Actions/ActionGroup.hpp"
 #include "Actions/Transfer.hpp"
 #include "Actions/Clearing.hpp"
@@ -72,7 +76,21 @@ std::shared_ptr<QuestCore::IQuest> JsonQuestFactory::GetQuest()
     foundIt = root.find("paragraphs");
     if (foundIt != root.end()) {
         CreateParagraphs(*foundIt);
+    }
+
+    foundIt = root.find("containers");
+    if (foundIt != root.end()) {
+        CreateContainers(*foundIt);
+    }
+
+    foundIt = root.find("paragraphs");
+    if (foundIt != root.end()) {
         ReadParagraphs(*foundIt);
+    }
+
+    foundIt = root.find("containers");
+    if (foundIt != root.end()) {
+        ReadContainers(*foundIt);
     }
 
     foundIt = root.find("inputs");
@@ -108,13 +126,21 @@ void JsonQuestFactory::ReadInputs(const nlohmann::json& inputsNode)
         std::string key = Read(jsonInput, "key", std::string());
         
         std::string paragraphId = Read(jsonInput, "paragraph", std::string());
+        std::string containerId = Read(jsonInput, "container", std::string());
+
         auto paragraphIt = _paragraphs.find(paragraphId);
         assert(paragraphIt != _paragraphs.end());
-
-        if (paragraphIt != _paragraphs.end()) {
-            _inputs.emplace(key, paragraphIt->second);
+        if (paragraphIt == _paragraphs.end()){
+            continue;
         }
 
+        auto containerIt = _containers.find(containerId);
+        assert(containerIt != _containers.end());
+        if (containerIt == _containers.end()) {
+            continue;
+        }
+
+        _inputs.emplace(key, QuestCore::Node{ paragraphIt->second, containerIt->second });
     }
 }
 
@@ -291,19 +317,9 @@ void JsonQuestFactory::InitParagraph(const std::shared_ptr<QuestCore::IParagraph
             stateMachine->SetState(foundIt->second);
         }
     }
-    else if (typeId == "Text") {
-        auto foundIt = paragraphNode.find("cases");
-        if (foundIt != paragraphNode.end()) {
-            ReadCases(*foundIt, paragraph->GetCaseContainer());
-        }
-    }
     else if (typeId == "Inventory") {
         auto inventory = std::static_pointer_cast<InventoryParagraph>(paragraph);
-        auto foundIt = paragraphNode.find("cases");
-        if (foundIt != paragraphNode.end()) {
-            ReadCases(*foundIt, inventory->GetCaseContainer());
-        }
-        foundIt = paragraphNode.find("itemOrders");
+        auto foundIt = paragraphNode.find("itemOrders");
         if (foundIt != paragraphNode.end()) {
             auto orders = ReadItemOrders(*foundIt);
             for (auto& order : orders) {
@@ -366,6 +382,146 @@ void JsonQuestFactory::InitParagraph(const std::shared_ptr<QuestCore::IParagraph
     }
 }
 
+void JsonQuestFactory::CreateContainers(const nlohmann::json& containersNode)
+{
+    if (!containersNode.is_array()) {
+        return;
+    }
+
+    for (auto& jsonContainer : containersNode) {
+        auto container = CreateContainer(jsonContainer);
+        auto id = Read<std::string>(jsonContainer, "id", std::string());
+        auto res = _containers.emplace(id, container);
+    }
+}
+
+void JsonQuestFactory::ReadContainers(const nlohmann::json& containersNode)
+{
+    if (!containersNode.is_array()) {
+        return;
+    }
+
+    for (auto& jsonContainer : containersNode) {
+        auto id = Read<std::string>(jsonContainer, "id", std::string());
+        auto foundIt = _containers.find(id);
+        if (foundIt != _containers.end()) {
+            InitContainer(foundIt->second, jsonContainer);
+        }
+    }
+}
+
+std::shared_ptr<QuestCore::ICaseContainer> JsonQuestFactory::CreateContainer(const nlohmann::json& containerNode)
+{
+    std::string typeId = Read(containerNode, "type", std::string());
+    if (typeId == "StateMachine") {
+        return std::make_shared<CaseContainerStateMachine>();
+    }
+    else if (typeId == "Simple") {
+        return std::make_shared<SimpleCaseContainer>();
+    }
+    else if (typeId == "Group") {
+        return std::make_shared<CaseContainerGroup>();
+    }
+    else if (typeId == "Condition") {
+        return std::make_shared<ConditionalCaseContainer>();
+    }
+
+    return nullptr;
+}
+
+void JsonQuestFactory::InitContainer(const std::shared_ptr<QuestCore::ICaseContainer>& container, const nlohmann::json& containerNode)
+{
+    std::string typeId = Read(containerNode, "type", std::string());
+    if (typeId == "StateMachine") {
+        auto stateMachine = std::static_pointer_cast<CaseContainerStateMachine>(container);
+        std::string target = Read(containerNode, "target", std::string());
+        auto foundIt = _containers.find(target);
+        assert(foundIt != _containers.end());
+
+        if (foundIt != _containers.end()) {
+            stateMachine->SetState(foundIt->second);
+        }
+    }
+    else if (typeId == "Simple") {
+        auto simple = std::static_pointer_cast<SimpleCaseContainer>(container);
+
+        auto foundIt = containerNode.find("cases");
+        if (foundIt != containerNode.end()) {
+            auto& casesNode = *foundIt;
+            if (!casesNode.is_array()) {
+                return;
+            }
+
+            for (auto& jsonCase : casesNode) {
+                std::string key = Read(jsonCase, "key", std::string());
+                auto _case = ReadCase(jsonCase);
+                if (_case.action) {
+                    if (key.empty()) {
+                        simple->AddCase(_case);
+                    }
+                    else {
+                        simple->AddCase(key, _case);
+                    }
+                }
+
+            }
+        }
+    }
+    else if (typeId == "Group") {
+        auto group = std::static_pointer_cast<CaseContainerGroup>(container);
+
+        auto foundIt = containerNode.find("containers");
+        if (foundIt != containerNode.end()) {
+            auto& childrenNode = *foundIt;
+            if (!childrenNode.is_array()) {
+                return;
+            }
+
+            for (auto& jsonChild : childrenNode) {
+                auto containerId = jsonChild.get<std::string>();
+                auto containerIt = _containers.find(containerId);
+                assert(containerIt != _containers.end());
+
+                if (containerIt != _containers.end()) {
+                    group->AddCaseContainer(containerIt->second);
+                }
+
+            }
+        }
+    }
+    else if (typeId == "Condition") {
+        auto conditional = std::static_pointer_cast<ConditionalCaseContainer>(container);
+
+        std::string thenContainer = Read(containerNode, "then", std::string());
+        if (!thenContainer.empty()) {
+            auto foundIt = _containers.find(thenContainer);
+            assert(foundIt != _containers.end());
+
+            if (foundIt != _containers.end()) {
+                conditional->SetThenContainer(foundIt->second);
+            }
+        }
+
+        std::string elseContainer = Read(containerNode, "else", std::string());
+        if (!elseContainer.empty()) {
+            auto foundIt = _containers.find(elseContainer);
+            assert(foundIt != _containers.end());
+
+            if (foundIt != _containers.end()) {
+                conditional->SetElseContainer(foundIt->second);
+            }
+        }
+
+        auto foundIt = containerNode.find("conditions");
+        if (foundIt != containerNode.end()) {
+            auto conditions = ReadConditions(*foundIt);
+            for (auto& condition : conditions) {
+                conditional->AddCondition(condition);
+            }
+        }
+    }
+}
+
 std::vector<std::shared_ptr<QuestCore::IAction>> JsonQuestFactory::ReadActions(const nlohmann::json& actionsNode)
 {
     std::vector<std::shared_ptr<QuestCore::IAction>> result;
@@ -381,38 +537,25 @@ std::vector<std::shared_ptr<QuestCore::IAction>> JsonQuestFactory::ReadActions(c
     return result;
 }
 
-void JsonQuestFactory::ReadCases(const nlohmann::json& casesNode, QuestCore::CaseContainer& cases)
+Case JsonQuestFactory::ReadCase(const nlohmann::json& caseNode)
 {
-    if (!casesNode.is_array()) {
-        return;
+    Case _case;
+
+    auto foundIt = caseNode.find("action");
+    if (foundIt == caseNode.end()) {
+        return _case;
     }
 
-    for (auto& jsonCase : casesNode) {
+    _case.action = ReadAction(*foundIt);
+    _case.name = Read(caseNode, "text", TextString());
 
-        auto foundIt = jsonCase.find("action");
-        if (foundIt == jsonCase.end()) {
-            continue;
-        }
-
-        TextString text = Read(jsonCase, "text", TextString());
-        auto action = ReadAction(*foundIt);
-        Case _case{ text, action };
-
-        std::string key = Read(jsonCase, "key", std::string());
-        if (key.empty()) {
-            cases.AddCase(_case);
-        }
-        else {
-            assert(std::find(_hotKeys.begin(), _hotKeys.end(), key) != _hotKeys.end());
-            cases.AddCase(key, _case);
-        }
-    }
+    return _case;
 }
 
 std::shared_ptr<QuestCore::IAction> JsonQuestFactory::ReadAction(const nlohmann::json& actionNode)
 {
     std::string typeId = Read(actionNode, "type", std::string());
-    if (typeId == "Switching") {
+    if (typeId == "ParagraphSwitching") {
 
         std::string stateMachineId = Read(actionNode, "stateMachine", std::string());
         auto foundIt = _paragraphs.find(stateMachineId);
@@ -434,7 +577,31 @@ std::shared_ptr<QuestCore::IAction> JsonQuestFactory::ReadAction(const nlohmann:
             return nullptr;
         }
 
-        return std::make_shared<QuestCore::Switching>(stateMachine, foundIt->second);
+        return std::make_shared<QuestCore::ParagraphSwitching>(stateMachine, foundIt->second);
+    }
+    else if (typeId == "CasesSwitching") {
+
+        std::string stateMachineId = Read(actionNode, "stateMachine", std::string());
+        auto foundIt = _containers.find(stateMachineId);
+        assert(foundIt != _containers.end());
+        if (foundIt == _containers.end()) {
+            return nullptr;
+        }
+
+        auto stateMachine = std::dynamic_pointer_cast<QuestCore::CaseContainerStateMachine>(foundIt->second);
+        assert(stateMachine);
+        if (!stateMachine) {
+            return nullptr;
+        }
+
+        std::string target = Read(actionNode, "target", std::string());
+        foundIt = _containers.find(target);
+        assert(foundIt != _containers.end());
+        if (foundIt == _containers.end()) {
+            return nullptr;
+        }
+
+        return std::make_shared<QuestCore::CaseContainerSwitching>(stateMachine, foundIt->second);
     }
     else if (typeId == "Group") {
         auto actionGroup = std::make_shared<QuestCore::ActionGroup>();

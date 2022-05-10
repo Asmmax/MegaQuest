@@ -1,7 +1,7 @@
 #include "Player/PlayerController.hpp"
 #include "IParagraph.hpp"
 #include "Player/ITextView.hpp"
-#include "CaseContainer.hpp"
+#include "ICaseContainer.hpp"
 #include "IAction.hpp"
 #include "IQuest.hpp"
 
@@ -18,10 +18,10 @@ PlayerController::PlayerController(const std::shared_ptr<QuestCore::IQuest>& que
 void PlayerController::DoCommand(int answerID)
 {
     int caseID = answerID - 1;
-    auto paragraph = GetCurrentParagraph();
+    auto caseContainer = GetCurrentNode().caseContainer;
 
     
-    if (caseID < 0 || caseID >= paragraph->GetCaseContainer().GetCaseCount()) {
+    if (caseID < 0 || caseID >= caseContainer->GetCaseCount()) {
         throw AnswerNotExsistExeption();
     }
 
@@ -43,7 +43,7 @@ void PlayerController::OpenInventory()
         return;
     }
 
-    auto inventoryCases = GetCurrentParagraph()->GetCaseContainer().GetCases(*hotKeyIt);
+    auto inventoryCases = GetCurrentNode().caseContainer->GetCases(*hotKeyIt);
     if (inventoryCases.empty()) {
         return;
     }
@@ -57,8 +57,8 @@ void PlayerController::OpenInventory()
 
 void PlayerController::ViewParagraph()
 {
-    auto paragraph = GetCurrentParagraph();
-    _textView->Write(paragraph->GetQuest() + TextString::FromUtf8(u8"\n") + GetCasesContain());
+    auto paragraph = GetCurrentNode().paragraph;
+    _textView->Write(paragraph->GetText() + TextString::FromUtf8(u8"\n") + GetCasesContain());
 }
 
 void PlayerController::Answer(int caseID)
@@ -71,7 +71,7 @@ void PlayerController::Answer(int caseID)
 
 std::vector<QuestCore::Case> PlayerController::GetCases() const
 {
-    return GetCurrentParagraph()->GetCaseContainer().GetCases();
+    return GetCurrentNode().caseContainer->GetCases();
 }
 
 TextString PlayerController::GetCasesContain() const
@@ -86,12 +86,12 @@ TextString PlayerController::GetCasesContain() const
     return caseString;
 }
 
-std::shared_ptr<IParagraph> PlayerController::GetCurrentParagraph() const
+Node PlayerController::GetCurrentNode() const
 {
     auto& roots = _quest->GetRoots();
     auto foundIt = roots.find("root");
     if (foundIt == roots.end()) {
-        std::shared_ptr<IParagraph>();
+        return Node();
     }
     return foundIt->second;
 }

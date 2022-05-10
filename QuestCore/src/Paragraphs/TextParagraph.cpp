@@ -7,12 +7,7 @@ TextParagraph::TextParagraph(const TextString& text):
 {
 }
 
-TextString TextParagraph::GetQuest() const
+TextString TextParagraph::GetText() const
 {
 	return _text;
-}
-
-CaseContainer& TextParagraph::GetCaseContainer()
-{
-	return _cases;
 }

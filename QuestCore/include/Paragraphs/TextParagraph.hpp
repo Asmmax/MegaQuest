@@ -1,6 +1,6 @@
 #pragma once
 #include "IParagraph.hpp"
-#include "CaseContainer.hpp"
+#include "TextString.hpp"
 
 namespace QuestCore
 {
@@ -8,11 +8,9 @@ namespace QuestCore
 	{
 	public:
 		TextParagraph(const TextString& text);
-		virtual TextString GetQuest() const override;
-		virtual CaseContainer& GetCaseContainer() override;
+		virtual TextString GetText() const override;
 
 	private:
 		TextString _text;
-		CaseContainer _cases;
 	};
 }

@@ -3,7 +3,8 @@
 	"inputs":[
 	{
 		"key":"root",
-		"paragraph":"root"
+		"paragraph":"root",
+		"container":"root"
 	}
 	],
 	"items": [
@@ -91,7 +92,7 @@
 	{
 		"type":"Group",
 		"id":"world",
-		"paragraphs":["world_prefix", "world_root", "to_inventory"]
+		"paragraphs":["world_prefix", "world_root"]
 	},
 	{
 		"type":"Text",
@@ -102,22 +103,6 @@
 		"type":"StateMachine",
 		"id":"world_root",
 		"target":"road"
-	},
-	{
-		"type":"Text",
-		"id":"to_inventory",
-		"cases":[
-		{
-			"key":"inventory",
-			"text":"Открыть инвентарь",
-			"action":
-			{
-				"type":"Switching",
-				"stateMachine":"root",
-				"target":"inventory"
-			}
-		}
-		]
 	},
 	{
 		"type":"Condition",
@@ -143,58 +128,12 @@
 	{
 		"type":"Text",
 		"id":"road_need_coins",
-		"text":"Перед вами дорога",
-		"cases":[
-		{
-			"text":"Осмотреть",
-			"action":
-			{
-				"type":"Switching",
-				"stateMachine":"world_root",
-				"target":"explored_road"
-			}
-		},
-		{
-			"text":"Поговорить с путником",
-			"action":
-			{
-				"type":"Switching",
-				"stateMachine":"world_root",
-				"target":"trump"
-			}
-		}
-		]
+		"text":"Перед вами дорога"
 	},
 	{
 		"type":"Text",
 		"text":"Теперь у нас есть достаточно золота, чтобы поехать дальше",
-		"id":"road_next",
-		"cases":[
-		{
-			"text":"Заплатить 40 монет и отправиться дальше по дороге",
-			"action":
-			{
-				"type":"Group",
-				"actions":[
-				{
-					"type":"Transfer",
-					"source":"player",
-					"items":[
-					{
-						"id":"coin",
-						"count":40
-					}
-					]
-				},
-				{
-					"type":"Switching",
-					"stateMachine":"world_root",
-					"target":"next"
-				}
-				]
-			}
-		}
-		]
+		"id":"road_next"
 	},
 	{
 		"type":"Text",
@@ -204,18 +143,7 @@
 	{
 		"type":"Text",
 		"id":"explored_road",
-		"text":"Вы видите перед собой дорогу, а на дороге путника.",
-		"cases":[
-		{
-			"text":"Вернуться назад",
-			"action":
-			{
-				"type":"Switching",
-				"stateMachine":"world_root",
-				"target":"road"
-			}
-		}
-		]
+		"text":"Вы видите перед собой дорогу, а на дороге путника."
 	},
 	{
 		"type":"StateMachine",
@@ -225,58 +153,12 @@
 	{
 		"type":"Text",
 		"id":"empty_trump",
-		"text":"Здравствуй незнакомец, а я тебе уже всё отдал.",
-		"cases":[
-		{
-			"text":"Вернуться назад",
-			"action":
-			{
-				"type":"Switching",
-				"stateMachine":"world_root",
-				"target":"road"
-			}
-		}
-		]
+		"text":"Здравствуй незнакомец, а я тебе уже всё отдал."
 	},
 	{
 		"type":"Text",
 		"id":"talked_trump",
-		"text":"Здравствуй незнакомец, на вот те за просто так 50 монет и медальон.",
-		"cases":[
-		{
-			"text":"Забрать подарок и вернуться назад",
-			"action":
-			{
-				"type":"Group",
-				"actions":[
-				{
-					"type":"Transfer",
-					"target":"player",
-					"items":[
-					{
-						"id":"coin",
-						"count":50
-					},
-					{
-						"id":"medalion",
-						"count":1
-					}
-					]
-				},
-				{
-					"type":"Switching",
-					"stateMachine":"world_root",
-					"target":"road"
-				},
-				{
-					"type":"Switching",
-					"stateMachine":"trump",
-					"target":"empty_trump"
-				}
-				]
-			}
-		}
-		]
+		"text":"Здравствуй незнакомец, на вот те за просто так 50 монет и медальон."
 	},
 	{
 		"type":"Group",
@@ -319,15 +201,285 @@
 			"id":"coin",
 			"order":-100
 		}
-		],
+		]
+	}
+	],
+	"containers":[
+	{
+		"type":"StateMachine",
+		"id":"root",
+		"target":"world"
+	},
+	{
+		"type":"Group",
+		"id":"world",
+		"containers":["world_root", "to_inventory"]
+	},
+	{
+		"type":"StateMachine",
+		"id":"world_root",
+		"target":"road"
+	},
+	{
+		"type":"Simple",
+		"id":"to_inventory",
+		"cases":[
+		{
+			"key":"inventory",
+			"text":"Открыть инвентарь",
+			"action":
+			{
+				"type":"Group",
+				"actions":[
+				{
+					"type":"ParagraphSwitching",
+					"stateMachine":"root",
+					"target":"inventory"
+				},
+				{
+					"type":"CasesSwitching",
+					"stateMachine":"root",
+					"target":"inventory"
+				}
+				]
+			}
+		}
+		]
+	},
+	{
+		"type":"Condition",
+		"id":"road",
+		"then":"road_next",
+		"else":"road_need_coins",
+		"conditions":[
+		{
+			"type":"Comparison",
+			"left":{
+				"type":"Inventory",
+				"inventory":"player",
+				"item":"coin"
+			},
+			"operation":"Greater",
+			"right":{
+				"type":"Simple",
+				"value":40
+			}
+		}
+		]
+	},
+	{
+		"type":"Simple",
+		"id":"road_need_coins",
+		"cases":[
+		{
+			"text":"Осмотреть",
+			"action":
+			{
+				"type":"Group",
+				"actions":[
+				{
+					"type":"ParagraphSwitching",
+					"stateMachine":"world_root",
+					"target":"explored_road"
+				},
+				{
+					"type":"CasesSwitching",
+					"stateMachine":"world_root",
+					"target":"explored_road"
+				}
+				]
+			}
+		},
+		{
+			"text":"Поговорить с путником",
+			"action":
+			{
+				"type":"Group",
+				"actions":[
+				{
+					"type":"ParagraphSwitching",
+					"stateMachine":"world_root",
+					"target":"trump"
+				},
+				{
+					"type":"CasesSwitching",
+					"stateMachine":"world_root",
+					"target":"trump"
+				}
+				]
+			}
+		}
+		]
+	},
+	{
+		"type":"Simple",
+		"id":"road_next",
+		"cases":[
+		{
+			"text":"Заплатить 40 монет и отправиться дальше по дороге",
+			"action":
+			{
+				"type":"Group",
+				"actions":[
+				{
+					"type":"Transfer",
+					"source":"player",
+					"items":[
+					{
+						"id":"coin",
+						"count":40
+					}
+					]
+				},
+				{
+					"type":"ParagraphSwitching",
+					"stateMachine":"world_root",
+					"target":"next"
+				},
+				{
+					"type":"CasesSwitching",
+					"stateMachine":"world_root",
+					"target":"next"
+				}
+				]
+			}
+		}
+		]
+	},
+	{
+		"type":"Simple",
+		"id":"next"
+	},
+	{
+		"type":"Simple",
+		"id":"explored_road",
+		"cases":[
+		{
+			"text":"Вернуться назад",
+			"action":
+			{
+				"type":"Group",
+				"actions":[
+				{
+					"type":"ParagraphSwitching",
+					"stateMachine":"world_root",
+					"target":"road"
+				},
+				{
+					"type":"CasesSwitching",
+					"stateMachine":"world_root",
+					"target":"road"
+				}
+				]
+			}
+		}
+		]
+	},
+	{
+		"type":"StateMachine",
+		"id":"trump",
+		"target":"talked_trump"
+	},
+	{
+		"type":"Simple",
+		"id":"empty_trump",
+		"cases":[
+		{
+			"text":"Вернуться назад",
+			"action":
+			{
+				"type":"Group",
+				"actions":[
+				{
+					"type":"ParagraphSwitching",
+					"stateMachine":"world_root",
+					"target":"road"
+				},
+				{
+					"type":"CasesSwitching",
+					"stateMachine":"world_root",
+					"target":"road"
+				}
+				]
+			}
+		}
+		]
+	},
+	{
+		"type":"Simple",
+		"id":"talked_trump",
+		"cases":[
+		{
+			"text":"Забрать подарок и вернуться назад",
+			"action":
+			{
+				"type":"Group",
+				"actions":[
+				{
+					"type":"Transfer",
+					"target":"player",
+					"items":[
+					{
+						"id":"coin",
+						"count":50
+					},
+					{
+						"id":"medalion",
+						"count":1
+					}
+					]
+				},
+				{
+					"type":"ParagraphSwitching",
+					"stateMachine":"world_root",
+					"target":"road"
+				},
+				{
+					"type":"CasesSwitching",
+					"stateMachine":"world_root",
+					"target":"road"
+				},
+				{
+					"type":"ParagraphSwitching",
+					"stateMachine":"trump",
+					"target":"empty_trump"
+				},
+				{
+					"type":"CasesSwitching",
+					"stateMachine":"trump",
+					"target":"empty_trump"
+				}
+				]
+			}
+		}
+		]
+	},
+	{
+		"type":"Group",
+		"id":"inventory",
+		"containers":["inventory_root"]
+	},
+	{
+		"type":"Simple",
+		"id":"inventory_root",
 		"cases":[
 		{
 			"text":"Назад",
 			"action":
 			{
-				"type":"Switching",
-				"stateMachine":"root",
-				"target":"world"
+				"type":"Group",
+				"actions":[
+				{
+					"type":"ParagraphSwitching",
+					"stateMachine":"root",
+					"target":"world"
+				},
+				{
+					"type":"CasesSwitching",
+					"stateMachine":"root",
+					"target":"world"
+				}
+				]
 			}
 		}
 		]

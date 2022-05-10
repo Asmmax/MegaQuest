@@ -9,6 +9,7 @@ namespace QuestCore
 	class IQuest;
 	class IParagraph;
 	struct Case;
+	struct Node;
 }
 
 namespace Player 
@@ -31,7 +32,7 @@ namespace Player
 		void Answer(int caseID);
 		std::vector<QuestCore::Case> GetCases() const;
 		QuestCore::TextString GetCasesContain() const;
-		std::shared_ptr<QuestCore::IParagraph> GetCurrentParagraph() const;
+		QuestCore::Node GetCurrentNode() const;
 
 	private:
 		std::shared_ptr<QuestCore::IQuest> _quest;

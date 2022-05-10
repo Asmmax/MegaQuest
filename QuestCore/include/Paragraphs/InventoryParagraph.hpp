@@ -1,8 +1,8 @@
 #pragma once
 #include "IParagraph.hpp"
 #include "FormatedString.hpp"
-#include "CaseContainer.hpp"
 #include <vector>
+#include <map>
 
 namespace QuestCore
 {
@@ -12,26 +12,37 @@ namespace QuestCore
 	class InventoryParagraph: public IParagraph
 	{
 		using FormPtr = std::shared_ptr<FormBase>;
+		using InventoryPtr = std::shared_ptr<Inventory>;
 		using ItemPtr = std::shared_ptr<Item>;
+
+		class ItemOrganizer
+		{
+		public:
+			void AddItemOrder(const ItemPtr& item, int order);
+			int GetOrder(const ItemPtr& item) const;
+
+		private:
+			std::map<ItemPtr, int> _itemOrders;
+		};
+
 	public:
 		InventoryParagraph(const FormatedString& prefix,
 			const TextString& gap,
 			const FormatedString& postfix,
-			const std::shared_ptr<Inventory>& inventory);
+			const InventoryPtr& inventory);
 
-		virtual TextString GetQuest() const override;
-		virtual CaseContainer& GetCaseContainer() override;
+		virtual TextString GetText() const override;
 		void SetItemOrder(const ItemPtr& item, int order);
 
 	private:
+		int GetSumItemCount() const;
 		std::vector<std::pair<ItemPtr, int>> GetOrderedItems() const;
 
 	private:
-		CaseContainer _cases;
 		FormatedString _prefix;
 		TextString _gap;
 		FormatedString _postfix;
-		std::shared_ptr<Inventory> _inventory;
-		std::map<ItemPtr, int> _itemOrders;
+		InventoryPtr _inventory;
+		ItemOrganizer _itemOrganizer;
 	};
 }

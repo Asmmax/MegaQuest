@@ -9,18 +9,19 @@ namespace QuestCore
 
 	class ConditionalParagraph : public IParagraph
 	{
+		using ConditionPtr = std::shared_ptr<ICondition>;
+
 	public:
-		virtual TextString GetQuest() const override;
-		virtual CaseContainer& GetCaseContainer() override;
-		void SetThenParagraph(const std::shared_ptr<IParagraph>& thenParagraph);
-		void SetElseParagraph(const std::shared_ptr<IParagraph>& elseParagraph);
+		virtual TextString GetText() const override;
+		void SetThenParagraph(const IParagraph::Ptr& thenParagraph);
+		void SetElseParagraph(const IParagraph::Ptr& elseParagraph);
 		void ClearConditions();
-		void AddCondition(const std::shared_ptr<ICondition>& condition);
+		void AddCondition(const ConditionPtr& condition);
 		bool IsAllowed() const;
 
 	private:
-		std::shared_ptr<IParagraph> _thenParagraph;
-		std::shared_ptr<IParagraph> _elseParagraph;
-		std::vector<std::shared_ptr<ICondition>> _conditions;
+		IParagraph::Ptr _thenParagraph;
+		IParagraph::Ptr _elseParagraph;
+		std::vector<ConditionPtr> _conditions;
 	};
 }

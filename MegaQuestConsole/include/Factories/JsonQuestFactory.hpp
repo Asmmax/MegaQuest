@@ -12,9 +12,11 @@ namespace QuestCore
 	class FormBase;
 	class IAction;
 	class Inventory;
-	class CaseContainer;
+	class ICaseContainer;
 	class ICondition;
 	class Value;
+	struct Node;
+	struct Case;
 	enum class Operation;
 }
 
@@ -31,13 +33,18 @@ private:
 	void ReadForms(const nlohmann::json& formStrNode, QuestCore::FormatedString& formString);
 	std::shared_ptr<QuestCore::FormBase> ReadForm(const nlohmann::json& formNode);
 	void ReadInventory(const nlohmann::json& inventoriesNode);
+
 	void CreateParagraphs(const nlohmann::json& paragraphsNode);
 	void ReadParagraphs(const nlohmann::json& paragraphsNode);
-
 	std::shared_ptr<QuestCore::IParagraph> CreateParagraph(const nlohmann::json& paragraphNode);
 	void InitParagraph(const std::shared_ptr<QuestCore::IParagraph>& paragraph, const nlohmann::json& paragraphNode);
 
-	void ReadCases(const nlohmann::json& casesNode, QuestCore::CaseContainer& cases);
+	void CreateContainers(const nlohmann::json& containersNode);
+	void ReadContainers(const nlohmann::json& containersNode);
+	std::shared_ptr<QuestCore::ICaseContainer> CreateContainer(const nlohmann::json& containerNode);
+	void InitContainer(const std::shared_ptr<QuestCore::ICaseContainer>& container, const nlohmann::json& containerNode);
+
+	QuestCore::Case ReadCase(const nlohmann::json& caseNode);
 	std::vector<std::shared_ptr<QuestCore::IAction>> ReadActions(const nlohmann::json& actionsNode);
 	std::shared_ptr<QuestCore::IAction> ReadAction(const nlohmann::json& actionNode);
 
@@ -58,9 +65,10 @@ private:
 private:
 	std::string _filename;
 	std::vector<std::string> _hotKeys;
-	std::map<std::string, std::shared_ptr<QuestCore::IParagraph>> _inputs;
+	std::map<std::string, QuestCore::Node> _inputs;
 	std::map<std::string, std::shared_ptr<QuestCore::Item>> _items;
 	std::map<std::string, std::shared_ptr<QuestCore::IParagraph>> _paragraphs;
+	std::map<std::string, std::shared_ptr<QuestCore::ICaseContainer>> _containers;
 	std::map<std::string, std::shared_ptr<QuestCore::Inventory>> _inventories;
 };
 

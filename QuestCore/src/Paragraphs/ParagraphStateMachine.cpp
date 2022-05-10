@@ -1,17 +1,11 @@
 #include "Paragraphs/ParagraphStateMachine.hpp"
-
+#include "TextString.hpp"
 #include <assert.h>
 
 using namespace QuestCore;
 
-TextString ParagraphStateMachine::GetQuest() const
+TextString ParagraphStateMachine::GetText() const
 {
 	assert(_state);
-	return _state->GetQuest();
-}
-
-CaseContainer& ParagraphStateMachine::GetCaseContainer()
-{
-	assert(_state);
-	return _state->GetCaseContainer();
+	return _state->GetText();
 }

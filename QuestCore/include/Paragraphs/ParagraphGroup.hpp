@@ -1,23 +1,19 @@
 #pragma once
 #include "IParagraph.hpp"
-#include "CaseContainer.hpp"
+#include "TextString.hpp"
 #include <vector>
-#include <memory>
 
 namespace QuestCore {
 	class ParagraphGroup : public IParagraph
 	{
 	public:
 		ParagraphGroup(const TextString& gap);
-		void ClearParagraphs();
-		void AddParagraph(const std::shared_ptr<IParagraph>& paragraph);
-		void UpdateCases();
+		void Clear();
+		void AddParagraph(const IParagraph::Ptr& paragraph);
 
-		virtual TextString GetQuest() const override;
-		virtual CaseContainer& GetCaseContainer() override;
+		virtual TextString GetText() const override;
 	private:
-		CaseContainer _cases;
 		TextString _gap;
-		std::vector<std::shared_ptr<IParagraph>> _paragraphs;
+		std::vector<IParagraph::Ptr> _paragraphs;
 	};
 }

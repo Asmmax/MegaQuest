@@ -7,26 +7,17 @@ ParagraphGroup::ParagraphGroup(const TextString& gap):
 {
 }
 
-void ParagraphGroup::ClearParagraphs()
+void ParagraphGroup::Clear()
 {
 	_paragraphs.clear();
-	_cases.Clear();
 }
 
-void ParagraphGroup::AddParagraph(const std::shared_ptr<IParagraph>& paragraph)
+void ParagraphGroup::AddParagraph(const IParagraph::Ptr& paragraph)
 {
 	_paragraphs.emplace_back(paragraph);
 }
 
-void ParagraphGroup::UpdateCases()
-{
-	_cases.Clear();
-	for (auto& paragraph : _paragraphs) {
-		_cases += paragraph->GetCaseContainer();
-	}
-}
-
-TextString ParagraphGroup::GetQuest() const
+TextString ParagraphGroup::GetText() const
 {
 	TextString result;
 	for (auto it = _paragraphs.begin(); it != _paragraphs.end(); it++) {
@@ -34,13 +25,7 @@ TextString ParagraphGroup::GetQuest() const
 			result += _gap;
 		}
 		auto& paragraphPtr = *it;
-		result += paragraphPtr->GetQuest();
+		result += paragraphPtr->GetText();
 	}
 	return result;
-}
-
-CaseContainer& ParagraphGroup::GetCaseContainer()
-{
-	UpdateCases();
-	return _cases;
 }
