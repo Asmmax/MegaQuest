@@ -7,11 +7,9 @@ using namespace QuestCore;
 
 JsonQuest::JsonQuest(const std::map<std::string, Node>& roots,
 	const std::vector<std::string>& hotKeys,
-	const std::map<std::string, Item::Ptr>& items,
 	const std::map<std::string, Inventory::Ptr>& inventories) :
 	_roots(roots),
 	_hotKeys(hotKeys),
-	_items(items),
 	_inventories(inventories)
 {
 }
@@ -24,11 +22,6 @@ const std::map<std::string, Node>& JsonQuest::GetRoots() const
 const std::vector<std::string>& JsonQuest::GetHotKeys() const
 {
 	return _hotKeys;
-}
-
-const std::map<std::string, Item::Ptr>& JsonQuest::GetItems() const
-{
-	return _items;
 }
 
 const std::map<std::string, Inventory::Ptr>& JsonQuest::GetInventories() const

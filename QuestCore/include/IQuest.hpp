@@ -33,7 +33,6 @@ namespace QuestCore
 
 		virtual const std::map<std::string, Node>& GetRoots() const = 0;
 		virtual const std::vector<std::string>& GetHotKeys() const = 0;
-		virtual const std::map<std::string, ItemPtr>& GetItems() const = 0;
 		virtual const std::map<std::string, InventoryPtr>& GetInventories() const = 0;
 	};
 };

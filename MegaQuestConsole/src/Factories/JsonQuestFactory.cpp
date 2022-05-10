@@ -97,7 +97,7 @@ std::shared_ptr<QuestCore::IQuest> JsonQuestFactory::GetQuest()
         ReadInputs(*foundIt);
     }
 
-    return std::make_shared<JsonQuest>(_inputs, _hotKeys, _items, _inventories);
+    return std::make_shared<JsonQuest>(_inputs, _hotKeys, _inventories);
 }
 
 void JsonQuestFactory::ReadHotKeys(const nlohmann::json& keysNode)
@@ -159,7 +159,7 @@ void JsonQuestFactory::ReadItems(const nlohmann::json& itemsNode)
             ReadForms(*foundIt, forms);
         }
 
-        auto item = std::make_shared<QuestCore::Item>(forms, isNullable);
+        auto item = std::make_shared<QuestCore::Item>(id, forms, isNullable);
         _items.emplace(id, item);
     }
 }

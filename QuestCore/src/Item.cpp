@@ -2,9 +2,10 @@
 
 using namespace QuestCore;
 
-Item::Item(const FormatedString& text, bool isNullable):
+Item::Item(const std::string& name, const FormatedString& text, bool isNullable):
 	_text(text),
-	_isNullable(isNullable)
+	_isNullable(isNullable),
+	_name(name)
 {
 }
 
