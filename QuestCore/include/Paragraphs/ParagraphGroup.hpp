@@ -11,7 +11,7 @@ namespace QuestCore {
 		void Clear();
 		void AddParagraph(const IParagraph::Ptr& paragraph);
 
-		virtual TextString GetText() const override;
+		virtual void Print(ITextView& view) override;
 	private:
 		TextString _gap;
 		std::vector<IParagraph::Ptr> _paragraphs;

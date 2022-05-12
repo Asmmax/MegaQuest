@@ -1,4 +1,5 @@
 #include "Paragraphs/TextParagraph.hpp"
+#include "ITextView.hpp"
 
 using namespace QuestCore;
 
@@ -6,8 +7,7 @@ TextParagraph::TextParagraph(const TextString& text):
 	_text(text)
 {
 }
-
-TextString TextParagraph::GetText() const
+void TextParagraph::Print(ITextView& view)
 {
-	return _text;
+	view.AppendText(_text);
 }

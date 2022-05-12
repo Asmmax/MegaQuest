@@ -19,6 +19,7 @@
 #include "Actions/Transfer.hpp"
 #include "Actions/Clearing.hpp"
 #include "Actions/Copying.hpp"
+#include "QuestBase.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -30,12 +31,12 @@ JsonQuestFactory::JsonQuestFactory(const std::string& filename) :
 {
 }
 
-std::shared_ptr<QuestCore::IQuest> JsonQuestFactory::GetQuest()
+std::shared_ptr<QuestCore::QuestBase> JsonQuestFactory::GetQuest(const TextViewFactoryPtr& viewFactory, const ButtonsFactoryPtr& buttonsFactory)
 {
     std::fstream file;
     file.open(_filename, std::ios::in);
     if (!file.is_open()) {
-        return std::shared_ptr<QuestCore::IQuest>();
+        return nullptr;
     }
     
     std::string input;
@@ -54,7 +55,7 @@ std::shared_ptr<QuestCore::IQuest> JsonQuestFactory::GetQuest()
     catch (nlohmann::json::parse_error& ex)
     {
         std::cerr << ex.what() << std::endl;
-        return false;
+        return nullptr;
     }
 
     auto foundIt = root.find("hotKeys");
@@ -97,7 +98,7 @@ std::shared_ptr<QuestCore::IQuest> JsonQuestFactory::GetQuest()
         ReadInputs(*foundIt);
     }
 
-    return std::make_shared<JsonQuest>(_inputs, _hotKeys, _inventories);
+    return std::make_shared<JsonQuest>(viewFactory, buttonsFactory, _inputs, _inventories);
 }
 
 void JsonQuestFactory::ReadHotKeys(const nlohmann::json& keysNode)

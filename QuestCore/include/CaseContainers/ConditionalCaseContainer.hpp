@@ -11,8 +11,7 @@ namespace QuestCore
 		using ConditionPtr = std::shared_ptr<ICondition>;
 
 	public:
-		virtual const std::vector<Case>& GetCases(const std::string& key = std::string()) const override;
-		virtual size_t GetCaseCount() const override;
+		virtual void Print(IButtonPanel& buttonPanel) override;
 
 		void SetThenContainer(const ICaseContainer::Ptr& thenContainer);
 		void SetElseContainer(const ICaseContainer::Ptr& elseContainer);

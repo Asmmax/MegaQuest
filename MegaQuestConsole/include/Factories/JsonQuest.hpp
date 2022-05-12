@@ -1,5 +1,5 @@
 #pragma once
-#include "IQuest.hpp"
+#include "QuestBase.hpp"
 
 namespace QuestCore
 {
@@ -8,19 +8,20 @@ namespace QuestCore
 	class Inventory;
 }
 
-class JsonQuest : public QuestCore::IQuest
+class JsonQuest : public QuestCore::QuestBase
 {
 public:
-	JsonQuest(const std::map<std::string, QuestCore::Node>& roots,
-		const std::vector<std::string>& hotKeys,
+	JsonQuest(const TextViewFactoryPtr& viewFactory, 
+		const ButtonsFactoryPtr& buttonsFactory, 
+		const std::map<std::string, QuestCore::Node>& roots,
 		const std::map<std::string, InventoryPtr>& inventories);
 
-	virtual const std::map<std::string, QuestCore::Node>& GetRoots() const override;
-	virtual const std::vector<std::string>& GetHotKeys() const override;
 	virtual const std::map<std::string, InventoryPtr>& GetInventories() const override;
 
+protected:
+	virtual const std::map<std::string, QuestCore::Node>& GetRoots() const override;
+
 private:
-	std::vector<std::string> _hotKeys;
 	std::map<std::string, QuestCore::Node> _roots;
 	std::map<std::string, InventoryPtr> _inventories;
 };

@@ -1,20 +1,22 @@
 #pragma once
 #include <memory>
 
+class InputHandler;
+
 namespace Game
 {
-    class IInputHandler;
-
     class GameLoop
     {
+        using InputHandlerPtr = std::shared_ptr<InputHandler>;
+
     public:
-        void SetInputHandler(const std::shared_ptr<IInputHandler>& inputHandler);
+        GameLoop(const InputHandlerPtr& inputHandler);
         void Update();
         int Run();
         void Quit();
 
     private:
-        std::shared_ptr<IInputHandler> _inputHandler;
+        InputHandlerPtr _inputHandler;
         bool _isStoped = true;
     };
 }

@@ -3,36 +3,19 @@
 
 using namespace QuestCore;
 
-const std::vector<Case>& ConditionalCaseContainer::GetCases(const std::string& key) const
-{
-    static std::vector<Case> defaultCases;
-
-    if (IsAllowed()) {
-        if (!_thenContainer) {
-            return defaultCases;
-        }
-        return _thenContainer->GetCases(key);
-    }
-
-    if (!_elseContainer) {
-        return defaultCases;
-    }
-    return _elseContainer->GetCases(key);
-}
-
-size_t ConditionalCaseContainer::GetCaseCount() const
+void ConditionalCaseContainer::Print(IButtonPanel& buttonPanel)
 {
     if (IsAllowed()) {
-        if (!_thenContainer) {
-            return 0;
+        if (_thenContainer) {
+            _thenContainer->Print(buttonPanel);
         }
-        return _thenContainer->GetCaseCount();
-    }
+	}
+	else {
 
-    if (!_elseContainer) {
-        return 0;
-    }
-    return _elseContainer->GetCaseCount();
+		if (_elseContainer) {
+			_elseContainer->Print(buttonPanel);
+		}
+	}
 }
 
 void ConditionalCaseContainer::SetThenContainer(const ICaseContainer::Ptr& thenContainer)

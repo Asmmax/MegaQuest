@@ -10,11 +10,9 @@ namespace QuestCore
 		void Clear();
 		void AddCaseContainer(const ICaseContainer::Ptr& container);
 
-		virtual const std::vector<Case>& GetCases(const std::string& key = std::string()) const override;
-		virtual size_t GetCaseCount() const override;
+		virtual void Print(IButtonPanel& buttonPanel) override;
 
 	private:
 		std::vector<ICaseContainer::Ptr> _containers;
-		mutable std::vector<Case> _cases;
 	};
 }

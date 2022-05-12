@@ -59,3 +59,9 @@ TextString TextString::FromUtf8(const std::string& text)
 {
 	return TextString(text);
 }
+
+TextString TextString::FromUtf16(const std::wstring& text)
+{
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	return TextString(converter.to_bytes(text));
+}

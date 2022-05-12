@@ -6,7 +6,6 @@
 
 namespace QuestCore
 {
-	class IQuest;
 	class Item;
 	class IParagraph;
 	class FormBase;
@@ -24,7 +23,7 @@ class JsonQuestFactory : public QuestCore::IQuestFactory
 {
 public:
 	JsonQuestFactory(const std::string& filename);
-	virtual std::shared_ptr<QuestCore::IQuest> GetQuest() override;
+	virtual std::shared_ptr<QuestCore::QuestBase> GetQuest(const TextViewFactoryPtr& viewFactory, const ButtonsFactoryPtr& buttonsFactory) override;
 
 private:
 	void ReadHotKeys(const nlohmann::json& keysNode);

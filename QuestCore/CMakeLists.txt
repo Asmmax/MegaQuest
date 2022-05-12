@@ -10,7 +10,7 @@ file(GLOB_RECURSE quest_src CONFIGURE_DEPENDS "${quest_src_dir}/*.cpp")
 
 add_library (QuestCore SHARED 
 ${quest_include}  
-${quest_src} "src/TextString.cpp")
+${quest_src})
 
 target_compile_features (QuestCore PRIVATE cxx_std_17)
 set_target_properties(QuestCore PROPERTIES LINKER_LANGUAGE CXX)

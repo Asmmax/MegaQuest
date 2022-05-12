@@ -3,12 +3,20 @@
 
 namespace QuestCore
 {
-	class IQuest;
+	class QuestBase;
+	class ITextViewFactory;
+	class IButtonPanelFactory;
 
 	class IQuestFactory
 	{
+	protected:
+		using TextViewFactoryPtr = std::shared_ptr<ITextViewFactory>;
+		using ButtonsFactoryPtr = std::shared_ptr<IButtonPanelFactory>;
+
 	public:
+		using Ptr = std::shared_ptr<IQuestFactory>;
+
 		virtual ~IQuestFactory() = default;
-		virtual std::shared_ptr<IQuest> GetQuest() = 0;
+		virtual std::shared_ptr<QuestBase> GetQuest(const TextViewFactoryPtr& viewFactory, const ButtonsFactoryPtr& buttonsFactory) = 0;
 	};
 }

@@ -6,6 +6,8 @@
 
 namespace QuestCore
 {
+	class IButtonPanel;
+
 	class ICaseContainer
 	{
 	public:
@@ -13,7 +15,6 @@ namespace QuestCore
 
 		virtual ~ICaseContainer() = default;
 
-		virtual const std::vector<Case>& GetCases(const std::string& key = std::string()) const = 0;
-		virtual size_t GetCaseCount() const = 0;
+		virtual void Print(IButtonPanel& buttonPanel) = 0;
 	};
 }

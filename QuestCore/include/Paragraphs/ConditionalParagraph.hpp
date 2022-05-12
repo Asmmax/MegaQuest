@@ -12,7 +12,7 @@ namespace QuestCore
 		using ConditionPtr = std::shared_ptr<ICondition>;
 
 	public:
-		virtual TextString GetText() const override;
+		virtual void Print(ITextView& view) override;
 		void SetThenParagraph(const IParagraph::Ptr& thenParagraph);
 		void SetElseParagraph(const IParagraph::Ptr& elseParagraph);
 		void ClearConditions();

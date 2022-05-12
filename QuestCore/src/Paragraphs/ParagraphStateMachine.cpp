@@ -4,8 +4,8 @@
 
 using namespace QuestCore;
 
-TextString ParagraphStateMachine::GetText() const
+void ParagraphStateMachine::Print(ITextView& view)
 {
 	assert(_state);
-	return _state->GetText();
+	_state->Print(view);
 }

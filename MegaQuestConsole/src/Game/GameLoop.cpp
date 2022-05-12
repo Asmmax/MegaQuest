@@ -1,11 +1,13 @@
 #include "Game/GameLoop.hpp"
-#include "Game/IInputHandler.hpp"
+#include "InputHandler.hpp"
+#include "Events.hpp"
 
 using namespace Game;
 
-void GameLoop::SetInputHandler(const std::shared_ptr<IInputHandler>& inputHandler)
+GameLoop::GameLoop(const InputHandler::Ptr& inputHandler):
+    _inputHandler(inputHandler)
 {
-	_inputHandler = inputHandler;
+    GameEvents::Quit.Subscribe([this]() {Quit(); });
 }
 
 void GameLoop::Update()

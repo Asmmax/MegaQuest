@@ -31,7 +31,7 @@ namespace QuestCore
 			const FormatedString& postfix,
 			const InventoryPtr& inventory);
 
-		virtual TextString GetText() const override;
+		virtual void Print(ITextView& view) override;
 		void SetItemOrder(const ItemPtr& item, int order);
 
 	private:

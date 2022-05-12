@@ -8,7 +8,7 @@ namespace QuestCore
 	class ParagraphStateMachine : public IParagraph
 	{
 	public:
-		virtual TextString GetText() const override;
+		virtual void Print(ITextView& view) override;
 
 		inline void SetState(const IParagraph::Ptr& newState) { _state = newState; }
 	

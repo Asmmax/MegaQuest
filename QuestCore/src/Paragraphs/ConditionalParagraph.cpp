@@ -4,19 +4,19 @@
 
 using namespace QuestCore;
 
-TextString ConditionalParagraph::GetText() const
+void ConditionalParagraph::Print(ITextView& view)
 {
 	if (IsAllowed()) {
-		if (!_thenParagraph) {
-			return TextString();
+		if (_thenParagraph) {
+			_thenParagraph->Print(view);
 		}
-		return _thenParagraph->GetText();
 	}
+	else {
 
-	if (!_elseParagraph) {
-		return TextString();
+		if (_elseParagraph) {
+			_elseParagraph->Print(view);
+		}
 	}
-	return _elseParagraph->GetText();
 }
 
 void ConditionalParagraph::SetThenParagraph(const IParagraph::Ptr& thenParagraph)

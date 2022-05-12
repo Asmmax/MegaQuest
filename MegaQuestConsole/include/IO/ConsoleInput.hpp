@@ -1,28 +1,11 @@
 #pragma once
-#include "Game/IInputHandler.hpp"
-#include "TextString.hpp"
-#include <memory>
-
-namespace Player
-{
-	class PlayerController;
-}
-
-namespace Game {
-	class GameLoop;
-}
+#include "IInput.hpp"
 
 namespace IO
 {
-	class ConsoleInput : public Game::IInputHandler
+	class ConsoleInput : public IInput
 	{
 	public:
-        ConsoleInput(Game::GameLoop& gameLoop, const std::shared_ptr<Player::PlayerController>& playerController);
-		QuestCore::TextString GetInstructions();
-		void Handle();
-
-	private:
-		Game::GameLoop& _gameLoop;
-		std::shared_ptr<Player::PlayerController> _playerController;
+		virtual QuestCore::TextString GetString() const override;
 	};
 }

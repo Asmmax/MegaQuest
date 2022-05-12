@@ -12,23 +12,9 @@ void CaseContainerGroup::AddCaseContainer(const ICaseContainer::Ptr& container)
 	_containers.emplace_back(container);
 }
 
-const std::vector<Case>& CaseContainerGroup::GetCases(const std::string& key) const
+void CaseContainerGroup::Print(IButtonPanel& buttonPanel)
 {
-	_cases.clear();
 	for (auto& container : _containers) {
-		for (auto _case : container->GetCases(key))
-		{
-			_cases.emplace_back(_case);
-		}
+		container->Print(buttonPanel);
 	}
-	return _cases;
-}
-
-size_t CaseContainerGroup::GetCaseCount() const
-{
-	size_t sumCaseCount = 0;
-	for (auto& container : _containers) {
-		sumCaseCount += container->GetCaseCount();
-	}
-	return sumCaseCount;
 }

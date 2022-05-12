@@ -1,6 +1,7 @@
 #include "Paragraphs/InventoryParagraph.hpp"
 #include "Inventory.hpp"
 #include "Item.hpp"
+#include "ITextView.hpp"
 #include <algorithm>
 
 using namespace QuestCore;
@@ -35,19 +36,20 @@ InventoryParagraph::InventoryParagraph(const FormatedString& prefix,
 {
 }
 
-TextString InventoryParagraph::GetText() const
+void InventoryParagraph::Print(ITextView& view)
 {
-	TextString contains;
+	int countItems = GetSumItemCount();
+	view.AppendText(_prefix.GetContainsFor(countItems));
+
 	auto items = GetOrderedItems();
 	for (auto itemIt = items.begin(); itemIt != items.end(); itemIt++) {
 		if (itemIt != items.begin()) {
-			contains += _gap;
+			view.AppendText(_gap);
 		}
-		contains += itemIt->first->GetContains(itemIt->second);
+		view.AppendText(itemIt->first->GetContains(itemIt->second));
 	}
 
-	int countItems = GetSumItemCount();
-	return _prefix.GetContainsFor(countItems) + contains + _postfix.GetContainsFor(countItems);
+	view.AppendText(_postfix.GetContainsFor(countItems));
 }
 
 void InventoryParagraph::SetItemOrder(const Item::Ptr& item, int order)

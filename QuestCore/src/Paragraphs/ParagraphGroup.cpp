@@ -1,4 +1,5 @@
 #include "Paragraphs/ParagraphGroup.hpp"
+#include "ITextView.hpp"
 
 using namespace QuestCore;
 
@@ -17,15 +18,13 @@ void ParagraphGroup::AddParagraph(const IParagraph::Ptr& paragraph)
 	_paragraphs.emplace_back(paragraph);
 }
 
-TextString ParagraphGroup::GetText() const
+void ParagraphGroup::Print(ITextView& view)
 {
-	TextString result;
 	for (auto it = _paragraphs.begin(); it != _paragraphs.end(); it++) {
 		if (it != _paragraphs.begin()) {
-			result += _gap;
+			view.AppendText(_gap);
 		}
 		auto& paragraphPtr = *it;
-		result += paragraphPtr->GetText();
+		paragraphPtr->Print(view);
 	}
-	return result;
 }

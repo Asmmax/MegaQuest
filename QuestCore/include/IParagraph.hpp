@@ -3,6 +3,7 @@
 
 namespace QuestCore
 {
+	class ITextView;
 	class TextString;
 
 	class IParagraph
@@ -12,6 +13,6 @@ namespace QuestCore
 
 		virtual ~IParagraph() = default;
 
-		virtual TextString GetText() const = 0;
+		virtual void Print(ITextView& view) = 0;
 	};
 }

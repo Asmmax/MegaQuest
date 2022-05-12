@@ -10,6 +10,8 @@ namespace QuestCore
 	class Item;
 	class Inventory;
 	class ICaseContainer;
+	class ITextViewFactory;
+	class IButtonPanelFactory;
 
 	struct Node
 	{
@@ -22,17 +24,28 @@ namespace QuestCore
 		CaseContainerPtr caseContainer;
 	};
 
-	class IQuest
+	class QuestBase
 	{
 	protected:
 		using ItemPtr = std::shared_ptr<Item>;
 		using InventoryPtr = std::shared_ptr<Inventory>;
+		using TextViewFactoryPtr = std::shared_ptr<ITextViewFactory>;
+		using ButtonsFactoryPtr = std::shared_ptr<IButtonPanelFactory>;
 
 	public:
-		virtual ~IQuest() = default;
+		using Ptr = std::shared_ptr<QuestBase>;
 
-		virtual const std::map<std::string, Node>& GetRoots() const = 0;
-		virtual const std::vector<std::string>& GetHotKeys() const = 0;
+		QuestBase(const TextViewFactoryPtr& viewFactory, const ButtonsFactoryPtr& buttonsFactory);
+		virtual ~QuestBase() = default;
+
+		virtual void Update();
 		virtual const std::map<std::string, InventoryPtr>& GetInventories() const = 0;
+
+	protected:
+		virtual const std::map<std::string, Node>& GetRoots() const = 0;
+
+	private:
+		TextViewFactoryPtr _viewFactory;
+		ButtonsFactoryPtr _buttonsFactory;
 	};
 };

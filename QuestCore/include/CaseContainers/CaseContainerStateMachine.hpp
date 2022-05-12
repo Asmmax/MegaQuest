@@ -6,8 +6,7 @@ namespace QuestCore
 	class CaseContainerStateMachine : public ICaseContainer
 	{
 	public:
-		virtual const std::vector<Case>& GetCases(const std::string& key = std::string()) const override;
-		virtual size_t GetCaseCount() const override;
+		virtual void Print(IButtonPanel& buttonPanel) override;
 
 		inline void SetState(const ICaseContainer::Ptr& newState) { _state = newState; }
 
