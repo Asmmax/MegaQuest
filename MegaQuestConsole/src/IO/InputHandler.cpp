@@ -1,10 +1,13 @@
-#include "InputHandler.hpp"
-#include "IInput.hpp"
-#include "IOutput.hpp"
-#include "IModel.hpp"
-#include "Events.hpp"
+#include "IO/InputHandler.hpp"
+#include "Game/IInput.hpp"
+#include "Game/IOutput.hpp"
+#include "Game/IModel.hpp"
+#include "Game/Events.hpp"
 
 #include <iostream>
+
+using namespace Game;
+using namespace IO;
 
 InputHandler::InputHandler(const IInput::Ptr& input, const IOutput::Ptr& output, const IModel::Ptr& model):
 	_input(input),
@@ -14,7 +17,7 @@ InputHandler::InputHandler(const IInput::Ptr& input, const IOutput::Ptr& output,
 	auto intro = QuestCore::TextString::FromUtf8(u8"Добро пожаловать в квест! Вы можете ввести Quit, Inventory или цифры.");
 	_output->WriteLn(intro);
 
-	CommandPtr quitCommand = std::make_shared<Command>([]() {GameEvents::Quit.Send(); });
+	CommandPtr quitCommand = std::make_shared<Command>([]() {Game::Events::Quit.Send(); });
 	_toCommands.emplace(u8"q", quitCommand);
 	_toCommands.emplace(u8"Q", quitCommand);
 	_toCommands.emplace(u8"quit", quitCommand);

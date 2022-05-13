@@ -11,9 +11,10 @@ namespace QuestCore
     {
     public:
         using Ptr = std::shared_ptr<IButtonGroup>;
+        using Callback = std::function<void()>;
 
         virtual ~IButtonGroup() = default;
-        virtual void AddButton(const TextString& text, const std::function<void()>& callback) = 0;
+        virtual void AddButton(const TextString& text, const Callback& callback) = 0;
     };
 
     class IButtonPanel

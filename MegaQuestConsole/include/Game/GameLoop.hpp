@@ -1,13 +1,16 @@
 #pragma once
 #include <memory>
 
-class InputHandler;
+namespace IO
+{
+    class InputHandler;
+}
 
 namespace Game
 {
     class GameLoop
     {
-        using InputHandlerPtr = std::shared_ptr<InputHandler>;
+        using InputHandlerPtr = std::shared_ptr<IO::InputHandler>;
 
     public:
         GameLoop(const InputHandlerPtr& inputHandler);

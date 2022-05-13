@@ -1,9 +1,9 @@
 #pragma once
-#include "IOutput.hpp"
+#include "Game/IOutput.hpp"
 
 namespace IO
 {
-	class ConsoleOutput : public IOutput
+	class ConsoleOutput : public Game::IOutput
 	{
 	public:
 		ConsoleOutput();

@@ -1,13 +1,13 @@
 #include "Game/GameLoop.hpp"
-#include "InputHandler.hpp"
-#include "Events.hpp"
+#include "Game/Events.hpp"
+#include "IO/InputHandler.hpp"
 
 using namespace Game;
 
-GameLoop::GameLoop(const InputHandler::Ptr& inputHandler):
+GameLoop::GameLoop(const IO::InputHandler::Ptr & inputHandler) :
     _inputHandler(inputHandler)
 {
-    GameEvents::Quit.Subscribe([this]() {Quit(); });
+    Game::Events::Quit.Subscribe([this]() {Quit(); });
 }
 
 void GameLoop::Update()

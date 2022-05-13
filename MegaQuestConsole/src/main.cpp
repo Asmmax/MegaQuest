@@ -3,8 +3,8 @@
 #include "Game/GameLoop.hpp"
 #include "IO/ConsoleInput.hpp"
 #include "IO/ConsoleOutput.hpp"
-#include "Model.hpp"
-#include "InputHandler.hpp"
+#include "IO/InputHandler.hpp"
+#include "Game/Model.hpp"
 
 #include <iostream>
 
@@ -14,10 +14,10 @@ int main()
     auto questFactory = std::make_shared<JsonQuestFactory>(settings.GetResourcePath() + "testquest.json");
 
     auto output = std::make_shared<IO::ConsoleOutput>();
-    auto model = std::make_shared<Model>(output, questFactory);
+    auto model = std::make_shared<Game::Model>(output, questFactory);
 
     auto input = std::make_shared<IO::ConsoleInput>();
-    auto inputHandler = std::make_shared<InputHandler>(input, output, model);
+    auto inputHandler = std::make_shared<IO::InputHandler>(input, output, model);
 
     Game::GameLoop game(inputHandler);
     return game.Run();

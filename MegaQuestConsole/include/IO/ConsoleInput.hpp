@@ -1,9 +1,9 @@
 #pragma once
-#include "IInput.hpp"
+#include "Game/IInput.hpp"
 
 namespace IO
 {
-	class ConsoleInput : public IInput
+	class ConsoleInput : public Game::IInput
 	{
 	public:
 		virtual QuestCore::TextString GetString() const override;
