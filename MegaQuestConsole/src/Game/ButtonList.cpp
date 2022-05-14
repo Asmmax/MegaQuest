@@ -2,16 +2,10 @@
 
 using namespace Game;
 
-ButtonList::ButtonList(const std::function<void()>& finishCallback) :
-	_finishCallback(finishCallback)
-{
-}
-
 void ButtonList::AddButton(const QuestCore::TextString& text, const std::function<void()>& callback)
 {
-	Button button{ text, [this, callback]() {
+	Button button{ text, [callback]() {
 		callback();
-		_finishCallback();
 	} };
 	_buttons.push_back(button);
 }

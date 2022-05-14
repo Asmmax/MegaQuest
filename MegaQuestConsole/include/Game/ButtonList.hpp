@@ -16,7 +16,6 @@ namespace Game
 	public:
 		using Ptr = std::shared_ptr<ButtonList>;
 
-		ButtonList(const Callback& finishCallback);
 		virtual void AddButton(const QuestCore::TextString& text, const Callback& callback) override;
 		void Do();
 		void Do(int answer);
@@ -24,7 +23,6 @@ namespace Game
 		size_t GetButtonCount() const;
 
 	private:
-		Callback _finishCallback;
 		std::vector<Button> _buttons;
 	};
 }

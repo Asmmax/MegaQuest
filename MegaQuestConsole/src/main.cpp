@@ -12,13 +12,12 @@
 int main()
 {
     auto& settings = Config::Settings::Instance();
-    auto questFactory = std::make_shared<JsonQuestFactory>(settings.GetResourcePath() + "testquest.json");
+    auto rootFactory = std::make_shared<JsonQuestFactory>(settings.GetResourcePath() + "testquest.json");
 
     auto output = std::make_shared<IO::ConsoleOutput>();
-    auto dialogFactory = std::make_shared<DialogFactory>(output);
-    auto quest = questFactory->GetQuest(dialogFactory, dialogFactory);
+    auto dialogFactory = std::make_shared<DialogFactory>(output, rootFactory);
     auto dialogs = dialogFactory->GetDialogs();
-    auto model = std::make_shared<Game::Model>(dialogs, quest);
+    auto model = std::make_shared<Game::Model>(dialogs);
 
     auto input = std::make_shared<IO::ConsoleInput>();
     auto inputHandler = std::make_shared<IO::InputHandler>(input, output, model);

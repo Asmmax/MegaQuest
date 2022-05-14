@@ -2,11 +2,6 @@
 #include <memory>
 #include <vector>
 
-namespace QuestCore
-{
-	class QuestBase;
-}
-
 namespace Game
 {
 	class ButtonList;
@@ -15,19 +10,17 @@ namespace Game
 	class Model
 	{
 		using DialogPtr = std::shared_ptr<Dialog>;
-		using QuestPtr = std::shared_ptr<QuestCore::QuestBase>;
 
 	public:
 		using Ptr = std::shared_ptr<Model>;
 
-		Model(const std::vector<DialogPtr>& dialogs, const QuestPtr& quest);
+		Model(const std::vector<DialogPtr>& dialogs);
 		void OpenInventory();
 		bool Handle(int answer);
-		void Init();
+		void Update();
 
 	private:
 		std::vector<DialogPtr> _dialogs;
 		DialogPtr _currentDialog;
-		QuestPtr _quest;
 	};
 }

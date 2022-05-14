@@ -1,45 +1,31 @@
 #pragma once
+#include "IRootFactory.hpp"
 #include "TextString.hpp"
 #include "FormatedString.hpp"
 #include "json.hpp"
 
 namespace QuestCore
 {
-	class QuestBase;
 	class Item;
-	class IParagraph;
 	class FormBase;
 	class IAction;
-	class Inventory;
-	class ICaseContainer;
 	class ICondition;
 	class Value;
 	struct Case;
 	enum class Operation;
 }
 
-struct Node
-{
-private:
-	using ParagraphPtr = std::shared_ptr<QuestCore::IParagraph>;
-	using CaseContainerPtr = std::shared_ptr<QuestCore::ICaseContainer>;
-
-public:
-	ParagraphPtr paragraph;
-	CaseContainerPtr caseContainer;
-};
-
 class ITextViewFactory;
 class IButtonPanelFactory;
 
-class JsonQuestFactory
+class JsonQuestFactory : public IRootFactory
 {
-	using InventoryPtr = std::shared_ptr<QuestCore::Inventory>;
-
 public:
 	JsonQuestFactory(const std::string& filename);
-	std::shared_ptr<QuestCore::QuestBase> GetQuest(const std::shared_ptr<ITextViewFactory>& textViewFactory,
-		const std::shared_ptr<IButtonPanelFactory>& buttonsFactory);
+
+	virtual ParagraphPtr GetRootParagraph(const std::string& rootKey) override;
+	virtual CaseContainerPtr GetRootCaseContainer(const std::string& rootKey) override;
+	virtual InventoryPtr GetInventory(const std::string& inventoryKey) override;
 
 private:
 	bool Read();
@@ -79,9 +65,11 @@ private:
 	template<> QuestCore::TextString Read(const nlohmann::json& node, const std::string& key, const QuestCore::TextString& defValue);
 
 private:
+	bool _isRed;
 	std::string _filename;
 	std::vector<std::string> _hotKeys;
-	std::map<std::string, Node> _inputs;
+	std::map<std::string, ParagraphPtr> _rootParagraphs;
+	std::map<std::string, CaseContainerPtr> _rootContainers;
 	std::map<std::string, std::shared_ptr<QuestCore::Item>> _items;
 	std::map<std::string, std::shared_ptr<QuestCore::IParagraph>> _paragraphs;
 	std::map<std::string, std::shared_ptr<QuestCore::ICaseContainer>> _containers;

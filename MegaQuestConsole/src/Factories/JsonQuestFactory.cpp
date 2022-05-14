@@ -18,9 +18,6 @@
 #include "Actions/Transfer.hpp"
 #include "Actions/Clearing.hpp"
 #include "Actions/Copying.hpp"
-#include "QuestBase.hpp"
-#include "Factories/ITextViewFactory.hpp"
-#include "Factories/IButtonPanelFactory.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -28,32 +25,59 @@
 using namespace QuestCore;
 
 JsonQuestFactory::JsonQuestFactory(const std::string& filename) :
+    _isRed(false),
     _filename(filename)
 {
 }
 
-std::shared_ptr<QuestCore::QuestBase> JsonQuestFactory::GetQuest(const std::shared_ptr<ITextViewFactory>& textViewFactory,
-const std::shared_ptr<IButtonPanelFactory>& buttonsFactory)
+IParagraph::Ptr JsonQuestFactory::GetRootParagraph(const std::string& rootKey)
 {
     if (!Read()) {
         return nullptr;
     }
 
-    std::vector<QuestCore::Root> roots;
-    for (auto& input : _inputs) {
-        QuestCore::Root root;
-        root.paragraph = input.second.paragraph;
-        root.caseContainer = input.second.caseContainer;
-        root.textView = textViewFactory->GetTextView(input.first);
-        root.buttons = buttonsFactory->GetButtonPanel(input.first);
-        roots.push_back(root);
+    auto foundIt = _rootParagraphs.find(rootKey);
+    if (foundIt == _rootParagraphs.end()) {
+        return nullptr;
     }
 
-    return std::make_shared<QuestCore::QuestBase>(roots);
+    return foundIt->second;
+}
+
+ICaseContainer::Ptr JsonQuestFactory::GetRootCaseContainer(const std::string& rootKey)
+{
+    if (!Read()) {
+        return nullptr;
+    }
+
+    auto foundIt = _rootContainers.find(rootKey);
+    if (foundIt == _rootContainers.end()) {
+        return nullptr;
+    }
+
+    return foundIt->second;
+}
+
+Inventory::Ptr JsonQuestFactory::GetInventory(const std::string& inventoryKey)
+{
+    if (!Read()) {
+        return nullptr;
+    }
+
+    auto foundIt = _inventories.find(inventoryKey);
+    if (foundIt == _inventories.end()) {
+        return nullptr;
+    }
+
+    return foundIt->second;
 }
 
 bool JsonQuestFactory::Read()
 {
+    if (_isRed) {
+        return true;
+    }
+
     std::fstream file;
     file.open(_filename, std::ios::in);
     if (!file.is_open()) {
@@ -119,6 +143,7 @@ bool JsonQuestFactory::Read()
         ReadInputs(*foundIt);
     }
 
+    _isRed = true;
     return true;
 }
 
@@ -147,21 +172,18 @@ void JsonQuestFactory::ReadInputs(const nlohmann::json& inputsNode)
         std::string key = Read(jsonInput, "key", std::string());
         
         std::string paragraphId = Read(jsonInput, "paragraph", std::string());
-        std::string containerId = Read(jsonInput, "container", std::string());
-
         auto paragraphIt = _paragraphs.find(paragraphId);
         assert(paragraphIt != _paragraphs.end());
-        if (paragraphIt == _paragraphs.end()){
-            continue;
+        if (paragraphIt != _paragraphs.end()){
+            _rootParagraphs.emplace(key, paragraphIt->second);
         }
 
+        std::string containerId = Read(jsonInput, "container", std::string());
         auto containerIt = _containers.find(containerId);
         assert(containerIt != _containers.end());
-        if (containerIt == _containers.end()) {
-            continue;
+        if (containerIt != _containers.end()) {
+            _rootContainers.emplace(key, containerIt->second);
         }
-
-        _inputs.emplace(key, Node{ paragraphIt->second, containerIt->second });
     }
 }
 

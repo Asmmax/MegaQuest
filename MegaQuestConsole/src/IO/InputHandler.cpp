@@ -17,19 +17,24 @@ InputHandler::InputHandler(const IInput::Ptr& input, const IOutput::Ptr& output,
 	auto intro = QuestCore::TextString::FromUtf8(u8"Добро пожаловать в квест! Вы можете ввести Quit, Inventory или цифры.");
 	_output->WriteLn(intro);
 
-	CommandPtr quitCommand = std::make_shared<Command>([]() {Game::Events::Quit.Send(); });
+	CommandPtr quitCommand = std::make_shared<Command>([]() {
+		Game::Events::Quit.Send(); 
+		});
 	_toCommands.emplace(u8"q", quitCommand);
 	_toCommands.emplace(u8"Q", quitCommand);
 	_toCommands.emplace(u8"quit", quitCommand);
 	_toCommands.emplace(u8"Quit", quitCommand);
 
-	CommandPtr inventoryCommand = std::make_shared<Command>([this]() {_model->OpenInventory(); });
+	CommandPtr inventoryCommand = std::make_shared<Command>([this]() {
+		_model->OpenInventory(); 
+		_model->Update();
+		});
 	_toCommands.emplace(u8"i", inventoryCommand);
 	_toCommands.emplace(u8"I", inventoryCommand);
 	_toCommands.emplace(u8"inventory", inventoryCommand);
 	_toCommands.emplace(u8"Inventory", inventoryCommand);
 
-	_model->Init();
+	_model->Update();
 }
 
 InputHandler::CommandPtr InputHandler::GetCommand(const std::string& command)
@@ -55,7 +60,10 @@ void InputHandler::Handle()
 	{
 		int answerID = std::stoi(answer.ToUtf8());
 		bool res = _model->Handle(answerID - 1);
-		if (!res) {
+		if (res) {
+			_model->Update();
+		}
+		else {
 			auto error = QuestCore::TextString::FromUtf8(u8"Вводить можно только цифру из предложенных!");
 			_output->WriteLn(error);
 		}

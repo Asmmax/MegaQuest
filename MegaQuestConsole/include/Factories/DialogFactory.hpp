@@ -1,8 +1,8 @@
 #pragma once
-#include "Factories/ITextViewFactory.hpp"
-#include "Factories/IButtonPanelFactory.hpp"
 #include <vector>
-#include <map>
+#include <memory>
+
+class IRootFactory;
 
 namespace Game 
 {
@@ -10,24 +10,22 @@ namespace Game
 	class IOutput;
 }
 
-class DialogFactory : public ITextViewFactory, public IButtonPanelFactory
+class DialogFactory
 {
 	using OutputPtr = std::shared_ptr<Game::IOutput>;
 	using DialogPtr = std::shared_ptr<Game::Dialog>;
+	using RootFactoryPtr = std::shared_ptr<IRootFactory>;
 
 public:
-	DialogFactory(const OutputPtr& output);
-	void Read();
-	virtual TextViewPtr GetTextView(const std::string& root) override;
-	virtual ButtonsPtr GetButtonPanel(const std::string& root) override;
-
+	DialogFactory(const OutputPtr& output, const RootFactoryPtr& rootFactory);
 	std::vector<DialogPtr> GetDialogs();
 
 private:
-	DialogPtr GetDialog(const std::string& root);
+	void Read();
 
 private:
 	bool _isRed;
 	OutputPtr _output;
-	std::map<std::string, DialogPtr> _dialogs;
+	RootFactoryPtr _rootFactory;
+	std::vector< DialogPtr> _dialogs;
 };

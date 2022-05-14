@@ -1,9 +1,11 @@
 #include "Factories/DialogFactory.hpp"
 #include "Game/Dialog.hpp"
+#include "Factories/IRootFactory.hpp"
 
-DialogFactory::DialogFactory(const OutputPtr& output):
+DialogFactory::DialogFactory(const OutputPtr& output, const RootFactoryPtr& rootFactory):
     _isRed(false),
-    _output(output)
+    _output(output),
+    _rootFactory(rootFactory)
 {
 }
 
@@ -15,41 +17,16 @@ void DialogFactory::Read()
 
     _dialogs.clear();
 
-    auto dialog = std::make_shared<Game::Dialog>(_output);
-    _dialogs.emplace("root", dialog);
+    auto paragraph = _rootFactory->GetRootParagraph("root");
+    auto caseContainer = _rootFactory->GetRootCaseContainer("root");
+    auto dialog = std::make_shared<Game::Dialog>(_output, paragraph, caseContainer);
+    _dialogs.push_back(dialog);
 
     _isRed = true;
-}
-
-std::shared_ptr<QuestCore::ITextView> DialogFactory::GetTextView(const std::string& root)
-{
-	return GetDialog(root);
-}
-
-std::shared_ptr<QuestCore::IButtonPanel> DialogFactory::GetButtonPanel(const std::string& root)
-{
-	return GetDialog(root);
 }
 
 std::vector<Game::Dialog::Ptr> DialogFactory::GetDialogs()
 {
     Read();
-
-    std::vector<Game::Dialog::Ptr> dialogs;
-
-    for (auto& dialog : _dialogs) {
-        dialogs.push_back(dialog.second);
-    }
-    return dialogs;
-}
-
-Game::Dialog::Ptr DialogFactory::GetDialog(const std::string& root)
-{
-    Read();
-
-    auto foundIt = _dialogs.find(root);
-    if (foundIt == _dialogs.end()) {
-        return nullptr;
-    }
-    return foundIt->second;
+    return _dialogs;
 }

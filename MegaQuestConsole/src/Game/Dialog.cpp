@@ -1,13 +1,16 @@
 #include "Game/Dialog.hpp"
 #include "Game/ButtonList.hpp"
 #include "Game/IOutput.hpp"
-#include "QuestBase.hpp"
+#include "IParagraph.hpp"
+#include "ICaseContainer.hpp"
 
 using namespace Game;
 
 
-Dialog::Dialog(const IOutput::Ptr& output) :
-	_output(output)
+Dialog::Dialog(const OutputPtr& output, const ParagraphPtr& paragraph, const CaseContainerPtr& container) :
+	_output(output),
+	_paragraph(paragraph),
+	_container(container)
 {
 }
 
@@ -30,11 +33,7 @@ QuestCore::IButtonGroup& Dialog::GetButtonGroup(const std::string& actionKey)
 {
 	auto foundIt = _buttonGroups.find(actionKey);
 	if (foundIt == _buttonGroups.end()) {
-		auto buttonGroup = std::make_shared<ButtonList>([this]() {
-			if (_quest) {
-				_quest->Update();
-			}
-			});
+		auto buttonGroup = std::make_shared<ButtonList>();
 		auto res = _buttonGroups.emplace(actionKey, buttonGroup);
 		foundIt = res.first;
 	}
@@ -59,14 +58,15 @@ ButtonList::Ptr Dialog::GetInventoryButtonList()
 	return foundIt->second;
 }
 
-void Dialog::SetQuest(const QuestCore::QuestBase::Ptr& quest)
-{
-	_quest = quest;
-}
-
 void Dialog::Update()
 {
+	_text = QuestCore::TextString();
+	_paragraph->Print(*this);
 	_output->WriteLn(_text);
+
+	_buttonGroups.clear();
+	_container->Print(*this);
+
 	auto defaultButtons = GetDefaultButtonList();
 	if (!defaultButtons) {
 		return;
