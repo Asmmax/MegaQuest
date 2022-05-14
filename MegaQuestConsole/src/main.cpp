@@ -5,6 +5,7 @@
 #include "IO/ConsoleOutput.hpp"
 #include "IO/InputHandler.hpp"
 #include "Game/Model.hpp"
+#include "Factories/DialogFactory.hpp"
 
 #include <iostream>
 
@@ -14,7 +15,10 @@ int main()
     auto questFactory = std::make_shared<JsonQuestFactory>(settings.GetResourcePath() + "testquest.json");
 
     auto output = std::make_shared<IO::ConsoleOutput>();
-    auto model = std::make_shared<Game::Model>(output, questFactory);
+    auto dialogFactory = std::make_shared<DialogFactory>(output);
+    auto quest = questFactory->GetQuest(dialogFactory, dialogFactory);
+    auto dialogs = dialogFactory->GetDialogs();
+    auto model = std::make_shared<Game::Model>(dialogs, quest);
 
     auto input = std::make_shared<IO::ConsoleInput>();
     auto inputHandler = std::make_shared<IO::InputHandler>(input, output, model);

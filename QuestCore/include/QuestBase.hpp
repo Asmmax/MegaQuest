@@ -7,45 +7,39 @@
 namespace QuestCore
 {
 	class IParagraph;
-	class Item;
 	class Inventory;
 	class ICaseContainer;
-	class ITextViewFactory;
-	class IButtonPanelFactory;
+	class ITextView;
+	class IButtonPanel;
 
-	struct Node
+	struct Root
 	{
 	private:
 		using ParagraphPtr = std::shared_ptr<IParagraph>;
 		using CaseContainerPtr = std::shared_ptr<ICaseContainer>;
+		using TextViewPtr = std::shared_ptr<ITextView>;
+		using ButtonsPtr = std::shared_ptr<IButtonPanel>;
 
 	public:
 		ParagraphPtr paragraph;
 		CaseContainerPtr caseContainer;
+		TextViewPtr textView;
+		ButtonsPtr buttons;
+
+		void Update();
 	};
 
 	class QuestBase
 	{
-	protected:
-		using ItemPtr = std::shared_ptr<Item>;
-		using InventoryPtr = std::shared_ptr<Inventory>;
-		using TextViewFactoryPtr = std::shared_ptr<ITextViewFactory>;
-		using ButtonsFactoryPtr = std::shared_ptr<IButtonPanelFactory>;
-
 	public:
 		using Ptr = std::shared_ptr<QuestBase>;
 
-		QuestBase(const TextViewFactoryPtr& viewFactory, const ButtonsFactoryPtr& buttonsFactory);
+		QuestBase(const std::vector<Root>& roots);
 		virtual ~QuestBase() = default;
 
 		virtual void Update();
-		virtual const std::map<std::string, InventoryPtr>& GetInventories() const = 0;
-
-	protected:
-		virtual const std::map<std::string, Node>& GetRoots() const = 0;
 
 	private:
-		TextViewFactoryPtr _viewFactory;
-		ButtonsFactoryPtr _buttonsFactory;
+		std::vector<Root> _roots;
 	};
 };

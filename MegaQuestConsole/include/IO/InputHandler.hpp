@@ -8,7 +8,7 @@ namespace Game
 {
 	class IInput;
 	class IOutput;
-	class IModel;
+	class Model;
 }
 
 namespace IO
@@ -17,7 +17,7 @@ namespace IO
 	{
 		using InputPtr = std::shared_ptr<Game::IInput>;
 		using OutputPtr = std::shared_ptr<Game::IOutput>;
-		using ModelPtr = std::shared_ptr<Game::IModel>;
+		using ModelPtr = std::shared_ptr<Game::Model>;
 		using Command = std::function<void()>;
 		using CommandPtr = std::shared_ptr<Command>;
 

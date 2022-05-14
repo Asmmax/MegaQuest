@@ -1,5 +1,4 @@
 #include "Factories/JsonQuestFactory.hpp"
-#include "Factories//JsonQuest.hpp"
 #include "Paragraphs/ParagraphStateMachine.hpp"
 #include "Paragraphs/TextParagraph.hpp"
 #include "Paragraphs/InventoryParagraph.hpp"
@@ -20,6 +19,8 @@
 #include "Actions/Clearing.hpp"
 #include "Actions/Copying.hpp"
 #include "QuestBase.hpp"
+#include "Factories/ITextViewFactory.hpp"
+#include "Factories/IButtonPanelFactory.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -31,18 +32,38 @@ JsonQuestFactory::JsonQuestFactory(const std::string& filename) :
 {
 }
 
-std::shared_ptr<QuestCore::QuestBase> JsonQuestFactory::GetQuest(const TextViewFactoryPtr& viewFactory, const ButtonsFactoryPtr& buttonsFactory)
+std::shared_ptr<QuestCore::QuestBase> JsonQuestFactory::GetQuest(const std::shared_ptr<ITextViewFactory>& textViewFactory,
+const std::shared_ptr<IButtonPanelFactory>& buttonsFactory)
+{
+    if (!Read()) {
+        return nullptr;
+    }
+
+    std::vector<QuestCore::Root> roots;
+    for (auto& input : _inputs) {
+        QuestCore::Root root;
+        root.paragraph = input.second.paragraph;
+        root.caseContainer = input.second.caseContainer;
+        root.textView = textViewFactory->GetTextView(input.first);
+        root.buttons = buttonsFactory->GetButtonPanel(input.first);
+        roots.push_back(root);
+    }
+
+    return std::make_shared<QuestCore::QuestBase>(roots);
+}
+
+bool JsonQuestFactory::Read()
 {
     std::fstream file;
     file.open(_filename, std::ios::in);
     if (!file.is_open()) {
-        return nullptr;
+        return false;
     }
-    
+
     std::string input;
     std::string line;
     while (std::getline(file, line)) {
-        input+= line + "\n";
+        input += line + "\n";
     }
 
     file.close();
@@ -55,7 +76,7 @@ std::shared_ptr<QuestCore::QuestBase> JsonQuestFactory::GetQuest(const TextViewF
     catch (nlohmann::json::parse_error& ex)
     {
         std::cerr << ex.what() << std::endl;
-        return nullptr;
+        return false;
     }
 
     auto foundIt = root.find("hotKeys");
@@ -98,7 +119,7 @@ std::shared_ptr<QuestCore::QuestBase> JsonQuestFactory::GetQuest(const TextViewF
         ReadInputs(*foundIt);
     }
 
-    return std::make_shared<JsonQuest>(viewFactory, buttonsFactory, _inputs, _inventories);
+    return true;
 }
 
 void JsonQuestFactory::ReadHotKeys(const nlohmann::json& keysNode)
@@ -140,7 +161,7 @@ void JsonQuestFactory::ReadInputs(const nlohmann::json& inputsNode)
             continue;
         }
 
-        _inputs.emplace(key, QuestCore::Node{ paragraphIt->second, containerIt->second });
+        _inputs.emplace(key, Node{ paragraphIt->second, containerIt->second });
     }
 }
 

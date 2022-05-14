@@ -24,11 +24,4 @@ namespace QuestCore
         virtual void RemoveAllButtons() = 0;
         virtual IButtonGroup& GetButtonGroup(const std::string& actionKey) = 0;
     };
-
-    class IButtonPanelFactory
-    {
-    public:
-        virtual ~IButtonPanelFactory() = default;
-        virtual IButtonPanel& GetButtonPanel(const std::string& rootKey) = 0;
-    };
 }

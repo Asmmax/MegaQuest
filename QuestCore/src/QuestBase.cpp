@@ -6,22 +6,23 @@
 
 using namespace QuestCore;
 
-QuestBase::QuestBase(const TextViewFactoryPtr& viewFactory, const ButtonsFactoryPtr& buttonsFactory):
-	_viewFactory(viewFactory),
-	_buttonsFactory(buttonsFactory)
+void Root::Update()
+{
+	textView->Clear();
+	paragraph->Print(*textView);
+
+	buttons->RemoveAllButtons();
+	caseContainer->Print(*buttons);
+}
+
+QuestBase::QuestBase(const std::vector<Root>& roots):
+	_roots(roots)
 {
 }
 
 void QuestBase::Update()
 {
-	auto& roots = GetRoots();
-	for (auto& root : roots) {
-		auto& view = _viewFactory->GetTextView(root.first);
-		view.Clear();
-		root.second.paragraph->Print(view);
-
-		auto& buttons = _buttonsFactory->GetButtonPanel(root.first);
-		buttons.RemoveAllButtons();
-		root.second.caseContainer->Print(buttons);
+	for (auto root : _roots) {
+		root.Update();
 	}
 }

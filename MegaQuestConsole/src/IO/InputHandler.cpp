@@ -1,7 +1,7 @@
 #include "IO/InputHandler.hpp"
 #include "Game/IInput.hpp"
 #include "Game/IOutput.hpp"
-#include "Game/IModel.hpp"
+#include "Game/Model.hpp"
 #include "Game/Events.hpp"
 
 #include <iostream>
@@ -9,7 +9,7 @@
 using namespace Game;
 using namespace IO;
 
-InputHandler::InputHandler(const IInput::Ptr& input, const IOutput::Ptr& output, const IModel::Ptr& model):
+InputHandler::InputHandler(const IInput::Ptr& input, const IOutput::Ptr& output, const Model::Ptr& model):
 	_input(input),
 	_output(output),
 	_model(model)

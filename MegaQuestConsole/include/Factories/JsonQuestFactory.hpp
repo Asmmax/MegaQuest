@@ -1,11 +1,11 @@
 #pragma once
-#include "IQuestFactory.hpp"
 #include "TextString.hpp"
 #include "FormatedString.hpp"
 #include "json.hpp"
 
 namespace QuestCore
 {
+	class QuestBase;
 	class Item;
 	class IParagraph;
 	class FormBase;
@@ -14,18 +14,35 @@ namespace QuestCore
 	class ICaseContainer;
 	class ICondition;
 	class Value;
-	struct Node;
 	struct Case;
 	enum class Operation;
 }
 
-class JsonQuestFactory : public QuestCore::IQuestFactory
+struct Node
 {
+private:
+	using ParagraphPtr = std::shared_ptr<QuestCore::IParagraph>;
+	using CaseContainerPtr = std::shared_ptr<QuestCore::ICaseContainer>;
+
+public:
+	ParagraphPtr paragraph;
+	CaseContainerPtr caseContainer;
+};
+
+class ITextViewFactory;
+class IButtonPanelFactory;
+
+class JsonQuestFactory
+{
+	using InventoryPtr = std::shared_ptr<QuestCore::Inventory>;
+
 public:
 	JsonQuestFactory(const std::string& filename);
-	virtual std::shared_ptr<QuestCore::QuestBase> GetQuest(const TextViewFactoryPtr& viewFactory, const ButtonsFactoryPtr& buttonsFactory) override;
+	std::shared_ptr<QuestCore::QuestBase> GetQuest(const std::shared_ptr<ITextViewFactory>& textViewFactory,
+		const std::shared_ptr<IButtonPanelFactory>& buttonsFactory);
 
 private:
+	bool Read();
 	void ReadHotKeys(const nlohmann::json& keysNode);
 	void ReadInputs(const nlohmann::json& inputsNode);
 	void ReadItems(const nlohmann::json& itemsNode);
@@ -64,7 +81,7 @@ private:
 private:
 	std::string _filename;
 	std::vector<std::string> _hotKeys;
-	std::map<std::string, QuestCore::Node> _inputs;
+	std::map<std::string, Node> _inputs;
 	std::map<std::string, std::shared_ptr<QuestCore::Item>> _items;
 	std::map<std::string, std::shared_ptr<QuestCore::IParagraph>> _paragraphs;
 	std::map<std::string, std::shared_ptr<QuestCore::ICaseContainer>> _containers;

@@ -1,18 +1,14 @@
 #include "Game/Model.hpp"
-#include "Game/DialogFactory.hpp"
 #include "Game/Dialog.hpp"
 #include "QuestBase.hpp"
-#include "IQuestFactory.hpp"
 
 using namespace Game;
 
-Model::Model(const OutputPtr& output, const QuestFactoryPtr& questFactory):
-	_output(output),
-	_questFactory(questFactory)
+Model::Model(const std::vector<DialogPtr>& dialogs, const QuestPtr& quest):
+	_dialogs(dialogs),
+	_quest(quest)
 {
-	_dialogFactory = std::make_shared<DialogFactory>(output);
-	_quest = _questFactory->GetQuest(_dialogFactory, _dialogFactory);
-	_currentDialog = _dialogFactory->GetDialog("root");
+	_currentDialog = dialogs[0];
 	_currentDialog->SetQuest(_quest);
 }
 
