@@ -12,7 +12,7 @@
 int main()
 {
     auto& settings = Config::Settings::Instance();
-    auto rootFactory = std::make_shared<JsonQuestFactory>(settings.GetResourcePath() + "testquest.json");
+    auto rootFactory = std::make_shared<JsonQuestFactory>(settings.GetQuestPath());
 
     auto output = std::make_shared<IO::ConsoleOutput>();
     auto dialogFactory = std::make_shared<DialogFactory>(output, rootFactory);

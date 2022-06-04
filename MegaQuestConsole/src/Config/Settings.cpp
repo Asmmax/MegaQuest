@@ -12,8 +12,18 @@ Settings& Settings::Instance()
 }
 
 std::string Settings::GetResourcePath() const
-{ 
-    return _resourcePath + "/"; 
+{
+    return _resourcePath;
+}
+
+std::string Settings::GetQuestPath() const
+{
+    return GetResourcePath() + "/" + _questFileName;
+}
+
+std::string Settings::GetUISettingsPath() const
+{
+    return GetResourcePath() + "/" + _uiSettingsFileName;
 }
 
 Settings::Settings(const std::string& filename)
@@ -48,9 +58,63 @@ void Settings::Load(const std::string& filename)
         return;
     }
 
-    auto foundIt = root.find("resourcePath");
+    std::string settingsFileName;
+    auto foundIt = root.find("settings");
     if (foundIt != root.end()) {
-        _resourcePath = *foundIt;
+        settingsFileName = *foundIt;
     }
+
+    LoadSettings(settingsFileName);
 }
 
+void Settings::LoadSettings(const std::string& filename)
+{
+    std::fstream file;
+    file.open(filename, std::ios::in);
+    if (!file.is_open()) {
+        return;
+    }
+
+    std::string input;
+    std::string line;
+    while (std::getline(file, line)) {
+        input += line + "\n";
+    }
+
+    file.close();
+
+    nlohmann::json root;
+    try
+    {
+        root = nlohmann::json::parse(input);
+    }
+    catch (nlohmann::json::parse_error& ex)
+    {
+        std::cerr << ex.what() << std::endl;
+        return;
+    }
+
+    std::string path = filename;
+    auto pos = path.find_last_of("/");
+    auto length = path.size() - pos;
+    path.erase(pos, length);
+    _resourcePath = path;
+
+    auto foundIt = root.find("resourcePath");
+    if (foundIt != root.end()) {
+        std::string relativePath = *foundIt;
+        if (!relativePath.empty()) {
+            _resourcePath += "/" + relativePath;
+        }
+    }
+
+    foundIt = root.find("questFileName");
+    if (foundIt != root.end()) {
+        _questFileName = *foundIt;
+    }
+
+    foundIt = root.find("uiSettingsFileName");
+    if (foundIt != root.end()) {
+        _uiSettingsFileName = *foundIt;
+    }
+}
