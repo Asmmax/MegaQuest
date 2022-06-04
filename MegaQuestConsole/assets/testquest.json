@@ -1,12 +1,7 @@
 {
 	"hotKeys":["inventory"],
-	"inputs":[
-	{
-		"key":"root",
-		"paragraph":"root",
-		"container":"root"
-	}
-	],
+	"inputParagraphs":["root"],
+	"inputContainers":["root"],
 	"items": [
 	{
 		"id":"coin",

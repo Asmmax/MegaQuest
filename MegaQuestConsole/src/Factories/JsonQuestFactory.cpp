@@ -138,9 +138,14 @@ bool JsonQuestFactory::Read()
         ReadContainers(*foundIt);
     }
 
-    foundIt = root.find("inputs");
+    foundIt = root.find("inputParagraphs");
     if (foundIt != root.end()) {
-        ReadInputs(*foundIt);
+        ReadInputParagraphs(*foundIt);
+    }
+
+    foundIt = root.find("inputContainers");
+    if (foundIt != root.end()) {
+        ReadInputContainers(*foundIt);
     }
 
     _isRed = true;
@@ -162,27 +167,34 @@ void JsonQuestFactory::ReadHotKeys(const nlohmann::json& keysNode)
     _hotKeys.erase(lastIt, _hotKeys.end());
 }
 
-void JsonQuestFactory::ReadInputs(const nlohmann::json& inputsNode)
+void JsonQuestFactory::ReadInputParagraphs(const nlohmann::json& inputsNode)
 {
     if (!inputsNode.is_array()) {
         return;
     }
 
     for (auto& jsonInput : inputsNode) {
-        std::string key = Read(jsonInput, "key", std::string());
-        
-        std::string paragraphId = Read(jsonInput, "paragraph", std::string());
+        auto paragraphId = jsonInput.get<std::string>();
         auto paragraphIt = _paragraphs.find(paragraphId);
         assert(paragraphIt != _paragraphs.end());
-        if (paragraphIt != _paragraphs.end()){
-            _rootParagraphs.emplace(key, paragraphIt->second);
+        if (paragraphIt != _paragraphs.end()) {
+            _rootParagraphs.emplace(paragraphId, paragraphIt->second);
         }
+    }
+}
 
-        std::string containerId = Read(jsonInput, "container", std::string());
+void JsonQuestFactory::ReadInputContainers(const nlohmann::json& inputsNode)
+{
+    if (!inputsNode.is_array()) {
+        return;
+    }
+
+    for (auto& jsonInput : inputsNode) {
+        auto containerId = jsonInput.get<std::string>();
         auto containerIt = _containers.find(containerId);
         assert(containerIt != _containers.end());
         if (containerIt != _containers.end()) {
-            _rootContainers.emplace(key, containerIt->second);
+            _rootContainers.emplace(containerId, containerIt->second);
         }
     }
 }

@@ -30,7 +30,8 @@ public:
 private:
 	bool Read();
 	void ReadHotKeys(const nlohmann::json& keysNode);
-	void ReadInputs(const nlohmann::json& inputsNode);
+	void ReadInputParagraphs(const nlohmann::json& inputsNode);
+	void ReadInputContainers(const nlohmann::json& inputsNode);
 	void ReadItems(const nlohmann::json& itemsNode);
 	void ReadForms(const nlohmann::json& formStrNode, QuestCore::FormatedString& formString);
 	std::shared_ptr<QuestCore::FormBase> ReadForm(const nlohmann::json& formNode);
