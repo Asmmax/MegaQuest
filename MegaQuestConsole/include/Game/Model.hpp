@@ -16,7 +16,7 @@ namespace Game
 
 		Model(const std::vector<DialogPtr>& dialogs);
 		void OpenInventory();
-		bool Handle(int answer);
+		void Handle(int answer);
 		void Update();
 
 	private:

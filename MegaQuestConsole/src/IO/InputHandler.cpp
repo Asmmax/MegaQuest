@@ -27,7 +27,6 @@ InputHandler::InputHandler(const IInput::Ptr& input, const IOutput::Ptr& output,
 
 	CommandPtr inventoryCommand = std::make_shared<Command>([this]() {
 		_model->OpenInventory(); 
-		_model->Update();
 		});
 	_toCommands.emplace(u8"i", inventoryCommand);
 	_toCommands.emplace(u8"I", inventoryCommand);
@@ -59,14 +58,7 @@ void InputHandler::Handle()
 	try
 	{
 		int answerID = std::stoi(answer.ToUtf8());
-		bool res = _model->Handle(answerID - 1);
-		if (res) {
-			_model->Update();
-		}
-		else {
-			auto error = QuestCore::TextString::FromUtf8(u8"¬водить можно только цифру из предложенных!");
-			_output->WriteLn(error);
-		}
+		_model->Handle(answerID - 1);
 	}
 	catch (const std::invalid_argument& /*ex*/) {
 		if (auto commandPtr = GetCommand(answer.ToUtf8())) {

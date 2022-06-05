@@ -1,5 +1,6 @@
 #include "Game/Model.hpp"
 #include "Game/Dialog.hpp"
+#include "Game/ButtonList.hpp"
 
 using namespace Game;
 
@@ -11,12 +12,16 @@ Model::Model(const std::vector<DialogPtr>& dialogs):
 
 void Model::OpenInventory()
 {
-	_currentDialog->OpenInventory();
+	if (auto inventoryButtons = _currentDialog->GetButtonList("inventory")) {
+		inventoryButtons->Do();
+	}
 }
 
-bool Model::Handle(int answer)
+void Model::Handle(int answer)
 {
-	return _currentDialog->Answer(answer);
+	if (auto defaultButtons = _currentDialog->GetButtonList()) {
+		defaultButtons->Do(answer);
+	}
 }
 
 void Model::Update()

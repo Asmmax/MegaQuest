@@ -30,11 +30,8 @@ namespace Game
 		virtual void RemoveAllButtons() override;
 		virtual void AppendText(const QuestCore::TextString& text) override;
 		virtual QuestCore::IButtonGroup& GetButtonGroup(const std::string& actionKey) override;
-		ButtonListPtr GetDefaultButtonList();
-		ButtonListPtr GetInventoryButtonList();
+		ButtonListPtr GetButtonList(const std::string& key = std::string());
 		void Update();
-		bool Answer(int answer);
-		void OpenInventory();
 
 	private:
 		OutputPtr _output;

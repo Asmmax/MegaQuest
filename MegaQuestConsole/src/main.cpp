@@ -6,6 +6,7 @@
 #include "IO/InputHandler.hpp"
 #include "Game/Model.hpp"
 #include "Factories/DialogFactory.hpp"
+#include "IO/Logger.hpp"
 
 #include <iostream>
 
@@ -15,6 +16,7 @@ int main()
     auto rootFactory = std::make_shared<JsonQuestFactory>(settings.GetQuestPath());
 
     auto output = std::make_shared<IO::ConsoleOutput>();
+    IO::Logger::Instance().Init(output);
     auto dialogFactory = std::make_shared<DialogFactory>(output, rootFactory);
     auto dialogs = dialogFactory->GetDialogs();
     auto model = std::make_shared<Game::Model>(dialogs);
