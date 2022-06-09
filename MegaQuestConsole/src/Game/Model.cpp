@@ -10,9 +10,9 @@ Model::Model(const std::vector<DialogPtr>& dialogs):
 	_currentDialog = dialogs[0];
 }
 
-void Model::OpenInventory()
+void Model::Handle(const std::string& key)
 {
-	if (auto inventoryButtons = _currentDialog->GetButtonList("inventory")) {
+	if (auto inventoryButtons = _currentDialog->GetButtonList(key)) {
 		inventoryButtons->Do();
 	}
 }

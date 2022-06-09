@@ -21,14 +21,15 @@ namespace IO
 		virtual void Run() override;
 	};
 
-	class InventoryCommand : public Game::VoidCommand
+	class ModelVoidCommand : public Game::VoidCommand
 	{
 		using ModelPtr = std::shared_ptr<Game::Model>;
 	public:
-		InventoryCommand(const ModelPtr& model);
+		ModelVoidCommand(const ModelPtr& model, const std::string& key);
 		virtual void Run() override;
 	private:
 		ModelPtr _model;
+		std::string _key;
 	};
 
 	class ModelIntCommand : public Game::IntCommand

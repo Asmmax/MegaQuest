@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include <string>
 
 namespace Game
 {
@@ -15,7 +16,7 @@ namespace Game
 		using Ptr = std::shared_ptr<Model>;
 
 		Model(const std::vector<DialogPtr>& dialogs);
-		void OpenInventory();
+		void Handle(const std::string& key);
 		void Handle(int answer);
 		void Update();
 

@@ -16,14 +16,15 @@ void QuitCommand::Run()
 	Game::Events::Quit.Send();
 }
 
-InventoryCommand::InventoryCommand(const ModelPtr& model):
-	_model(model)
+ModelVoidCommand::ModelVoidCommand(const ModelPtr& model, const std::string& key):
+	_model(model),
+	_key(key)
 {
 }
 
-void InventoryCommand::Run()
+void ModelVoidCommand::Run()
 {
-	_model->OpenInventory();
+	_model->Handle(_key);
 }
 
 ModelIntCommand::ModelIntCommand(const ModelPtr& model) :
@@ -52,7 +53,7 @@ InputHandler::InputHandler(const IInput::Ptr& input, const IOutput::Ptr& output,
 	CommandManager::Instance().Register("Quit", std::make_shared<Game::AliasCommand>("quit"));
 	CommandManager::Instance().Register("Q", std::make_shared<Game::AliasCommand>("quit"));
 
-	CommandManager::Instance().Register("inventory", std::make_shared<InventoryCommand>(_model));
+	CommandManager::Instance().Register("inventory", std::make_shared<ModelVoidCommand>(_model, "inventory"));
 	CommandManager::Instance().Register("i", std::make_shared<Game::AliasCommand>("inventory"));
 	CommandManager::Instance().Register("Inventory", std::make_shared<Game::AliasCommand>("inventory"));
 	CommandManager::Instance().Register("I", std::make_shared<Game::AliasCommand>("inventory"));
