@@ -2,6 +2,8 @@
 #include "ITextView.hpp"
 #include "IButtonPanel.hpp"
 #include "TextString.hpp"
+#include "Game/IDialog.hpp"
+
 #include <map>
 
 namespace QuestCore
@@ -15,7 +17,7 @@ namespace Game
 	class IOutput;
 	class ButtonList;
 
-	class Dialog : public QuestCore::ITextView, public QuestCore::IButtonPanel
+	class SimpleDialog : public IDialog, public QuestCore::ITextView, public QuestCore::IButtonPanel
 	{
 		using OutputPtr = std::shared_ptr<IOutput>;
 		using ButtonListPtr = std::shared_ptr<ButtonList>;
@@ -23,15 +25,15 @@ namespace Game
 		using CaseContainerPtr = std::shared_ptr<QuestCore::ICaseContainer>;
 
 	public:
-		using Ptr = std::shared_ptr<Dialog>;
+		using Ptr = std::shared_ptr<SimpleDialog>;
 
-		Dialog(const OutputPtr& output, const ParagraphPtr& paragraph, const CaseContainerPtr& container);
+		SimpleDialog(const OutputPtr& output, const ParagraphPtr& paragraph, const CaseContainerPtr& container);
 		virtual void Clear() override;
 		virtual void RemoveAllButtons() override;
 		virtual void AppendText(const QuestCore::TextString& text) override;
 		virtual QuestCore::IButtonGroup& GetButtonGroup(const std::string& actionKey) override;
-		ButtonListPtr GetButtonList(const std::string& key = std::string());
-		void Update();
+		virtual ButtonListPtr GetButtonList(const std::string& key = std::string()) override;
+		virtual void Update() override;
 
 	private:
 		OutputPtr _output;

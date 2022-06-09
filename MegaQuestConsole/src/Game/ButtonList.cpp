@@ -1,11 +1,11 @@
 #include "Game/ButtonList.hpp"
 #include "Game/IOutput.hpp"
-#include "Game/Dialog.hpp"
+#include "Game/IDialog.hpp"
 #include "IO/Logger.hpp"
 
 using namespace Game;
 
-ButtonList::ButtonList(Dialog* parent):
+ButtonList::ButtonList(IDialog* parent):
 	_parent(parent)
 {
 }

@@ -1,4 +1,4 @@
-#include "Game/Dialog.hpp"
+#include "Game/SimpleDialog.hpp"
 #include "Game/ButtonList.hpp"
 #include "Game/IOutput.hpp"
 #include "IParagraph.hpp"
@@ -7,29 +7,29 @@
 using namespace Game;
 
 
-Dialog::Dialog(const OutputPtr& output, const ParagraphPtr& paragraph, const CaseContainerPtr& container) :
+SimpleDialog::SimpleDialog(const OutputPtr& output, const ParagraphPtr& paragraph, const CaseContainerPtr& container) :
 	_output(output),
 	_paragraph(paragraph),
 	_container(container)
 {
 }
 
-void Dialog::Clear()
+void SimpleDialog::Clear()
 {
 	_text = QuestCore::TextString();
 }
 
-void Dialog::RemoveAllButtons()
+void SimpleDialog::RemoveAllButtons()
 {
 	_buttonGroups.clear();
 }
 
-void Dialog::AppendText(const QuestCore::TextString& text)
+void SimpleDialog::AppendText(const QuestCore::TextString& text)
 {
 	_text += text;
 }
 
-QuestCore::IButtonGroup& Dialog::GetButtonGroup(const std::string& actionKey)
+QuestCore::IButtonGroup& SimpleDialog::GetButtonGroup(const std::string& actionKey)
 {
 	auto foundIt = _buttonGroups.find(actionKey);
 	if (foundIt == _buttonGroups.end()) {
@@ -40,7 +40,7 @@ QuestCore::IButtonGroup& Dialog::GetButtonGroup(const std::string& actionKey)
 	return *foundIt->second;
 }
 
-ButtonList::Ptr Dialog::GetButtonList(const std::string& key)
+ButtonList::Ptr SimpleDialog::GetButtonList(const std::string& key)
 {
 	auto foundIt = _buttonGroups.find(key);
 	if (foundIt == _buttonGroups.end()) {
@@ -49,7 +49,7 @@ ButtonList::Ptr Dialog::GetButtonList(const std::string& key)
 	return foundIt->second;
 }
 
-void Dialog::Update()
+void SimpleDialog::Update()
 {
 	_text = QuestCore::TextString();
 	_paragraph->Print(*this);

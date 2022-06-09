@@ -1,5 +1,6 @@
 #include "Factories/DialogFactory.hpp"
-#include "Game/Dialog.hpp"
+#include "Game/SimpleDialog.hpp"
+#include "Game/SwitchDialog.hpp"
 #include "Factories/IRootFactory.hpp"
 
 DialogFactory::DialogFactory(const OutputPtr& output, const RootFactoryPtr& rootFactory):
@@ -15,18 +16,21 @@ void DialogFactory::Read()
         return;
     }
 
-    _dialogs.clear();
+    std::vector<Game::IDialog::Ptr> dialogs;
 
     auto paragraph = _rootFactory->GetRootParagraph("root");
     auto caseContainer = _rootFactory->GetRootCaseContainer("root");
-    auto dialog = std::make_shared<Game::Dialog>(_output, paragraph, caseContainer);
-    _dialogs.push_back(dialog);
+    auto dialog = std::make_shared<Game::SimpleDialog>(_output, paragraph, caseContainer);
+    dialogs.push_back(dialog);
+
+
+    _dialog = std::make_shared<Game::SwitchDialog>(dialogs);
 
     _isRed = true;
 }
 
-std::vector<Game::Dialog::Ptr> DialogFactory::GetDialogs()
+Game::IDialog::Ptr DialogFactory::GetDialog()
 {
     Read();
-    return _dialogs;
+    return _dialog;
 }

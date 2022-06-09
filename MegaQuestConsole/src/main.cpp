@@ -4,7 +4,6 @@
 #include "IO/ConsoleInput.hpp"
 #include "IO/ConsoleOutput.hpp"
 #include "IO/InputHandler.hpp"
-#include "Game/Model.hpp"
 #include "Factories/DialogFactory.hpp"
 #include "IO/Logger.hpp"
 
@@ -18,8 +17,7 @@ int main()
     auto output = std::make_shared<IO::ConsoleOutput>();
     IO::Logger::Instance().Init(output);
     auto dialogFactory = std::make_shared<DialogFactory>(output, rootFactory);
-    auto dialogs = dialogFactory->GetDialogs();
-    auto model = std::make_shared<Game::Model>(dialogs);
+    auto model = dialogFactory->GetDialog();
 
     auto input = std::make_shared<IO::ConsoleInput>();
     auto inputHandler = std::make_shared<IO::InputHandler>(input, output, model);

@@ -10,7 +10,7 @@ namespace Game
 {
 	class IInput;
 	class IOutput;
-	class Model;
+	class IDialog;
 }
 
 namespace IO
@@ -21,39 +21,39 @@ namespace IO
 		virtual void Run() override;
 	};
 
-	class ModelVoidCommand : public Game::VoidCommand
+	class DialogVoidCommand : public Game::VoidCommand
 	{
-		using ModelPtr = std::shared_ptr<Game::Model>;
+		using DialogPtr = std::shared_ptr<Game::IDialog>;
 	public:
-		ModelVoidCommand(const ModelPtr& model, const std::string& key);
+		DialogVoidCommand(const DialogPtr& dialog, const std::string& key);
 		virtual void Run() override;
 	private:
-		ModelPtr _model;
+		DialogPtr _dialog;
 		std::string _key;
 	};
 
-	class ModelIntCommand : public Game::IntCommand
+	class DialogIntCommand : public Game::IntCommand
 	{
-		using ModelPtr = std::shared_ptr<Game::Model>;
+		using DialogPtr = std::shared_ptr<Game::IDialog>;
 	public:
-		ModelIntCommand(const ModelPtr& model);
+		DialogIntCommand(const DialogPtr& dialog);
 		virtual void Run(int arg) override;
 	private:
-		ModelPtr _model;
+		DialogPtr _dialog;
 	};
 
 	class InputHandler
 	{
 		using InputPtr = std::shared_ptr<Game::IInput>;
 		using OutputPtr = std::shared_ptr<Game::IOutput>;
-		using ModelPtr = std::shared_ptr<Game::Model>;
+		using DialogPtr = std::shared_ptr<Game::IDialog>;
 		using Command = std::function<void()>;
 		using CommandPtr = std::shared_ptr<Command>;
 
 	public:
 		using Ptr = std::shared_ptr<InputHandler>;
 
-		InputHandler(const InputPtr& input, const OutputPtr& output, const ModelPtr& model);
+		InputHandler(const InputPtr& input, const OutputPtr& output, const DialogPtr& dialog);
 		void Handle();
 
 	private:
@@ -63,7 +63,6 @@ namespace IO
 	private:
 		InputPtr _input;
 		OutputPtr _output;
-		ModelPtr _model;
 		std::map<std::string, CommandPtr> _toCommands;
 	};
 }

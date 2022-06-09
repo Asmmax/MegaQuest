@@ -1,10 +1,11 @@
 #include "IO/InputHandler.hpp"
 #include "Game/IInput.hpp"
 #include "Game/IOutput.hpp"
-#include "Game/Model.hpp"
+#include "Game/IDialog.hpp"
 #include "Game/Events.hpp"
 #include "Game/CommandManager.hpp"
 #include "Game/Commands/AliasCommand.hpp"
+#include "Game/ButtonList.hpp"
 
 #include <iostream>
 
@@ -16,34 +17,37 @@ void QuitCommand::Run()
 	Game::Events::Quit.Send();
 }
 
-ModelVoidCommand::ModelVoidCommand(const ModelPtr& model, const std::string& key):
-	_model(model),
+DialogVoidCommand::DialogVoidCommand(const DialogPtr& dialog, const std::string& key):
+	_dialog(dialog),
 	_key(key)
 {
 }
 
-void ModelVoidCommand::Run()
+void DialogVoidCommand::Run()
 {
-	_model->Handle(_key);
+	if (auto inventoryButtons = _dialog->GetButtonList(_key)) {
+		inventoryButtons->Do();
+	}
 }
 
-ModelIntCommand::ModelIntCommand(const ModelPtr& model) :
+DialogIntCommand::DialogIntCommand(const DialogPtr& dialog) :
 	IntCommand(QuestCore::TextString::FromUtf8("Вводить можно только цифру из предложенных!")),
-	_model(model)
+	_dialog(dialog)
 {
 }
 
-void ModelIntCommand::Run(int arg)
+void DialogIntCommand::Run(int arg)
 {
-	_model->Handle(arg - 1);
+	if (auto defaultButtons = _dialog->GetButtonList()) {
+		defaultButtons->Do(arg - 1);
+	}
 }
 
 
 
-InputHandler::InputHandler(const IInput::Ptr& input, const IOutput::Ptr& output, const Model::Ptr& model):
+InputHandler::InputHandler(const IInput::Ptr& input, const IOutput::Ptr& output, const IDialog::Ptr& dialog):
 	_input(input),
-	_output(output),
-	_model(model)
+	_output(output)
 {
 	auto intro = QuestCore::TextString::FromUtf8(u8"Добро пожаловать в квест! Вы можете ввести Quit, Inventory или цифры.");
 	_output->WriteLn(intro);
@@ -53,14 +57,14 @@ InputHandler::InputHandler(const IInput::Ptr& input, const IOutput::Ptr& output,
 	CommandManager::Instance().Register("Quit", std::make_shared<Game::AliasCommand>("quit"));
 	CommandManager::Instance().Register("Q", std::make_shared<Game::AliasCommand>("quit"));
 
-	CommandManager::Instance().Register("inventory", std::make_shared<ModelVoidCommand>(_model, "inventory"));
+	CommandManager::Instance().Register("inventory", std::make_shared<DialogVoidCommand>(dialog, "inventory"));
 	CommandManager::Instance().Register("i", std::make_shared<Game::AliasCommand>("inventory"));
 	CommandManager::Instance().Register("Inventory", std::make_shared<Game::AliasCommand>("inventory"));
 	CommandManager::Instance().Register("I", std::make_shared<Game::AliasCommand>("inventory"));
 
-	CommandManager::Instance().Register("", std::make_shared<ModelIntCommand>(_model));
+	CommandManager::Instance().Register("", std::make_shared<DialogIntCommand>(dialog));
 
-	_model->Update();
+	dialog->Update();
 }
 
 InputHandler::CommandPtr InputHandler::GetCommand(const std::string& command)

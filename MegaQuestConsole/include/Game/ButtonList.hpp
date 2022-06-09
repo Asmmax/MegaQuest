@@ -6,7 +6,7 @@
 namespace Game
 {
 	class IOutput;
-	class Dialog;
+	class IDialog;
 
 	class ButtonList : public QuestCore::IButtonGroup
 	{
@@ -19,7 +19,7 @@ namespace Game
 	public:
 		using Ptr = std::shared_ptr<ButtonList>;
 
-		ButtonList(Dialog* parent);
+		ButtonList(IDialog* parent);
 		virtual void AddButton(const QuestCore::TextString& text, const Callback& callback) override;
 		void Do();
 		void Do(int answer);
@@ -29,6 +29,6 @@ namespace Game
 
 	private:
 		std::vector<Button> _buttons;
-		Dialog* _parent;
+		IDialog* _parent;
 	};
 }

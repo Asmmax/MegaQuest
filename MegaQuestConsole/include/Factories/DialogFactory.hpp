@@ -6,19 +6,19 @@ class IRootFactory;
 
 namespace Game 
 {
-	class Dialog;
+	class IDialog;
 	class IOutput;
 }
 
 class DialogFactory
 {
 	using OutputPtr = std::shared_ptr<Game::IOutput>;
-	using DialogPtr = std::shared_ptr<Game::Dialog>;
+	using DialogPtr = std::shared_ptr<Game::IDialog>;
 	using RootFactoryPtr = std::shared_ptr<IRootFactory>;
 
 public:
 	DialogFactory(const OutputPtr& output, const RootFactoryPtr& rootFactory);
-	std::vector<DialogPtr> GetDialogs();
+	DialogPtr GetDialog();
 
 private:
 	void Read();
@@ -27,5 +27,5 @@ private:
 	bool _isRed;
 	OutputPtr _output;
 	RootFactoryPtr _rootFactory;
-	std::vector< DialogPtr> _dialogs;
+	DialogPtr _dialog;
 };
