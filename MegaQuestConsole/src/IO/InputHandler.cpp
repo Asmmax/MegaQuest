@@ -3,11 +3,41 @@
 #include "Game/IOutput.hpp"
 #include "Game/Model.hpp"
 #include "Game/Events.hpp"
+#include "Game/CommandManager.hpp"
+#include "Game/Commands/AliasCommand.hpp"
 
 #include <iostream>
 
 using namespace Game;
 using namespace IO;
+
+void QuitCommand::Run()
+{
+	Game::Events::Quit.Send();
+}
+
+InventoryCommand::InventoryCommand(const ModelPtr& model):
+	_model(model)
+{
+}
+
+void InventoryCommand::Run()
+{
+	_model->OpenInventory();
+}
+
+ModelIntCommand::ModelIntCommand(const ModelPtr& model) :
+	IntCommand(QuestCore::TextString::FromUtf8("Вводить можно только цифру из предложенных!")),
+	_model(model)
+{
+}
+
+void ModelIntCommand::Run(int arg)
+{
+	_model->Handle(arg - 1);
+}
+
+
 
 InputHandler::InputHandler(const IInput::Ptr& input, const IOutput::Ptr& output, const Model::Ptr& model):
 	_input(input),
@@ -17,21 +47,17 @@ InputHandler::InputHandler(const IInput::Ptr& input, const IOutput::Ptr& output,
 	auto intro = QuestCore::TextString::FromUtf8(u8"Добро пожаловать в квест! Вы можете ввести Quit, Inventory или цифры.");
 	_output->WriteLn(intro);
 
-	CommandPtr quitCommand = std::make_shared<Command>([]() {
-		Game::Events::Quit.Send(); 
-		});
-	_toCommands.emplace(u8"q", quitCommand);
-	_toCommands.emplace(u8"Q", quitCommand);
-	_toCommands.emplace(u8"quit", quitCommand);
-	_toCommands.emplace(u8"Quit", quitCommand);
+	CommandManager::Instance().Register("quit", std::make_shared<QuitCommand>());
+	CommandManager::Instance().Register("q", std::make_shared<Game::AliasCommand>("quit"));
+	CommandManager::Instance().Register("Quit", std::make_shared<Game::AliasCommand>("quit"));
+	CommandManager::Instance().Register("Q", std::make_shared<Game::AliasCommand>("quit"));
 
-	CommandPtr inventoryCommand = std::make_shared<Command>([this]() {
-		_model->OpenInventory(); 
-		});
-	_toCommands.emplace(u8"i", inventoryCommand);
-	_toCommands.emplace(u8"I", inventoryCommand);
-	_toCommands.emplace(u8"inventory", inventoryCommand);
-	_toCommands.emplace(u8"Inventory", inventoryCommand);
+	CommandManager::Instance().Register("inventory", std::make_shared<InventoryCommand>(_model));
+	CommandManager::Instance().Register("i", std::make_shared<Game::AliasCommand>("inventory"));
+	CommandManager::Instance().Register("Inventory", std::make_shared<Game::AliasCommand>("inventory"));
+	CommandManager::Instance().Register("I", std::make_shared<Game::AliasCommand>("inventory"));
+
+	CommandManager::Instance().Register("", std::make_shared<ModelIntCommand>(_model));
 
 	_model->Update();
 }
@@ -55,20 +81,33 @@ void InputHandler::Handle()
 
 	_output->WriteLn();
 
-	try
-	{
-		int answerID = std::stoi(answer.ToUtf8());
-		_model->Handle(answerID - 1);
+	auto args = Parse(answer);
+	if (args.empty()) {
+		return;
 	}
-	catch (const std::invalid_argument& /*ex*/) {
-		if (auto commandPtr = GetCommand(answer.ToUtf8())) {
-			auto& command = *commandPtr;
-			command();
-		}
-		else
-		{
-			auto error = QuestCore::TextString::FromUtf8(u8"Вводить можно только цифру, Quit или Inventory!");
-			_output->WriteLn(error);
+
+	std::string command = args.front();
+	args.erase(args.begin());
+	CommandManager::Instance().Run(command, args);
+}
+
+std::vector<std::string> InputHandler::Parse(const QuestCore::TextString& command)
+{
+	auto strs = command.SplitBy(QuestCore::TextString::FromUtf8(" "));
+	std::vector<std::string> args;
+	for (auto& str : strs) {
+		if (!str.IsEmpty()) {
+			args.push_back(str.ToUtf8());
 		}
 	}
+
+	if (args.empty()) {
+		return args;
+	}
+
+	if (std::isdigit(args.front().front())) {
+		args.insert(args.begin(), "");
+	}
+
+	return args;
 }

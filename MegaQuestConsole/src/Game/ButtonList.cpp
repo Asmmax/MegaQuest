@@ -34,7 +34,6 @@ void ButtonList::Do()
 void ButtonList::Do(int answer)
 {
 	if (answer < 0 || answer >= _buttons.size()) {
-		IO::Logger::Instance().Log(QuestCore::TextString::FromUtf8(u8"¬водить можно только цифру из предложенных!"));
 		return;
 	}
 

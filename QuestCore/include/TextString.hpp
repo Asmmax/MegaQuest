@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 
 namespace QuestCore 
 {
@@ -19,6 +20,8 @@ namespace QuestCore
 
 		static TextString FromUtf8(const std::string& text);
 		static TextString FromUtf16(const std::wstring& text);
+
+		std::vector<TextString> SplitBy(const TextString& delimiter) const;
 
 	private:
 		TextString(const std::string& u8);

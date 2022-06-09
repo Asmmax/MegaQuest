@@ -65,3 +65,19 @@ TextString TextString::FromUtf16(const std::wstring& text)
 	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 	return TextString(converter.to_bytes(text));
 }
+
+std::vector<TextString> TextString::SplitBy(const TextString& delimiter) const
+{
+	std::string strDelimiter = delimiter.ToUtf8();
+	std::string strFull = _u8;
+
+	std::vector<TextString> strs;
+	size_t pos = 0;
+	while ((pos = strFull.find(strDelimiter)) != std::string::npos) {
+		strs.push_back(TextString::FromUtf8(strFull.substr(0, pos)));
+		strFull.erase(0, pos + strDelimiter.length());
+	}
+	strs.push_back(TextString::FromUtf8(strFull));
+
+	return strs;
+}

@@ -1,4 +1,6 @@
 #pragma once
+#include "Game/Commands/IntCommand.hpp"
+#include "Game/Commands/VoidCommand.hpp"
 #include <string>
 #include <memory>
 #include <map>
@@ -13,6 +15,32 @@ namespace Game
 
 namespace IO
 {
+	class QuitCommand : public Game::VoidCommand
+	{
+	public:
+		virtual void Run() override;
+	};
+
+	class InventoryCommand : public Game::VoidCommand
+	{
+		using ModelPtr = std::shared_ptr<Game::Model>;
+	public:
+		InventoryCommand(const ModelPtr& model);
+		virtual void Run() override;
+	private:
+		ModelPtr _model;
+	};
+
+	class ModelIntCommand : public Game::IntCommand
+	{
+		using ModelPtr = std::shared_ptr<Game::Model>;
+	public:
+		ModelIntCommand(const ModelPtr& model);
+		virtual void Run(int arg) override;
+	private:
+		ModelPtr _model;
+	};
+
 	class InputHandler
 	{
 		using InputPtr = std::shared_ptr<Game::IInput>;
@@ -29,6 +57,7 @@ namespace IO
 
 	private:
 		CommandPtr GetCommand(const std::string& command);
+		std::vector<std::string> Parse(const QuestCore::TextString& command);
 
 	private:
 		InputPtr _input;
