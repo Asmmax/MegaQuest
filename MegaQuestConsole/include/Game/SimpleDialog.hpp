@@ -15,12 +15,11 @@ namespace QuestCore
 namespace Game
 {
 	class IOutput;
-	class ButtonList;
 
 	class SimpleDialog : public IDialog, public QuestCore::ITextView, public QuestCore::IButtonPanel
 	{
 		using OutputPtr = std::shared_ptr<IOutput>;
-		using ButtonListPtr = std::shared_ptr<ButtonList>;
+		using ButtonListPtr = std::shared_ptr<IButtonList>;
 		using ParagraphPtr = std::shared_ptr<QuestCore::IParagraph>;
 		using CaseContainerPtr = std::shared_ptr<QuestCore::ICaseContainer>;
 

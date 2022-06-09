@@ -9,7 +9,7 @@ namespace Game
 	class SwitchDialog : public IDialog
 	{
 		using DialogPtr = std::shared_ptr<IDialog>;
-		using ButtonListPtr = std::shared_ptr<ButtonList>;
+		using ButtonListPtr = std::shared_ptr<IButtonList>;
 
 	public:
 		using Ptr = std::shared_ptr<SwitchDialog>;

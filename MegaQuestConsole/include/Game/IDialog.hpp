@@ -4,11 +4,11 @@
 
 namespace Game
 {
-	class ButtonList;
+	class IButtonList;
 
 	class IDialog
 	{
-		using ButtonListPtr = std::shared_ptr<ButtonList>;
+		using ButtonListPtr = std::shared_ptr<IButtonList>;
 	public:
 		using Ptr = std::shared_ptr<IDialog>;
 

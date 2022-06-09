@@ -1,14 +1,13 @@
 #pragma once
-#include "IButtonPanel.hpp"
+#include "Game/IButtonList.hpp"
 #include "TextString.hpp"
 #include <vector>
 
 namespace Game
 {
-	class IOutput;
 	class IDialog;
 
-	class ButtonList : public QuestCore::IButtonGroup
+	class SimpleButtonList : public IButtonList
 	{
 		struct Button
 		{
@@ -19,17 +18,17 @@ namespace Game
 		using DialogWeakPtr = std::weak_ptr<IDialog>;
 
 	public:
-		using Ptr = std::shared_ptr<ButtonList>;
+		using Ptr = std::shared_ptr<SimpleButtonList>;
 
-		ButtonList(const DialogWeakPtr& parent);
-		ButtonList(const DialogWeakPtr& parent, const QuestCore::TextString& error);
-		void Clear();
+		SimpleButtonList(const DialogWeakPtr& parent);
+		SimpleButtonList(const DialogWeakPtr& parent, const QuestCore::TextString& error);
+		virtual void Clear() override;
+		virtual void Do(int answer = 0) override;
+		virtual void Update(IOutput& output) override;
 		virtual void AddButton(const QuestCore::TextString& text, const Callback& callback) override;
-		void Do();
-		void Do(int answer);
+
+	private:
 		std::vector<QuestCore::TextString> GetNames() const;
-		size_t GetButtonCount() const;
-		void Update(IOutput& output);
 
 	private:
 		std::vector<Button> _buttons;

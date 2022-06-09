@@ -2,13 +2,13 @@
 #include "Game/SimpleDialog.hpp"
 #include "Game/SwitchDialog.hpp"
 #include "Factories/IRootFactory.hpp"
-#include "Game/ButtonList.hpp"
+#include "Game/SimpleButtonList.hpp"
 
 #include "Game/CommandManager.hpp"
 #include "Game/Commands/AliasCommand.hpp"
 #include "Game/Commands/QuitCommand.hpp"
-#include "Game/Commands/DialogVoidCommand.hpp"
-#include "Game/Commands/DialogIntCommand.hpp"
+#include "Game/Commands/ChoiceCommand.hpp"
+#include "Game/Commands/ForceChoiceCommand.hpp"
 
 DialogFactory::DialogFactory(const OutputPtr& output, const RootFactoryPtr& rootFactory):
     _isRed(false),
@@ -31,10 +31,10 @@ void DialogFactory::Read()
     auto dialog = std::make_shared<Game::SimpleDialog>(_output, paragraph, caseContainer, intro);
 
     auto buttonsError = QuestCore::TextString::FromUtf8(u8"¬водить можно только цифру из предложенных!");
-    auto defaultButtonList = std::make_shared<Game::ButtonList>(dialog, buttonsError);
+    auto defaultButtonList = std::make_shared<Game::SimpleButtonList>(dialog, buttonsError);
     dialog->AddButtonList("", defaultButtonList);
 
-    auto inventoryButtonList = std::make_shared<Game::ButtonList>(dialog);
+    auto inventoryButtonList = std::make_shared<Game::SimpleButtonList>(dialog);
     dialog->AddButtonList("inventory", inventoryButtonList);
 
     dialogs.push_back(dialog);
@@ -47,13 +47,13 @@ void DialogFactory::Read()
     Game::CommandManager::Instance().Register("Quit", std::make_shared<Game::AliasCommand>("quit"));
     Game::CommandManager::Instance().Register("Q", std::make_shared<Game::AliasCommand>("quit"));
 
-    Game::CommandManager::Instance().Register("inventory", std::make_shared<Game::DialogVoidCommand>(_dialog, "inventory"));
+    Game::CommandManager::Instance().Register("inventory", std::make_shared<Game::ForceChoiceCommand>(_dialog, "inventory"));
     Game::CommandManager::Instance().Register("i", std::make_shared<Game::AliasCommand>("inventory"));
     Game::CommandManager::Instance().Register("Inventory", std::make_shared<Game::AliasCommand>("inventory"));
     Game::CommandManager::Instance().Register("I", std::make_shared<Game::AliasCommand>("inventory"));
 
     auto errorInt = QuestCore::TextString::FromUtf8(u8"¬водить можно только цифру, Quit или Inventory!");
-    Game::CommandManager::Instance().Register("", std::make_shared<Game::DialogIntCommand>(_dialog, errorInt));
+    Game::CommandManager::Instance().Register("", std::make_shared<Game::ChoiceCommand>(_dialog, "", errorInt));
 
     _isRed = true;
 }

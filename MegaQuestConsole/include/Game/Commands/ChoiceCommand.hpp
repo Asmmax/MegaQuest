@@ -5,13 +5,17 @@ namespace Game
 {
 	class IDialog;
 
-	class DialogIntCommand : public IntCommand
+	class ChoiceCommand : public IntCommand
 	{
 		using DialogPtr = std::shared_ptr<IDialog>;
 	public:
-		DialogIntCommand(const DialogPtr& dialog, const QuestCore::TextString& error);
+		ChoiceCommand(const DialogPtr& dialog, 
+			const std::string& actionKey, 
+			const QuestCore::TextString& error);
+		
 		virtual void Run(int arg) override;
 	private:
 		DialogPtr _dialog;
+		std::string _actionKey;
 	};
 }

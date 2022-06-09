@@ -1,5 +1,5 @@
 #include "Game/SimpleDialog.hpp"
-#include "Game/ButtonList.hpp"
+#include "Game/IButtonList.hpp"
 #include "Game/IOutput.hpp"
 #include "IParagraph.hpp"
 #include "ICaseContainer.hpp"
@@ -29,12 +29,12 @@ QuestCore::IButtonGroup::Ptr SimpleDialog::GetButtonGroup(const std::string& act
 	return GetButtonList(actionKey);
 }
 
-void SimpleDialog::AddButtonList(const std::string& key, const ButtonList::Ptr& buttonList)
+void SimpleDialog::AddButtonList(const std::string& key, const IButtonList::Ptr& buttonList)
 {
 	_buttonGroups[key] = buttonList;
 }
 
-ButtonList::Ptr SimpleDialog::GetButtonList(const std::string& key)
+IButtonList::Ptr SimpleDialog::GetButtonList(const std::string& key)
 {
 	auto foundIt = _buttonGroups.find(key);
 	if (foundIt == _buttonGroups.end()) {
