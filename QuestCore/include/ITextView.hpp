@@ -9,7 +9,6 @@ namespace QuestCore
     {
     public:
         virtual ~ITextView() = default;
-        virtual void Clear() = 0;
         virtual void AppendText(const TextString& text) = 0;
     };
 }

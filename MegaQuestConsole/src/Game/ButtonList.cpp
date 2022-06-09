@@ -5,9 +5,20 @@
 
 using namespace Game;
 
-ButtonList::ButtonList(IDialog* parent):
+ButtonList::ButtonList(const DialogWeakPtr& parent):
 	_parent(parent)
 {
+}
+
+ButtonList::ButtonList(const DialogWeakPtr& parent, const QuestCore::TextString& error):
+	_parent(parent),
+	_error(error)
+{
+}
+
+void ButtonList::Clear()
+{
+	_buttons.clear();
 }
 
 void ButtonList::AddButton(const QuestCore::TextString& text, const std::function<void()>& callback)
@@ -26,20 +37,22 @@ void ButtonList::Do()
 
 	_buttons[0].callback();
 
-	if (_parent) {
-		_parent->Update();
+	if (auto ptr = _parent.lock()) {
+		ptr->Update();
 	}
 }
 
 void ButtonList::Do(int answer)
 {
 	if (answer < 0 || answer >= _buttons.size()) {
+		IO::Logger::Instance().Log(_error);
 		return;
 	}
 
 	_buttons[answer].callback();
-	if (_parent) {
-		_parent->Update();
+
+	if (auto ptr = _parent.lock()) {
+		ptr->Update();
 	}
 }
 

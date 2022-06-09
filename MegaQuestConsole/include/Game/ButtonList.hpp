@@ -16,10 +16,14 @@ namespace Game
 			Callback callback;
 		};
 
+		using DialogWeakPtr = std::weak_ptr<IDialog>;
+
 	public:
 		using Ptr = std::shared_ptr<ButtonList>;
 
-		ButtonList(IDialog* parent);
+		ButtonList(const DialogWeakPtr& parent);
+		ButtonList(const DialogWeakPtr& parent, const QuestCore::TextString& error);
+		void Clear();
 		virtual void AddButton(const QuestCore::TextString& text, const Callback& callback) override;
 		void Do();
 		void Do(int answer);
@@ -29,6 +33,7 @@ namespace Game
 
 	private:
 		std::vector<Button> _buttons;
-		IDialog* _parent;
+		DialogWeakPtr _parent;
+		QuestCore::TextString _error;
 	};
 }

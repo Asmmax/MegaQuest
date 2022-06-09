@@ -7,21 +7,16 @@
 using namespace Game;
 
 
-SimpleDialog::SimpleDialog(const OutputPtr& output, const ParagraphPtr& paragraph, const CaseContainerPtr& container) :
+SimpleDialog::SimpleDialog(const OutputPtr& output, 
+	const ParagraphPtr& paragraph, 
+	const CaseContainerPtr& container,
+	const QuestCore::TextString& intro) :
+
 	_output(output),
 	_paragraph(paragraph),
-	_container(container)
+	_container(container),
+	_intro(intro)
 {
-}
-
-void SimpleDialog::Clear()
-{
-	_text = QuestCore::TextString();
-}
-
-void SimpleDialog::RemoveAllButtons()
-{
-	_buttonGroups.clear();
 }
 
 void SimpleDialog::AppendText(const QuestCore::TextString& text)
@@ -29,15 +24,14 @@ void SimpleDialog::AppendText(const QuestCore::TextString& text)
 	_text += text;
 }
 
-QuestCore::IButtonGroup& SimpleDialog::GetButtonGroup(const std::string& actionKey)
+QuestCore::IButtonGroup::Ptr SimpleDialog::GetButtonGroup(const std::string& actionKey)
 {
-	auto foundIt = _buttonGroups.find(actionKey);
-	if (foundIt == _buttonGroups.end()) {
-		auto buttonGroup = std::make_shared<ButtonList>(this);
-		auto res = _buttonGroups.emplace(actionKey, buttonGroup);
-		foundIt = res.first;
-	}
-	return *foundIt->second;
+	return GetButtonList(actionKey);
+}
+
+void SimpleDialog::AddButtonList(const std::string& key, const ButtonList::Ptr& buttonList)
+{
+	_buttonGroups[key] = buttonList;
 }
 
 ButtonList::Ptr SimpleDialog::GetButtonList(const std::string& key)
@@ -49,13 +43,21 @@ ButtonList::Ptr SimpleDialog::GetButtonList(const std::string& key)
 	return foundIt->second;
 }
 
+void SimpleDialog::Init()
+{
+	_output->WriteLn(_intro);
+	Update();
+}
+
 void SimpleDialog::Update()
 {
 	_text = QuestCore::TextString();
 	_paragraph->Print(*this);
 	_output->WriteLn(_text);
 
-	_buttonGroups.clear();
+	for (auto buttonGroup : _buttonGroups) {
+		buttonGroup.second->Clear();
+	}
 	_container->Print(*this);
 
 	if (auto defaultButtons = GetButtonList()) {

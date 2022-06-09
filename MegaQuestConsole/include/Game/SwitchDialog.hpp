@@ -16,6 +16,7 @@ namespace Game
 
 		SwitchDialog(const std::vector<DialogPtr>& dialogs);
 		virtual ButtonListPtr GetButtonList(const std::string& key = std::string()) override;
+		virtual void Init() override;
 		virtual void Update() override;
 
 	private:

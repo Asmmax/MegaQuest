@@ -6,6 +6,7 @@
 #include "IO/InputHandler.hpp"
 #include "Factories/DialogFactory.hpp"
 #include "IO/Logger.hpp"
+#include "Game/IDialog.hpp"
 
 #include <iostream>
 
@@ -18,9 +19,10 @@ int main()
     IO::Logger::Instance().Init(output);
     auto dialogFactory = std::make_shared<DialogFactory>(output, rootFactory);
     auto model = dialogFactory->GetDialog();
+    model->Init();
 
     auto input = std::make_shared<IO::ConsoleInput>();
-    auto inputHandler = std::make_shared<IO::InputHandler>(input, output, model);
+    auto inputHandler = std::make_shared<IO::InputHandler>(input, output);
 
     Game::GameLoop game(inputHandler);
     return game.Run();

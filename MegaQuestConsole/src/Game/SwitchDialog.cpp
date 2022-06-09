@@ -15,6 +15,11 @@ ButtonList::Ptr SwitchDialog::GetButtonList(const std::string& key)
 	return _currentDialog->GetButtonList(key);
 }
 
+void SwitchDialog::Init()
+{
+	_currentDialog->Init();
+}
+
 void SwitchDialog::Update()
 {
 	_currentDialog->Update();

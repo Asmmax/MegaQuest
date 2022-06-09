@@ -27,12 +27,16 @@ namespace Game
 	public:
 		using Ptr = std::shared_ptr<SimpleDialog>;
 
-		SimpleDialog(const OutputPtr& output, const ParagraphPtr& paragraph, const CaseContainerPtr& container);
-		virtual void Clear() override;
-		virtual void RemoveAllButtons() override;
+		SimpleDialog(const OutputPtr& output, 
+			const ParagraphPtr& paragraph, 
+			const CaseContainerPtr& container,
+			const QuestCore::TextString& intro);
+
 		virtual void AppendText(const QuestCore::TextString& text) override;
-		virtual QuestCore::IButtonGroup& GetButtonGroup(const std::string& actionKey) override;
+		virtual QuestCore::IButtonGroup::Ptr GetButtonGroup(const std::string& actionKey) override;
+		void AddButtonList(const std::string& key, const ButtonListPtr& buttonList);
 		virtual ButtonListPtr GetButtonList(const std::string& key = std::string()) override;
+		virtual void Init() override;
 		virtual void Update() override;
 
 	private:
@@ -40,6 +44,7 @@ namespace Game
 		ParagraphPtr _paragraph;
 		CaseContainerPtr _container;
 		QuestCore::TextString _text;
+		QuestCore::TextString _intro;
 		std::map<std::string, ButtonListPtr> _buttonGroups;
 	};
 }
