@@ -4,15 +4,9 @@
 
 using namespace Game;
 
-CommandManager& CommandManager::Instance()
+CommandManager::CommandManager(const QuestCore::TextString& error):
+	_error(error)
 {
-	static CommandManager commandManager;
-	return commandManager;
-}
-
-void CommandManager::InitError(const QuestCore::TextString& error)
-{
-	_error = error;
 }
 
 void CommandManager::Register(const std::string& text, const ICommand::Ptr& command)

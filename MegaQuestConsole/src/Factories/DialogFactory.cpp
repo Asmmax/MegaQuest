@@ -165,19 +165,19 @@ void DialogFactory::InitDialog(const Game::IDialog::Ptr& dialog, const nlohmann:
 
 void DialogFactory::ReadCommandManager(const nlohmann::json& managerNode)
 {
-    _commandError = Utils::Read(managerNode, "error", QuestCore::TextString());
-    Game::CommandManager::Instance().InitError(_commandError);
+    auto commandError = Utils::Read(managerNode, "error", QuestCore::TextString());
+    _commandManager = std::make_shared<Game::CommandManager>(commandError);
 
     auto foundIt = managerNode.find("commands");
     if (foundIt != managerNode.end()) {
-        auto commands = ReadCommands(*foundIt);
+        auto commands = ReadCommands(*foundIt, _commandManager);
         for (auto& command : commands) {
-            Game::CommandManager::Instance().Register(command.first, command.second);
+            _commandManager->Register(command.first, command.second);
         }
     }
 }
 
-std::map<std::string, Game::ICommand::Ptr> DialogFactory::ReadCommands(const nlohmann::json& commandsNode)
+std::map<std::string, Game::ICommand::Ptr> DialogFactory::ReadCommands(const nlohmann::json& commandsNode, const CommandManagerPtr& commandManager)
 {
     std::map<std::string, Game::ICommand::Ptr> result;
 
@@ -186,7 +186,7 @@ std::map<std::string, Game::ICommand::Ptr> DialogFactory::ReadCommands(const nlo
     }
 
     for (auto& jsonCommand : commandsNode) {
-        auto command = ReadCommand(jsonCommand);
+        auto command = ReadCommand(jsonCommand, commandManager);
         auto commandId = Utils::Read(jsonCommand, "command", std::string());
         result.emplace(commandId, command);
     }
@@ -194,12 +194,12 @@ std::map<std::string, Game::ICommand::Ptr> DialogFactory::ReadCommands(const nlo
     return result;
 }
 
-Game::ICommand::Ptr DialogFactory::ReadCommand(const nlohmann::json& commandNode)
+Game::ICommand::Ptr DialogFactory::ReadCommand(const nlohmann::json& commandNode, const CommandManagerPtr& commandManager)
 {
     std::string typeId = Utils::Read(commandNode, "type", std::string());
     if (typeId == "Alias") {
         auto alias = Utils::Read(commandNode, "alias", std::string());
-        return std::make_shared<Game::AliasCommand>(alias);
+        return std::make_shared<Game::AliasCommand>(commandManager, alias);
     }
     else if (typeId == "Quit") {
         return std::make_shared<Game::QuitCommand>();
@@ -278,4 +278,10 @@ Game::IDialog::Ptr DialogFactory::GetDialog()
 {
     Read();
     return _rootDialog;
+}
+
+Game::CommandManager::Ptr DialogFactory::GetCommandManager()
+{
+    Read();
+    return _commandManager;
 }

@@ -23,8 +23,10 @@ int main()
         model->Init();
     }
 
+    auto commandManager = dialogFactory->GetCommandManager();
+
     auto input = std::make_shared<IO::ConsoleInput>();
-    auto inputHandler = std::make_shared<IO::InputHandler>(input, output);
+    auto inputHandler = std::make_shared<IO::InputHandler>(input, output, commandManager);
 
     Game::GameLoop game(inputHandler);
     return game.Run();

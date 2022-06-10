@@ -8,9 +8,10 @@
 using namespace Game;
 using namespace IO;
 
-InputHandler::InputHandler(const IInput::Ptr& input, const IOutput::Ptr& output):
+InputHandler::InputHandler(const IInput::Ptr& input, const IOutput::Ptr& output, const CommandManagerPtr& commandManager):
 	_input(input),
-	_output(output)
+	_output(output),
+	_commandManager(commandManager)
 {
 }
 
@@ -30,7 +31,7 @@ void InputHandler::Handle()
 
 	std::string command = args.front();
 	args.erase(args.begin());
-	CommandManager::Instance().Run(command, args);
+	_commandManager->Run(command, args);
 }
 
 std::vector<std::string> InputHandler::Parse(const QuestCore::TextString& command)

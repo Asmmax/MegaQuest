@@ -13,9 +13,10 @@ namespace Game
 	{
 		using CommandPtr = std::shared_ptr<ICommand>;
 	public:
-		static CommandManager& Instance();
+		using Ptr = std::shared_ptr<CommandManager>;
 
-		void InitError(const QuestCore::TextString& error);
+		CommandManager(const QuestCore::TextString& error);
+
 		void Register(const std::string& text, const CommandPtr& command);
 		void Run(const std::string& command, const std::vector<std::string>& args);
 
