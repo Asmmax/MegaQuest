@@ -18,6 +18,7 @@ namespace Game
 		virtual ButtonListPtr GetButtonList(const std::string& key = std::string()) override;
 		virtual void Init() override;
 		virtual void Update() override;
+		void Next();
 
 	private:
 		std::vector<DialogPtr> _dialogs;

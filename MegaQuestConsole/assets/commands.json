@@ -23,6 +23,16 @@
 		"alias":"inventory"
 	},
 	{
+		"command":"next",
+		"type":"Switch",
+		"switchDialog":"root"
+	},
+	{
+		"command":"n",
+		"type":"Alias",
+		"alias":"next"
+	},
+	{
 		"command":"",
 		"type":"Choice",
 		"dialog":"root",

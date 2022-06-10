@@ -1,4 +1,4 @@
-#include "Game/SimpleDialog.hpp"
+#include "Game/Dialogs/SimpleDialog.hpp"
 #include "Game/IButtonList.hpp"
 #include "Game/IOutput.hpp"
 #include "IParagraph.hpp"

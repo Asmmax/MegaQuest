@@ -6,6 +6,8 @@
 #include "Game/Commands/QuitCommand.hpp"
 #include "Game/Commands/ChoiceCommand.hpp"
 #include "Game/Commands/ForceChoiceCommand.hpp"
+#include "Game/Commands/SwitchCommand.hpp"
+#include "Game/Dialogs/SwitchDialog.hpp"
 
 #include "Utils/Reader.hpp"
 
@@ -119,6 +121,23 @@ Game::ICommand::Ptr CommandsFactory::ReadCommand(const nlohmann::json& commandNo
 
         auto choice = Utils::Read<int>(commandNode, "choice", 0);
         return std::make_shared<Game::ForceChoiceCommand>(dialog, buttonGroup, choice);
+    }
+    else if (typeId == "Switch") {
+        auto switchDialogId = Utils::Read(commandNode, "switchDialog", std::string());
+
+        auto dialog = _dialogFactory->GetDialog(switchDialogId);
+        assert(dialog);
+        if (!dialog) {
+            return nullptr;
+        }
+
+        auto switchDialog = std::dynamic_pointer_cast<Game::SwitchDialog>(dialog);
+        assert(switchDialog);
+        if (!switchDialog) {
+            return nullptr;
+        }
+
+        return std::make_shared<Game::SwitchCommand>(switchDialog);
     }
 
     return nullptr;

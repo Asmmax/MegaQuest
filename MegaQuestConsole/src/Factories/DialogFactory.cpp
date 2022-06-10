@@ -1,6 +1,6 @@
 #include "Factories/DialogFactory.hpp"
-#include "Game/SimpleDialog.hpp"
-#include "Game/SwitchDialog.hpp"
+#include "Game/Dialogs/SimpleDialog.hpp"
+#include "Game/Dialogs/SwitchDialog.hpp"
 #include "Factories/IRootFactory.hpp"
 #include "Game/SimpleButtonList.hpp"
 
