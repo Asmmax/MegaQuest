@@ -9,7 +9,8 @@ namespace Config
 		static Settings& Instance();
 		std::string GetResourcePath() const;
 		std::string GetQuestPath() const;
-		std::string GetUISettingsPath() const;
+		std::string GetDialogsPath() const;
+		std::string GetCommandsPath() const;
 
 	private:
 		Settings(const std::string& filename);
@@ -19,6 +20,7 @@ namespace Config
 	private:
 		std::string _resourcePath;
 		std::string _questFileName;
-		std::string _uiSettingsFileName;
+		std::string _dialogsFileName;
+		std::string _commandsFileName;
 	};
 }

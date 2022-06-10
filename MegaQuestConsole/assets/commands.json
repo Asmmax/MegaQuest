@@ -1,0 +1,33 @@
+{
+	"error":"Вводить можно только цифру, Quit или Inventory!",
+	"commands":[
+	{
+		"command":"quit",
+		"type":"Quit"
+	},
+	{
+		"command":"q",
+		"type":"Alias",
+		"alias":"quit"
+	},
+	{
+		"command":"inventory",
+		"type":"ForceChoice",
+		"dialog":"root",
+		"buttonGroup":"inventory",
+		"choice":0
+	},
+	{
+		"command":"i",
+		"type":"Alias",
+		"alias":"inventory"
+	},
+	{
+		"command":"",
+		"type":"Choice",
+		"dialog":"root",
+		"buttonGroup":"",
+		"error":"Вводить можно только цифру из предложенных!"
+	}
+	]
+}

@@ -21,9 +21,14 @@ std::string Settings::GetQuestPath() const
     return GetResourcePath() + "/" + _questFileName;
 }
 
-std::string Settings::GetUISettingsPath() const
+std::string Settings::GetDialogsPath() const
 {
-    return GetResourcePath() + "/" + _uiSettingsFileName;
+    return GetResourcePath() + "/" + _dialogsFileName;
+}
+
+std::string Settings::GetCommandsPath() const
+{
+    return GetResourcePath() + "/" + _commandsFileName;
 }
 
 Settings::Settings(const std::string& filename)
@@ -113,8 +118,13 @@ void Settings::LoadSettings(const std::string& filename)
         _questFileName = *foundIt;
     }
 
-    foundIt = root.find("uiSettingsFileName");
+    foundIt = root.find("dialogsFileName");
     if (foundIt != root.end()) {
-        _uiSettingsFileName = *foundIt;
+        _dialogsFileName = *foundIt;
+    }
+
+    foundIt = root.find("commandsFileName");
+    if (foundIt != root.end()) {
+        _commandsFileName = *foundIt;
     }
 }

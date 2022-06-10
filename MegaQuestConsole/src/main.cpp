@@ -7,6 +7,7 @@
 #include "Factories/DialogFactory.hpp"
 #include "IO/Logger.hpp"
 #include "Game/IDialog.hpp"
+#include "Factories/CommandsFactory.hpp"
 
 #include <iostream>
 
@@ -17,13 +18,14 @@ int main()
 
     auto output = std::make_shared<IO::ConsoleOutput>();
     IO::Logger::Instance().Init(output);
-    auto dialogFactory = std::make_shared<DialogFactory>(settings.GetUISettingsPath(), output, rootFactory);
-    auto model = dialogFactory->GetDialog();
+    auto dialogFactory = std::make_shared<DialogFactory>(settings.GetDialogsPath(), output, rootFactory);
+    auto model = dialogFactory->GetRootDialog();
     if (model) {
         model->Init();
     }
 
-    auto commandManager = dialogFactory->GetCommandManager();
+    auto commandsFactory = std::make_shared<CommandsFactory>(settings.GetCommandsPath(), dialogFactory);
+    auto commandManager = commandsFactory->GetCommandManager();
 
     auto input = std::make_shared<IO::ConsoleInput>();
     auto inputHandler = std::make_shared<IO::InputHandler>(input, output, commandManager);

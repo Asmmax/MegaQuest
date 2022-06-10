@@ -1,0 +1,28 @@
+{
+	"rootDialog":"root",
+	"dialogs":[
+	{
+		"key":"main",
+		"type":"Simple",
+		"paragraph":"root",
+		"container":"root",
+		"intro":"Добро пожаловать в квест! Вы можете ввести Quit, Inventory или цифры.",
+		"buttonGroups":[
+		{
+			"actionKey":"",
+			"type":"Simple",
+			"error":"Вводить можно только цифру из предложенных!"
+		},
+		{
+			"actionKey":"inventory",
+			"type":"Simple"
+		}
+		]
+	},
+	{
+		"key":"root",
+		"type":"Switch",
+		"dialogs":["main"]
+	}
+	]
+}

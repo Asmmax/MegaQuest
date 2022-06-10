@@ -1,5 +1,6 @@
 {
 	"resourcePath":"",
 	"questFileName":"quests/testquest.json",
-	"uiSettingsFileName":"client.json"
+	"dialogsFileName":"dialogs.json",
+	"commandsFileName":"commands.json"
 }
