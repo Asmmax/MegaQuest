@@ -1,7 +1,7 @@
 #include "IO/ConsoleOutput.hpp"
 #include "TextString.hpp"
 #include <iostream>
-#include <locale>
+#include <clocale>
 
 using namespace IO;
 using namespace QuestCore;
