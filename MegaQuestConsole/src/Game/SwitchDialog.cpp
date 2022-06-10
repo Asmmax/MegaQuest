@@ -4,10 +4,13 @@
 
 using namespace Game;
 
-SwitchDialog::SwitchDialog(const std::vector<IDialog::Ptr>& dialogs):
-	_dialogs(dialogs)
+void SwitchDialog::AddDialog(const DialogPtr& dialog)
 {
-	_currentDialog = dialogs[0];
+	if (_dialogs.empty()) {
+		_currentDialog = dialog;
+	}
+
+	_dialogs.push_back(dialog);
 }
 
 IButtonList::Ptr SwitchDialog::GetButtonList(const std::string& key)

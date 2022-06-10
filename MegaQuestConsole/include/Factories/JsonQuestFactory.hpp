@@ -62,9 +62,6 @@ private:
 	std::vector<std::pair<std::shared_ptr<QuestCore::Item>, int>> ReadItemOrders(const nlohmann::json& itemsNode);
 	std::pair<std::shared_ptr<QuestCore::Item>, int> ReadItemOrder(const nlohmann::json& itemNode);
 
-	template<typename T> T Read(const nlohmann::json& node, const std::string& key, const T& defValue);
-	template<> QuestCore::TextString Read(const nlohmann::json& node, const std::string& key, const QuestCore::TextString& defValue);
-
 private:
 	bool _isRed;
 	std::string _filename;
@@ -76,22 +73,3 @@ private:
 	std::map<std::string, std::shared_ptr<QuestCore::ICaseContainer>> _containers;
 	std::map<std::string, std::shared_ptr<QuestCore::Inventory>> _inventories;
 };
-
-
-template<typename T>
-T JsonQuestFactory::Read(const nlohmann::json& node, const std::string& key, const T& defValue)
-{
-	auto foundIt = node.find(key);
-	if (foundIt == node.end()) {
-		return defValue;
-	}
-
-	return *foundIt;
-}
-
-template<>
-QuestCore::TextString JsonQuestFactory::Read(const nlohmann::json& node, const std::string& key, const QuestCore::TextString& defValue)
-{
-	std::string rawDefValue = defValue.ToUtf8();
-	return QuestCore::TextString::FromUtf8(Read(node,key, rawDefValue));
-}

@@ -14,7 +14,7 @@ namespace Game
 	public:
 		using Ptr = std::shared_ptr<SwitchDialog>;
 
-		SwitchDialog(const std::vector<DialogPtr>& dialogs);
+		void AddDialog(const DialogPtr& dialog);
 		virtual ButtonListPtr GetButtonList(const std::string& key = std::string()) override;
 		virtual void Init() override;
 		virtual void Update() override;

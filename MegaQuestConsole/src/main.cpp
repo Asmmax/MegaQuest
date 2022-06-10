@@ -17,9 +17,11 @@ int main()
 
     auto output = std::make_shared<IO::ConsoleOutput>();
     IO::Logger::Instance().Init(output);
-    auto dialogFactory = std::make_shared<DialogFactory>(output, rootFactory);
+    auto dialogFactory = std::make_shared<DialogFactory>(settings.GetUISettingsPath(), output, rootFactory);
     auto model = dialogFactory->GetDialog();
-    model->Init();
+    if (model) {
+        model->Init();
+    }
 
     auto input = std::make_shared<IO::ConsoleInput>();
     auto inputHandler = std::make_shared<IO::InputHandler>(input, output);
