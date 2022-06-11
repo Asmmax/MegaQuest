@@ -3,6 +3,8 @@
 #include "Game/Dialogs/SwitchDialog.hpp"
 #include "Factories/IRootFactory.hpp"
 #include "Game/SimpleButtonList.hpp"
+#include "Game/Dialogs/InventoryDialog.hpp"
+#include "Game/InventoryButtonList.hpp"
 
 #include "Utils/Reader.hpp"
 
@@ -94,10 +96,18 @@ Game::IDialog::Ptr DialogFactory::CreateDialog(const nlohmann::json& dialogNode)
         auto container = _rootFactory->GetRootCaseContainer(containerId);
 
         auto intro = Utils::Read(dialogNode, "intro", QuestCore::TextString());
-        return std::make_shared<Game::SimpleDialog>(_output, paragraph, container, intro);
+        return std::make_shared<Game::SimpleDialog>(_output, intro, paragraph, container);
     }
     else if (typeId == "Switch") {
-        return std::make_shared<Game::SwitchDialog>();
+        auto intro = Utils::Read(dialogNode, "intro", QuestCore::TextString());
+        return std::make_shared<Game::SwitchDialog>(_output, intro);
+    }
+    else if (typeId == "Inventory") {
+        auto inventoryId = Utils::Read(dialogNode, "inventory", std::string());
+        auto inventory = _rootFactory->GetInventory(inventoryId);
+
+        auto intro = Utils::Read(dialogNode, "intro", QuestCore::TextString());
+        return std::make_shared<Game::InventoryDialog>(_output, intro, inventory);
     }
 
     return nullptr;
@@ -150,6 +160,16 @@ void DialogFactory::InitDialog(const Game::IDialog::Ptr& dialog, const nlohmann:
             }
         }
     }
+    else if (typeId == "Inventory") {
+        auto inventoryDialog = std::dynamic_pointer_cast<Game::InventoryDialog>(dialog);
+        auto buttonsJsonIt = dialogNode.find("buttonGroups");
+        if (buttonsJsonIt != dialogNode.end()) {
+            auto buttonLists = ReadButtonLists(*buttonsJsonIt, inventoryDialog);
+            for (auto buttonList : buttonLists) {
+                inventoryDialog->AddButtonList(buttonList.first, buttonList.second);
+            }
+        }
+    }
 }
 
 void DialogFactory::ReadRootDialog(const nlohmann::json& rootNode)
@@ -187,6 +207,27 @@ Game::IButtonList::Ptr DialogFactory::ReadButtonList(const nlohmann::json& butto
 
         auto error = Utils::Read(buttonsNode, "error", QuestCore::TextString());
         return std::make_shared<Game::SimpleButtonList>(dialog, error);
+    }
+    else if (typeId == "Inventory") {
+
+        auto inventoryId = Utils::Read(buttonsNode, "inventory", std::string());
+        auto inventory = _rootFactory->GetInventory(inventoryId);
+
+        auto error = Utils::Read(buttonsNode, "error", QuestCore::TextString());
+
+        std::vector<int> counts;
+
+        auto foundIt = buttonsNode.find("counts");
+        if (foundIt != buttonsNode.end()) {
+            for (auto& count : *foundIt) {
+                counts.push_back(count.get<int>());
+            }
+        }
+
+        auto putMessage = Utils::Read(buttonsNode, "put", QuestCore::TextString());
+        auto throwMessage = Utils::Read(buttonsNode, "throw", QuestCore::TextString());
+
+        return std::make_shared<Game::InventoryButtonList>(dialog, error, inventory, counts, putMessage, throwMessage);
     }
     
     return nullptr;

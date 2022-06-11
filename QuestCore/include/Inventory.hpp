@@ -1,10 +1,11 @@
 #pragma once
-#include "Item.hpp"
 #include <memory>
 #include <map>
 
 namespace QuestCore
 {
+	class Item;
+
 	class Inventory
 	{
 		using ItemPtr = std::shared_ptr<Item>;

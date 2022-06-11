@@ -74,6 +74,10 @@
 		{
 			"id":"coin",
 			"count":0
+		},
+		{
+			"id":"medalion",
+			"count":0
 		}
 		]
 	}

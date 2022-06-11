@@ -1,9 +1,15 @@
 #include "Game/Dialogs/SwitchDialog.hpp"
 #include "Game/IDialog.hpp"
 #include "Game/IButtonList.hpp"
+#include "Game/IOutput.hpp"
 #include <assert.h>
 
 using namespace Game;
+
+SwitchDialog::SwitchDialog(const OutputPtr& output, const QuestCore::TextString& intro):
+	IntroDialog(output, intro)
+{
+}
 
 void SwitchDialog::AddDialog(const DialogPtr& dialog)
 {
@@ -21,6 +27,7 @@ IButtonList::Ptr SwitchDialog::GetButtonList(const std::string& key)
 
 void SwitchDialog::Init()
 {
+	IntroDialog::Init();
 	_currentDialog->Init();
 }
 
@@ -47,6 +54,6 @@ void SwitchDialog::Next()
 	size_t nextId = (currId + 1) % count;
 
 	_currentDialog = _dialogs[nextId];
-
-	Update();
+	_currentDialog->Init();
+	_currentDialog->Update();
 }

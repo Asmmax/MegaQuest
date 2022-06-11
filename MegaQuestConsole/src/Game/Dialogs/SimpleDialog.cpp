@@ -7,15 +7,14 @@
 using namespace Game;
 
 
-SimpleDialog::SimpleDialog(const OutputPtr& output, 
+SimpleDialog::SimpleDialog(const OutputPtr& output,
+	const QuestCore::TextString& intro,
 	const ParagraphPtr& paragraph, 
-	const CaseContainerPtr& container,
-	const QuestCore::TextString& intro) :
+	const CaseContainerPtr& container) :
 
-	_output(output),
+	IntroDialog(output, intro),
 	_paragraph(paragraph),
-	_container(container),
-	_intro(intro)
+	_container(container)
 {
 }
 
@@ -43,17 +42,13 @@ IButtonList::Ptr SimpleDialog::GetButtonList(const std::string& key)
 	return foundIt->second;
 }
 
-void SimpleDialog::Init()
-{
-	_output->WriteLn(_intro);
-	Update();
-}
-
 void SimpleDialog::Update()
 {
+	auto&& output = GetOutput();
+
 	_text = QuestCore::TextString();
 	_paragraph->Print(*this);
-	_output->WriteLn(_text);
+	output->WriteLn(_text);
 
 	for (auto buttonGroup : _buttonGroups) {
 		buttonGroup.second->Clear();
@@ -61,6 +56,6 @@ void SimpleDialog::Update()
 	_container->Print(*this);
 
 	if (auto defaultButtons = GetButtonList()) {
-		defaultButtons->Update(*_output);
+		defaultButtons->Update(*output);
 	}
 }

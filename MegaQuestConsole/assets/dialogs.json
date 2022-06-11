@@ -6,7 +6,7 @@
 		"type":"Simple",
 		"paragraph":"root",
 		"container":"root",
-		"intro":"Добро пожаловать в квест! Вы можете ввести Quit, Inventory или цифры.",
+		"intro":"Вы можете ввести Quit, Inventory или цифры.",
 		"buttonGroups":[
 		{
 			"actionKey":"",
@@ -20,9 +20,27 @@
 		]
 	},
 	{
+		"key":"inventory",
+		"type":"Inventory",
+		"inventory":"player",
+		"intro":"Инвентарь игрока. Вы можете ввести Quit или цифры.",
+		"buttonGroups":[
+		{
+			"actionKey":"",
+			"type":"Inventory",
+			"inventory":"player",
+			"counts":[1,10],
+			"put":"Добавить ",
+			"throw":"Выкинуть ",
+			"error":"Вводить можно только цифру из предложенных!"
+		}
+		]
+	},
+	{
 		"key":"root",
 		"type":"Switch",
-		"dialogs":["main"]
+		"intro":"Добро пожаловать в квест!",
+		"dialogs":["main", "inventory"]
 	}
 	]
 }

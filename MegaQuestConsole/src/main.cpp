@@ -22,6 +22,7 @@ int main()
     auto model = dialogFactory->GetRootDialog();
     if (model) {
         model->Init();
+        model->Update();
     }
 
     auto commandsFactory = std::make_shared<CommandsFactory>(settings.GetCommandsPath(), dialogFactory);

@@ -20,7 +20,6 @@ namespace Game
 	public:
 		using Ptr = std::shared_ptr<SimpleButtonList>;
 
-		SimpleButtonList(const DialogWeakPtr& parent);
 		SimpleButtonList(const DialogWeakPtr& parent, const QuestCore::TextString& error);
 		virtual void Clear() override;
 		virtual void Do(int answer = 0) override;

@@ -43,10 +43,15 @@ void InventoryParagraph::Print(ITextView& view)
 
 	auto items = GetOrderedItems();
 	for (auto itemIt = items.begin(); itemIt != items.end(); itemIt++) {
+		auto text = itemIt->first->GetContains(itemIt->second);
+		if (text.IsEmpty()) {
+			continue;
+		}
+
 		if (itemIt != items.begin()) {
 			view.AppendText(_gap);
 		}
-		view.AppendText(itemIt->first->GetContains(itemIt->second));
+		view.AppendText(text);
 	}
 
 	view.AppendText(_postfix.GetContainsFor(countItems));

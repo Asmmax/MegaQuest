@@ -5,11 +5,6 @@
 
 using namespace Game;
 
-SimpleButtonList::SimpleButtonList(const DialogWeakPtr& parent):
-	_parent(parent)
-{
-}
-
 SimpleButtonList::SimpleButtonList(const DialogWeakPtr& parent, const QuestCore::TextString& error):
 	_parent(parent),
 	_error(error)
