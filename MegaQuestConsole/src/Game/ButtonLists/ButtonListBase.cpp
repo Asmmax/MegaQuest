@@ -1,6 +1,7 @@
-#include "Game/ButtonListBase.hpp"
+#include "Game/ButtonLists/ButtonListBase.hpp"
 #include "Game/IOutput.hpp"
 #include "Game/IDialog.hpp"
+#include "IO/Logger.hpp"
 
 using namespace Game;
 
@@ -23,7 +24,7 @@ void ButtonListBase::AddButton(const QuestCore::TextString& text, const std::fun
 void ButtonListBase::Do(int answer)
 {
 	if (answer < 0 || answer >= _buttons.size()) {
-		_output->WriteLn(_error);
+		IO::Logger::Instance().Log(_error);
 		return;
 	}
 

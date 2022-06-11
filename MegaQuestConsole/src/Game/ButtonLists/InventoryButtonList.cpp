@@ -1,4 +1,4 @@
-#include "Game/InventoryButtonList.hpp"
+#include "Game/ButtonLists/InventoryButtonList.hpp"
 #include "Inventory.hpp"
 #include "Item.hpp"
 #include <algorithm>

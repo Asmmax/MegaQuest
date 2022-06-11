@@ -1,5 +1,5 @@
 #pragma once
-#include "Game/ButtonListBase.hpp"
+#include "Game/ButtonLists/ButtonListBase.hpp"
 #include "TextString.hpp"
 #include <vector>
 

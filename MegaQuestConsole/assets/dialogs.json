@@ -8,7 +8,7 @@
 		"intro":"Вы можете ввести Quit, Inventory или цифры.",
 		"buttonGroups":[
 		{
-			"actionKey":"",
+			"actionKey":"default",
 			"type":"Simple",
 			"container":"root",
 			"show":true,
@@ -28,7 +28,7 @@
 		"intro":"Инвентарь игрока. Вы можете ввести Quit или цифры.",
 		"buttonGroups":[
 		{
-			"actionKey":"",
+			"actionKey":"default",
 			"type":"Inventory",
 			"inventory":"player",
 			"counts":[1,10],

@@ -1,4 +1,4 @@
-#include "Game/SimpleButtonList.hpp"
+#include "Game/ButtonLists/SimpleButtonList.hpp"
 #include "Game/IOutput.hpp"
 #include "ICaseContainer.hpp"
 

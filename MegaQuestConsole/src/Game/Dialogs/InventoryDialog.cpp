@@ -38,7 +38,7 @@ void InventoryDialog::Update()
 		output->WriteLn(item.first->GetContains(item.second));
 	}
 
-	if (auto defaultButtons = GetButtonList()) {
-		defaultButtons->Update();
+	for (auto& buttonGroup : _buttonGroups) {
+		buttonGroup.second->Update();
 	}
 }

@@ -2,9 +2,9 @@
 #include "Game/Dialogs/SimpleDialog.hpp"
 #include "Game/Dialogs/SwitchDialog.hpp"
 #include "Factories/IRootFactory.hpp"
-#include "Game/SimpleButtonList.hpp"
+#include "Game/ButtonLists/SimpleButtonList.hpp"
 #include "Game/Dialogs/InventoryDialog.hpp"
-#include "Game/InventoryButtonList.hpp"
+#include "Game/ButtonLists/InventoryButtonList.hpp"
 
 #include "Utils/Reader.hpp"
 

@@ -36,7 +36,7 @@
 		"command":"",
 		"type":"Choice",
 		"dialog":"root",
-		"buttonGroup":"",
+		"buttonGroup":"default",
 		"error":"Вводить можно только цифру из предложенных!"
 	}
 	]
