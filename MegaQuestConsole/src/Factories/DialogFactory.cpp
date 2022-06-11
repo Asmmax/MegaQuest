@@ -92,11 +92,8 @@ Game::IDialog::Ptr DialogFactory::CreateDialog(const nlohmann::json& dialogNode)
         auto paragraphId = Utils::Read(dialogNode, "paragraph", std::string());
         auto paragraph = _rootFactory->GetRootParagraph(paragraphId);
 
-        auto containerId = Utils::Read(dialogNode, "container", std::string());
-        auto container = _rootFactory->GetRootCaseContainer(containerId);
-
         auto intro = Utils::Read(dialogNode, "intro", QuestCore::TextString());
-        return std::make_shared<Game::SimpleDialog>(_output, intro, paragraph, container);
+        return std::make_shared<Game::SimpleDialog>(_output, intro, paragraph);
     }
     else if (typeId == "Switch") {
         auto intro = Utils::Read(dialogNode, "intro", QuestCore::TextString());
@@ -205,8 +202,13 @@ Game::IButtonList::Ptr DialogFactory::ReadButtonList(const nlohmann::json& butto
     std::string typeId = Utils::Read(buttonsNode, "type", std::string());
     if (typeId == "Simple") {
 
+        auto containerId = Utils::Read(buttonsNode, "container", std::string());
+        auto container = _rootFactory->GetRootCaseContainer(containerId);
+
+        bool show = Utils::Read<bool>(buttonsNode, "show", false);
+
         auto error = Utils::Read(buttonsNode, "error", QuestCore::TextString());
-        return std::make_shared<Game::SimpleButtonList>(dialog, error);
+        return std::make_shared<Game::SimpleButtonList>(dialog, _output, error, container, show);
     }
     else if (typeId == "Inventory") {
 
@@ -227,7 +229,7 @@ Game::IButtonList::Ptr DialogFactory::ReadButtonList(const nlohmann::json& butto
         auto putMessage = Utils::Read(buttonsNode, "put", QuestCore::TextString());
         auto throwMessage = Utils::Read(buttonsNode, "throw", QuestCore::TextString());
 
-        return std::make_shared<Game::InventoryButtonList>(dialog, error, inventory, counts, putMessage, throwMessage);
+        return std::make_shared<Game::InventoryButtonList>(dialog, _output, error, inventory, counts, putMessage, throwMessage);
     }
     
     return nullptr;

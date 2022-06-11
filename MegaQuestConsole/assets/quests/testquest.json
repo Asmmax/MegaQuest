@@ -1,7 +1,6 @@
 {
-	"hotKeys":["inventory"],
 	"inputParagraphs":["root"],
-	"inputContainers":["root"],
+	"inputContainers":["root","to_inventory"],
 	"items": [
 	{
 		"id":"coin",
@@ -212,34 +211,12 @@
 	{
 		"type":"Group",
 		"id":"world",
-		"containers":["world_root", "to_inventory"]
+		"containers":["world_root"]
 	},
 	{
 		"type":"StateMachine",
 		"id":"world_root",
 		"target":"road"
-	},
-	{
-		"type":"Simple",
-		"id":"to_inventory",
-		"cases":[
-		{
-			"key":"inventory",
-			"text":"Открыть инвентарь",
-			"actions":[
-			{
-				"type":"ParagraphSwitching",
-				"stateMachine":"root",
-				"target":"inventory"
-			},
-			{
-				"type":"CasesSwitching",
-				"stateMachine":"root",
-				"target":"inventory"
-			}
-			]
-		}
-		]
 	},
 	{
 		"type":"Condition",
@@ -446,10 +423,50 @@
 				"type":"CasesSwitching",
 				"stateMachine":"root",
 				"target":"world"
+			},
+			{
+				"type":"CasesSwitching",
+				"stateMachine":"to_inventory",
+				"target":"to_inventory_root"
 			}
 			]
 		}
 		]
+	},
+	{
+		"type":"StateMachine",
+		"id":"to_inventory",
+		"target":"to_inventory_root"
+	},
+	{
+		"type":"Simple",
+		"id":"to_inventory_root",
+		"cases":[
+		{
+			"text":"Открыть инвентарь",
+			"actions":[
+			{
+				"type":"ParagraphSwitching",
+				"stateMachine":"root",
+				"target":"inventory"
+			},
+			{
+				"type":"CasesSwitching",
+				"stateMachine":"root",
+				"target":"inventory"
+			},
+			{
+				"type":"CasesSwitching",
+				"stateMachine":"to_inventory",
+				"target":"to_inventory_inventory"
+			}
+			]
+		}
+		]
+	},
+	{
+		"type":"Simple",
+		"id":"to_inventory_inventory"
 	}
 	]
 }

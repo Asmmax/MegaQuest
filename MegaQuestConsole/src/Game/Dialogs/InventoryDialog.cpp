@@ -39,6 +39,6 @@ void InventoryDialog::Update()
 	}
 
 	if (auto defaultButtons = GetButtonList()) {
-		defaultButtons->Update(*output);
+		defaultButtons->Update();
 	}
 }

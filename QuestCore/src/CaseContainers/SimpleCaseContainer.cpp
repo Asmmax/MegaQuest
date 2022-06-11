@@ -1,20 +1,13 @@
 #include "CaseContainers/SimpleCaseContainer.hpp"
-#include "IButtonPanel.hpp"
+#include "IButtonGroup.hpp"
 
 using namespace QuestCore;
 
-void SimpleCaseContainer::Print(IButtonPanel& buttonPanel)
+void SimpleCaseContainer::Print(IButtonGroup& buttons)
 {
-	for (auto& caseList : _cases) {
-		auto buttonContainer = buttonPanel.GetButtonGroup(caseList.first);
-		if (!buttonContainer) {
-			continue;
-		}
-
-		for (auto& _case : caseList.second) {
-			buttonContainer->AddButton(_case.name, [_case = _case]() mutable { 
-				_case.Do(); });
-		}
+	for (auto& _case : _cases) {
+		buttons.AddButton(_case.name, [_case = _case]() mutable {
+			_case.Do(); });
 	}
 }
 
@@ -25,10 +18,5 @@ void SimpleCaseContainer::Clear()
 
 void SimpleCaseContainer::AddCase(const Case& _case)
 {
-	_cases[""].push_back(_case);
-}
-
-void SimpleCaseContainer::AddCase(const std::string& key, const Case& _case)
-{
-	_cases[key].push_back(_case);
+	_cases.push_back(_case);
 }

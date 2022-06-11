@@ -6,7 +6,7 @@ namespace QuestCore
 	class CaseContainerStateMachine : public ICaseContainer
 	{
 	public:
-		virtual void Print(IButtonPanel& buttonPanel) override;
+		virtual void Print(IButtonGroup& buttons) override;
 
 		inline void SetState(const ICaseContainer::Ptr& newState) { _state = newState; }
 

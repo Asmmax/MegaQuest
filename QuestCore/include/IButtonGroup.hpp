@@ -16,11 +16,4 @@ namespace QuestCore
         virtual ~IButtonGroup() = default;
         virtual void AddButton(const TextString& text, const Callback& callback) = 0;
     };
-
-    class IButtonPanel
-    {
-    public:
-        virtual ~IButtonPanel() = default;
-        virtual IButtonGroup::Ptr GetButtonGroup(const std::string& actionKey) = 0;
-    };
 }

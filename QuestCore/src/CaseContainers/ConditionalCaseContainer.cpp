@@ -3,17 +3,17 @@
 
 using namespace QuestCore;
 
-void ConditionalCaseContainer::Print(IButtonPanel& buttonPanel)
+void ConditionalCaseContainer::Print(IButtonGroup& buttons)
 {
     if (IsAllowed()) {
         if (_thenContainer) {
-            _thenContainer->Print(buttonPanel);
+            _thenContainer->Print(buttons);
         }
 	}
 	else {
 
 		if (_elseContainer) {
-			_elseContainer->Print(buttonPanel);
+			_elseContainer->Print(buttons);
 		}
 	}
 }

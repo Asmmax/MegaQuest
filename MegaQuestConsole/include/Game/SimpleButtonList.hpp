@@ -1,37 +1,34 @@
 #pragma once
-#include "Game/IButtonList.hpp"
+#include "Game/ButtonListBase.hpp"
 #include "TextString.hpp"
 #include <vector>
 
+namespace QuestCore
+{
+	class ICaseContainer;
+}
+
 namespace Game
 {
-	class IDialog;
-
-	class SimpleButtonList : public IButtonList
+	class SimpleButtonList : public ButtonListBase
 	{
-		struct Button
-		{
-			QuestCore::TextString name;
-			Callback callback;
-		};
-
 		using DialogWeakPtr = std::weak_ptr<IDialog>;
+		using OutputPtr = std::shared_ptr<IOutput>;
+		using CaseContainerPtr = std::shared_ptr<QuestCore::ICaseContainer>;
 
 	public:
 		using Ptr = std::shared_ptr<SimpleButtonList>;
 
-		SimpleButtonList(const DialogWeakPtr& parent, const QuestCore::TextString& error);
-		virtual void Clear() override;
-		virtual void Do(int answer = 0) override;
-		virtual void Update(IOutput& output) override;
-		virtual void AddButton(const QuestCore::TextString& text, const Callback& callback) override;
+		SimpleButtonList(const DialogWeakPtr& parent,
+			const OutputPtr& output,
+			const QuestCore::TextString& error,
+			const CaseContainerPtr& container,
+			bool show);
+
+		virtual void Update() override;
 
 	private:
-		std::vector<QuestCore::TextString> GetNames() const;
-
-	private:
-		std::vector<Button> _buttons;
-		DialogWeakPtr _parent;
-		QuestCore::TextString _error;
+		CaseContainerPtr _container;
+		bool _show;
 	};
 }

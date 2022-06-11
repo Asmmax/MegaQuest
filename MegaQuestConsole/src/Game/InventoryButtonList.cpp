@@ -6,13 +6,14 @@
 using namespace Game;
 
 InventoryButtonList::InventoryButtonList(const DialogWeakPtr& parent,
+	const OutputPtr& output,
 	const QuestCore::TextString& error,
 	const InventoryPtr& inventory,
 	const std::vector<int>& counts,
 	const QuestCore::TextString& putMessage,
 	const QuestCore::TextString& throwMessage) :
 
-	SimpleButtonList(parent, error),
+	ButtonListBase(parent, output, error),
 	_inventory(inventory),
 	_counts(counts),
 	_putMessage(putMessage),
@@ -20,7 +21,7 @@ InventoryButtonList::InventoryButtonList(const DialogWeakPtr& parent,
 {
 }
 
-void InventoryButtonList::Update(IOutput& output)
+void InventoryButtonList::Update()
 {
 	Clear();
 
@@ -35,7 +36,7 @@ void InventoryButtonList::Update(IOutput& output)
 		}
 	}
 
-	SimpleButtonList::Update(output);
+	Print();
 }
 
 void InventoryButtonList::AddPutButton(const ItemPtr& item, int count)

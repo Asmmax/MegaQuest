@@ -12,9 +12,9 @@ void CaseContainerGroup::AddCaseContainer(const ICaseContainer::Ptr& container)
 	_containers.emplace_back(container);
 }
 
-void CaseContainerGroup::Print(IButtonPanel& buttonPanel)
+void CaseContainerGroup::Print(IButtonGroup& buttons)
 {
 	for (auto& container : _containers) {
-		container->Print(buttonPanel);
+		container->Print(buttons);
 	}
 }

@@ -3,8 +3,8 @@
 
 using namespace QuestCore;
 
-void CaseContainerStateMachine::Print(IButtonPanel& buttonPanel)
+void CaseContainerStateMachine::Print(IButtonGroup& buttons)
 {
 	assert(_state);
-	_state->Print(buttonPanel);
+	_state->Print(buttons);
 }

@@ -6,7 +6,7 @@
 
 namespace QuestCore
 {
-	class IButtonPanel;
+	class IButtonGroup;
 
 	class ICaseContainer
 	{
@@ -15,6 +15,6 @@ namespace QuestCore
 
 		virtual ~ICaseContainer() = default;
 
-		virtual void Print(IButtonPanel& buttonPanel) = 0;
+		virtual void Print(IButtonGroup& buttons) = 0;
 	};
 }

@@ -509,19 +509,12 @@ void JsonQuestFactory::InitContainer(const std::shared_ptr<QuestCore::ICaseConta
             }
 
             for (auto& jsonCase : casesNode) {
-                std::string key = Utils::Read(jsonCase, "key", std::string());
                 auto _case = ReadCase(jsonCase);
                 if (_case.actions.empty()) {
                     continue;
                 }
 
-                if (key.empty()) {
-                    simple->AddCase(_case);
-                }
-                else {
-                    simple->AddCase(key, _case);
-                }
-
+                simple->AddCase(_case);
             }
         }
     }

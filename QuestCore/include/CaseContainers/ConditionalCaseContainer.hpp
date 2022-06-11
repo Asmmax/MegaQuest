@@ -11,7 +11,7 @@ namespace QuestCore
 		using ConditionPtr = std::shared_ptr<ICondition>;
 
 	public:
-		virtual void Print(IButtonPanel& buttonPanel) override;
+		virtual void Print(IButtonGroup& buttons) override;
 
 		void SetThenContainer(const ICaseContainer::Ptr& thenContainer);
 		void SetElseContainer(const ICaseContainer::Ptr& elseContainer);

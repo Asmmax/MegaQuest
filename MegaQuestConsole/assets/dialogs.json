@@ -5,17 +5,19 @@
 		"key":"main",
 		"type":"Simple",
 		"paragraph":"root",
-		"container":"root",
 		"intro":"Вы можете ввести Quit, Inventory или цифры.",
 		"buttonGroups":[
 		{
 			"actionKey":"",
 			"type":"Simple",
+			"container":"root",
+			"show":true,
 			"error":"Вводить можно только цифру из предложенных!"
 		},
 		{
 			"actionKey":"inventory",
-			"type":"Simple"
+			"type":"Simple",
+			"container":"to_inventory"
 		}
 		]
 	},
