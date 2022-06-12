@@ -20,21 +20,12 @@ void SimpleDialog::AppendText(const QuestCore::TextString& text)
 	_text += text;
 }
 
-void SimpleDialog::AddButtonList(const std::string& key, const IButtonList::Ptr& buttonList)
+void SimpleDialog::AddButtonList(const IButtonList::Ptr& buttonList)
 {
-	_buttonGroups[key] = buttonList;
+	_buttonGroups.push_back(buttonList);
 	buttonList->SetButtonDoneCallback([this]() {
 		Update();
 		});
-}
-
-IButtonList::Ptr SimpleDialog::GetButtonList(const std::string& key)
-{
-	auto foundIt = _buttonGroups.find(key);
-	if (foundIt == _buttonGroups.end()) {
-		return nullptr;
-	}
-	return foundIt->second;
 }
 
 void SimpleDialog::Update()
@@ -46,6 +37,6 @@ void SimpleDialog::Update()
 	output->WriteLn(_text);
 	
 	for (auto& buttonGroup : _buttonGroups) {
-		buttonGroup.second->Update();
+		buttonGroup->Update();
 	}
 }

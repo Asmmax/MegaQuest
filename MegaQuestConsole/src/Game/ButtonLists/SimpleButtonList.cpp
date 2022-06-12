@@ -20,6 +20,8 @@ void SimpleButtonList::Update()
 	Clear();
 	_container->Print(*this);
 
+	ButtonListBase::Update();
+
 	if (_show) {
 		Print();
 	}

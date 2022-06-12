@@ -15,6 +15,7 @@ namespace Game
 	{
 		using OutputPtr = std::shared_ptr<IOutput>;
 		using CaseContainerPtr = std::shared_ptr<QuestCore::ICaseContainer>;
+		using SwitchButtonListPtr = std::shared_ptr<SwitchButtonList>;
 
 	public:
 		using Ptr = std::shared_ptr<SimpleButtonList>;

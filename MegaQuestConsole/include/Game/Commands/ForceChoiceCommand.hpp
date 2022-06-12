@@ -4,17 +4,16 @@
 
 namespace Game
 {
-	class IDialog;
+	class IButtonList;
 
 	class ForceChoiceCommand : public VoidCommand
 	{
-		using DialogPtr = std::shared_ptr<IDialog>;
+		using ButtonListPtr = std::shared_ptr<IButtonList>;
 	public:
-		ForceChoiceCommand(const DialogPtr& dialog, const std::string& actionKey, int choiceId = 0);
+		ForceChoiceCommand(const ButtonListPtr& buttonList, int choiceId = 0);
 		virtual void Run() override;
 	private:
-		DialogPtr _dialog;
-		std::string _actionKey;
+		ButtonListPtr _buttonList;
 		int _choiceId;
 	};
 }

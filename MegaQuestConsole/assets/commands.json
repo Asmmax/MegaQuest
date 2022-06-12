@@ -13,7 +13,6 @@
 	{
 		"command":"inventory",
 		"type":"ForceChoice",
-		"dialog":"root",
 		"buttonGroup":"inventory",
 		"choice":0
 	},
@@ -35,7 +34,6 @@
 	{
 		"command":"",
 		"type":"Choice",
-		"dialog":"root",
 		"buttonGroup":"default",
 		"error":"Вводить можно только цифру из предложенных!"
 	}

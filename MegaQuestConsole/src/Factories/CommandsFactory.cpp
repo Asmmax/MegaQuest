@@ -98,29 +98,27 @@ Game::ICommand::Ptr CommandsFactory::ReadCommand(const nlohmann::json& commandNo
     }
     else if (typeId == "Choice") {
         auto error = Utils::Read(commandNode, "error", QuestCore::TextString());
-        auto buttonGroup = Utils::Read(commandNode, "buttonGroup", std::string());
-        auto dialogId = Utils::Read(commandNode, "dialog", std::string());
+        auto buttonGroupId = Utils::Read(commandNode, "buttonGroup", std::string());
 
-        auto dialog = _dialogFactory->GetDialog(dialogId);
-        assert(dialog);
-        if (!dialog) {
+        auto buttonGroup = _dialogFactory->GetButtonList(buttonGroupId);
+        assert(buttonGroup);
+        if (!buttonGroup) {
             return nullptr;
         }
 
-        return std::make_shared<Game::ChoiceCommand>(dialog, buttonGroup, error);
+        return std::make_shared<Game::ChoiceCommand>(buttonGroup, error);
     }
     else if (typeId == "ForceChoice") {
-        auto buttonGroup = Utils::Read(commandNode, "buttonGroup", std::string());
-        auto dialogId = Utils::Read(commandNode, "dialog", std::string());
+        auto buttonGroupId = Utils::Read(commandNode, "buttonGroup", std::string());
 
-        auto dialog = _dialogFactory->GetDialog(dialogId);
-        assert(dialog);
-        if (!dialog) {
+        auto buttonGroup = _dialogFactory->GetButtonList(buttonGroupId);
+        assert(buttonGroup);
+        if (!buttonGroup) {
             return nullptr;
         }
 
         auto choice = Utils::Read<int>(commandNode, "choice", 0);
-        return std::make_shared<Game::ForceChoiceCommand>(dialog, buttonGroup, choice);
+        return std::make_shared<Game::ForceChoiceCommand>(buttonGroup, choice);
     }
     else if (typeId == "Switch") {
         auto switchDialogId = Utils::Read(commandNode, "switchDialog", std::string());

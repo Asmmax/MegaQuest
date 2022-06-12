@@ -35,6 +35,8 @@ void InventoryButtonList::Update()
 		}
 	}
 
+	ButtonListBase::Update();
+
 	Print();
 }
 

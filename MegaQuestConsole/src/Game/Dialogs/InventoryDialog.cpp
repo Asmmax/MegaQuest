@@ -15,21 +15,12 @@ InventoryDialog::InventoryDialog(const OutputPtr& output,
 {
 }
 
-void InventoryDialog::AddButtonList(const std::string& key, const IButtonList::Ptr& buttonList)
+void InventoryDialog::AddButtonList(const IButtonList::Ptr& buttonList)
 {
-	_buttonGroups[key] = buttonList;
+	_buttonGroups.push_back(buttonList);
 	buttonList->SetButtonDoneCallback([this]() {
 		Update();
 		});
-}
-
-IButtonList::Ptr InventoryDialog::GetButtonList(const std::string& key)
-{
-	auto foundIt = _buttonGroups.find(key);
-	if (foundIt == _buttonGroups.end()) {
-		return nullptr;
-	}
-	return foundIt->second;
 }
 
 void InventoryDialog::Update()
@@ -42,6 +33,6 @@ void InventoryDialog::Update()
 	}
 
 	for (auto& buttonGroup : _buttonGroups) {
-		buttonGroup.second->Update();
+		buttonGroup->Update();
 	}
 }

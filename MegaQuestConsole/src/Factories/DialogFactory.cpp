@@ -5,6 +5,7 @@
 #include "Game/ButtonLists/SimpleButtonList.hpp"
 #include "Game/Dialogs/InventoryDialog.hpp"
 #include "Game/ButtonLists/InventoryButtonList.hpp"
+#include "Game/ButtonLists/SwitchButtonList.hpp"
 
 #include "Utils/Reader.hpp"
 
@@ -60,12 +61,17 @@ void DialogFactory::Read()
 
     foundIt = root.find("buttonLists");
     if (foundIt != root.end()) {
-        ReadButtonLists(*foundIt);
+        CreateButtonLists(*foundIt);
     }
 
     foundIt = root.find("dialogs");
     if (foundIt != root.end()) {
         ReadDialogs(*foundIt);
+    }
+
+    foundIt = root.find("buttonLists");
+    if (foundIt != root.end()) {
+        ReadButtonLists(*foundIt);
     }
 
     foundIt = root.find("rootDialog");
@@ -139,7 +145,7 @@ void DialogFactory::InitDialog(const Game::IDialog::Ptr& dialog, const nlohmann:
         if (buttonsJsonIt != dialogNode.end()) {
             auto buttonGroups = ReadButtonGroups(*buttonsJsonIt);
             for (auto buttonGroup : buttonGroups) {
-                simpleDialog->AddButtonList(buttonGroup.first, buttonGroup.second);
+                simpleDialog->AddButtonList(buttonGroup);
             }
         }
     }
@@ -168,7 +174,7 @@ void DialogFactory::InitDialog(const Game::IDialog::Ptr& dialog, const nlohmann:
         if (buttonsJsonIt != dialogNode.end()) {
             auto buttonGroups = ReadButtonGroups(*buttonsJsonIt);
             for (auto buttonGroup : buttonGroups) {
-                inventoryDialog->AddButtonList(buttonGroup.first, buttonGroup.second);
+                inventoryDialog->AddButtonList(buttonGroup);
             }
         }
     }
@@ -185,20 +191,20 @@ void DialogFactory::ReadRootDialog(const nlohmann::json& rootNode)
     }
 }
 
-void DialogFactory::ReadButtonLists(const nlohmann::json& buttonListsNode)
+void DialogFactory::CreateButtonLists(const nlohmann::json& buttonListsNode)
 {
     if (!buttonListsNode.is_array()) {
         return;
     }
 
     for (auto& jsonButonList : buttonListsNode) {
-        auto butonList = ReadButtonList(jsonButonList);
+        auto butonList = CreateButtonList(jsonButonList);
         auto id = Utils::Read(jsonButonList, "id", std::string());
         _buttonLists.emplace(id, butonList);
     }
 }
 
-Game::IButtonList::Ptr DialogFactory::ReadButtonList(const nlohmann::json& buttonListNode)
+Game::IButtonList::Ptr DialogFactory::CreateButtonList(const nlohmann::json& buttonListNode)
 {
     std::string typeId = Utils::Read(buttonListNode, "type", std::string());
     if (typeId == "Simple") {
@@ -232,28 +238,78 @@ Game::IButtonList::Ptr DialogFactory::ReadButtonList(const nlohmann::json& butto
 
         return std::make_shared<Game::InventoryButtonList>(_output, error, inventory, counts, putMessage, throwMessage);
     }
+    else if (typeId == "Switch") {
+        return std::make_shared<Game::SwitchButtonList>();
+    }
 
     return nullptr;
 }
 
-std::vector<std::pair<std::string, Game::IButtonList::Ptr>> DialogFactory::ReadButtonGroups(const nlohmann::json& buttonGroupsNode)
+void DialogFactory::ReadButtonLists(const nlohmann::json& buttonListsNode)
 {
-    std::vector<std::pair<std::string, Game::IButtonList::Ptr>> result;
+    if (!buttonListsNode.is_array()) {
+        return;
+    }
+
+    for (auto& jsonButtonList : buttonListsNode) {
+        auto id = Utils::Read(jsonButtonList, "id", std::string());
+        auto foundIt = _buttonLists.find(id);
+        if (foundIt != _buttonLists.end()) {
+            InitButtonList(foundIt->second, jsonButtonList);
+        }
+    }
+}
+
+void DialogFactory::InitButtonList(const Game::IButtonList::Ptr& buttonList, const nlohmann::json& buttonListNode)
+{
+    std::string typeId = Utils::Read(buttonListNode, "type", std::string());
+    if (typeId == "Simple") {
+        auto simpleButtonList = std::dynamic_pointer_cast<Game::SimpleButtonList>(buttonList);
+
+        auto switchId = Utils::Read(buttonListNode, "switch", std::string());
+        auto foundIt = _buttonLists.find(switchId);
+        assert(foundIt != _buttonLists.end());
+        if (foundIt != _buttonLists.end()) {
+            if (auto swicthButtonList = std::dynamic_pointer_cast<Game::SwitchButtonList>(foundIt->second)) {
+                simpleButtonList->SetSwitchButtonList(swicthButtonList);
+            }
+            
+        }
+
+    }
+    else if (typeId == "Inventory") {
+
+        auto inventoryButtonList = std::dynamic_pointer_cast<Game::InventoryButtonList>(buttonList);
+
+        auto switchId = Utils::Read(buttonListNode, "switch", std::string());
+        auto foundIt = _buttonLists.find(switchId);
+        assert(foundIt != _buttonLists.end());
+        if (foundIt != _buttonLists.end()) {
+            if (auto swicthButtonList = std::dynamic_pointer_cast<Game::SwitchButtonList>(foundIt->second)) {
+                inventoryButtonList->SetSwitchButtonList(swicthButtonList);
+            }
+
+        }
+    }
+}
+
+std::vector<Game::IButtonList::Ptr> DialogFactory::ReadButtonGroups(const nlohmann::json& buttonGroupsNode)
+{
+    std::vector<Game::IButtonList::Ptr> result;
 
     if (!buttonGroupsNode.is_array()) {
         return result;
     }
 
     for (auto& jsonButons : buttonGroupsNode) {
-        auto buttonListId = Utils::Read(jsonButons, "buttonList", std::string());
+        auto buttonListId = jsonButons.get<std::string>();
         auto foundIt = _buttonLists.find(buttonListId);
         assert(foundIt != _buttonLists.end());
         if (foundIt == _buttonLists.end()) {
             continue;
         }
 
-        auto actionKey = Utils::Read(jsonButons, "actionKey", std::string());
-        result.emplace_back(actionKey, foundIt->second);
+        result.push_back(foundIt->second);
     }
 
     return result;
@@ -270,6 +326,16 @@ Game::IDialog::Ptr DialogFactory::GetDialog(const std::string& id)
     Read();
     auto foundIt = _dialogs.find(id);
     if (foundIt == _dialogs.end()) {
+        return nullptr;
+    }
+    return foundIt->second;
+}
+
+Game::IButtonList::Ptr DialogFactory::GetButtonList(const std::string& id)
+{
+    Read();
+    auto foundIt = _buttonLists.find(id);
+    if (foundIt == _buttonLists.end()) {
         return nullptr;
     }
     return foundIt->second;

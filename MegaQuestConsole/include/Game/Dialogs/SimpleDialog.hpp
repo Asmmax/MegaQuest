@@ -2,7 +2,7 @@
 #include "ITextView.hpp"
 #include "Game/Dialogs/IntroDialog.hpp"
 
-#include <map>
+#include <vector>
 
 namespace QuestCore
 {
@@ -27,13 +27,12 @@ namespace Game
 			const ParagraphPtr& paragraph);
 
 		virtual void AppendText(const QuestCore::TextString& text) override;
-		void AddButtonList(const std::string& key, const ButtonListPtr& buttonList);
-		virtual ButtonListPtr GetButtonList(const std::string& key = std::string()) override;
+		void AddButtonList(const ButtonListPtr& buttonList);
 		virtual void Update() override;
 
 	private:
 		ParagraphPtr _paragraph;
 		QuestCore::TextString _text;
-		std::map<std::string, ButtonListPtr> _buttonGroups;
+		std::vector<ButtonListPtr> _buttonGroups;
 	};
 }

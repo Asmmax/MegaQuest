@@ -20,9 +20,12 @@ void SwitchDialog::AddDialog(const DialogPtr& dialog)
 	_dialogs.push_back(dialog);
 }
 
-IButtonList::Ptr SwitchDialog::GetButtonList(const std::string& key)
+void SwitchDialog::AddButtonList(const IButtonList::Ptr& buttonList)
 {
-	return _currentDialog->GetButtonList(key);
+	_buttonGroups.push_back(buttonList);
+	buttonList->SetButtonDoneCallback([this]() {
+		Update();
+		});
 }
 
 void SwitchDialog::Init()

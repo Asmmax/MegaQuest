@@ -1,19 +1,15 @@
 #include "Game/Commands/ForceChoiceCommand.hpp"
-#include "Game/IDialog.hpp"
 #include "Game/IButtonList.hpp"
 
 using namespace Game;
 
-ForceChoiceCommand::ForceChoiceCommand(const DialogPtr& dialog, const std::string& actionKey, int choiceId) :
-	_dialog(dialog),
-	_actionKey(actionKey),
+ForceChoiceCommand::ForceChoiceCommand(const ButtonListPtr& buttonList, int choiceId) :
+	_buttonList(buttonList),
 	_choiceId(choiceId)
 {
 }
 
 void ForceChoiceCommand::Run()
 {
-	if (auto inventoryButtons = _dialog->GetButtonList(_actionKey)) {
-		inventoryButtons->Do(_choiceId);
-	}
+	_buttonList->Do(_choiceId);
 }

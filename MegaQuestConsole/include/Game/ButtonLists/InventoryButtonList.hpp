@@ -16,6 +16,7 @@ namespace Game
 		using ItemPtr = std::shared_ptr<QuestCore::Item>;
 	public:
 		using Ptr = std::shared_ptr<InventoryButtonList>;
+		using SwitchButtonListPtr = std::shared_ptr<SwitchButtonList>;
 
 		InventoryButtonList(const OutputPtr& output,
 			const QuestCore::TextString& error, 

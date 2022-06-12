@@ -19,7 +19,7 @@ namespace Game
 
 		SwitchDialog(const OutputPtr& output, const QuestCore::TextString& intro);
 		void AddDialog(const DialogPtr& dialog);
-		virtual ButtonListPtr GetButtonList(const std::string& key = std::string()) override;
+		void AddButtonList(const ButtonListPtr& buttonList);
 		virtual void Init() override;
 		virtual void Update() override;
 		void Next();
@@ -27,5 +27,6 @@ namespace Game
 	private:
 		std::vector<DialogPtr> _dialogs;
 		DialogPtr _currentDialog;
+		std::vector<ButtonListPtr> _buttonGroups;
 	};
 }
