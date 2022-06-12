@@ -9,12 +9,24 @@ void SwitchButtonList::Do(int answer)
 	}
 }
 
-void SwitchButtonList::SetButtonDoneCallback(const Callback& callback)
+void SwitchButtonList::Update()
 {
-	_buttonDone = callback;
+	_currentButtonList = nullptr;
 }
 
-void SwitchButtonList::Switch(const IButtonList::Ptr& buttonList)
+void SwitchButtonList::SetButtonDoneCallback(const Callback& /*callback*/)
 {
-	_currentButtonList = buttonList;
+}
+
+void SwitchButtonList::Switch(const IButtonList* buttonList)
+{
+	auto foundIt = std::find_if(_buttonLists.begin(), _buttonLists.end(), [buttonList](const IButtonList::Ptr& buttonListPtr) -> bool {
+		return buttonListPtr.get() == buttonList;
+		});
+	_currentButtonList = *foundIt;
+}
+
+void SwitchButtonList::AddButtonList(const IButtonList::Ptr& buttonList)
+{
+	_buttonLists.push_back(buttonList);
 }

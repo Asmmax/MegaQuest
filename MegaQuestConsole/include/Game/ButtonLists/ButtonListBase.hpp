@@ -8,7 +8,7 @@ namespace Game
 	class IOutput;
 	class SwitchButtonList;
 
-	class ButtonListBase : public IButtonList, public std::enable_shared_from_this<IButtonList>
+	class ButtonListBase : public IButtonList
 	{
 		using OutputPtr = std::shared_ptr<IOutput>;
 		using SwitchButtonListPtr = std::shared_ptr<SwitchButtonList>;

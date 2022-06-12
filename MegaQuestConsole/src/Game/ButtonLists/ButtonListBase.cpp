@@ -15,14 +15,7 @@ ButtonListBase::ButtonListBase(const IOutput::Ptr& output,
 
 void ButtonListBase::AddButton(const Button& button)
 {
-	Button copyButton(button);
-	copyButton.callback = [callback = copyButton.callback, afterCallback = _buttonDone]() {
-		callback();
-		if (afterCallback) {
-			afterCallback();
-		}
-	};
-	_buttons.push_back(copyButton);
+	_buttons.push_back(button);
 }
 
 void ButtonListBase::Do(int answer)
@@ -33,11 +26,15 @@ void ButtonListBase::Do(int answer)
 	}
 
 	_buttons[answer].callback();
+
+	if (_buttonDone) {
+		_buttonDone();
+	}
 }
 
 void ButtonListBase::Update()
 {
-	_switchList->Switch(shared_from_this());
+	_switchList->Switch(this);
 }
 
 std::vector<QuestCore::TextString> ButtonListBase::GetNames() const

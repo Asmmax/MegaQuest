@@ -27,11 +27,13 @@
 	},
 	{
 		"id":"default",
-		"type":"Switch"
+		"type":"Switch",
+		"targets":["root_buttons", "inventory_buttons"]
 	},
 	{
 		"id":"inventory",
-		"type":"Switch"
+		"type":"Switch",
+		"targets":["to_inventory_button"]
 	}
 	],
 	"dialogs":[

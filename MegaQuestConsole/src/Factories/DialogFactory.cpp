@@ -160,6 +160,14 @@ void DialogFactory::InitDialog(const Game::IDialog::Ptr& dialog, const nlohmann:
             }
         }
 
+        auto buttonsJsonIt = dialogNode.find("buttonGroups");
+        if (buttonsJsonIt != dialogNode.end()) {
+            auto buttonGroups = ReadButtonGroups(*buttonsJsonIt);
+            for (auto buttonGroup : buttonGroups) {
+                switchDialog->AddButtonList(buttonGroup);
+            }
+        }
+
         for (auto dialogId : dialogs) {
             auto foundSubDialog = _dialogs.find(dialogId);
             assert(foundSubDialog != _dialogs.end());
@@ -290,6 +298,26 @@ void DialogFactory::InitButtonList(const Game::IButtonList::Ptr& buttonList, con
             }
 
         }
+    }
+    else if (typeId == "Switch") {
+        auto swicthButtonList = std::dynamic_pointer_cast<Game::SwitchButtonList>(buttonList);
+
+        auto foundIt = buttonListNode.find("targets");
+        if (foundIt == buttonListNode.end()) {
+            return;
+        }
+
+        for (auto& jsonButons : *foundIt) {
+            auto buttonListId = jsonButons.get<std::string>();
+            auto foundIt = _buttonLists.find(buttonListId);
+            assert(foundIt != _buttonLists.end());
+            if (foundIt == _buttonLists.end()) {
+                continue;
+            }
+
+            swicthButtonList->AddButtonList(foundIt->second);
+        }
+
     }
 }
 

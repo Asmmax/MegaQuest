@@ -36,6 +36,10 @@ void SwitchDialog::Init()
 
 void SwitchDialog::Update()
 {
+	for (auto& buttonGroup : _buttonGroups) {
+		buttonGroup->Update();
+	}
+
 	_currentDialog->Update();
 }
 
@@ -58,5 +62,5 @@ void SwitchDialog::Next()
 
 	_currentDialog = _dialogs[nextId];
 	_currentDialog->Init();
-	_currentDialog->Update();
+	Update();
 }
