@@ -32,9 +32,10 @@ private:
 	void ReadDialogs(const nlohmann::json& dialogsNode);
 	void InitDialog(const DialogPtr& dialog, const nlohmann::json& dialogNode);
 	void ReadRootDialog(const nlohmann::json& rootNode);
+	void ReadButtonLists(const nlohmann::json& buttonListsNode);
+	ButtonListPtr ReadButtonList(const nlohmann::json& buttonListNode);
 
-	std::vector<std::pair<std::string, ButtonListPtr>> ReadButtonLists(const nlohmann::json& buttonsNode, const DialogPtr& dialog);
-	ButtonListPtr ReadButtonList(const nlohmann::json& buttonsNode, const DialogPtr& dialog);
+	std::vector<std::pair<std::string, ButtonListPtr>> ReadButtonGroups(const nlohmann::json& buttonGroupsNode);
 
 private:
 	bool _isRed;
@@ -42,5 +43,6 @@ private:
 	OutputPtr _output;
 	RootFactoryPtr _rootFactory;
 	std::map<std::string, DialogPtr> _dialogs;
+	std::map<std::string, ButtonListPtr> _buttonLists;
 	DialogPtr _rootDialog;
 };

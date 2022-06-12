@@ -58,6 +58,11 @@ void DialogFactory::Read()
         CreateDialogs(*foundIt);
     }
 
+    foundIt = root.find("buttonLists");
+    if (foundIt != root.end()) {
+        ReadButtonLists(*foundIt);
+    }
+
     foundIt = root.find("dialogs");
     if (foundIt != root.end()) {
         ReadDialogs(*foundIt);
@@ -79,7 +84,7 @@ void DialogFactory::CreateDialogs(const nlohmann::json& dialogsNode)
 
     for (auto& jsonDialog : dialogsNode) {
         auto dialog = CreateDialog(jsonDialog);
-        auto id = Utils::Read(jsonDialog, "key", std::string());
+        auto id = Utils::Read(jsonDialog, "id", std::string());
         _dialogs.emplace(id, dialog);
     }
 }
@@ -117,7 +122,7 @@ void DialogFactory::ReadDialogs(const nlohmann::json& dialogsNode)
     }
 
     for (auto& jsonDialog : dialogsNode) {
-        auto id = Utils::Read(jsonDialog, "key", std::string());
+        auto id = Utils::Read(jsonDialog, "id", std::string());
         auto foundIt = _dialogs.find(id);
         if (foundIt != _dialogs.end()) {
             InitDialog(foundIt->second, jsonDialog);
@@ -132,9 +137,9 @@ void DialogFactory::InitDialog(const Game::IDialog::Ptr& dialog, const nlohmann:
         auto simpleDialog = std::dynamic_pointer_cast<Game::SimpleDialog>(dialog);
         auto buttonsJsonIt = dialogNode.find("buttonGroups");
         if (buttonsJsonIt != dialogNode.end()) {
-            auto buttonLists = ReadButtonLists(*buttonsJsonIt, simpleDialog);
-            for (auto buttonList : buttonLists) {
-                simpleDialog->AddButtonList(buttonList.first, buttonList.second);
+            auto buttonGroups = ReadButtonGroups(*buttonsJsonIt);
+            for (auto buttonGroup : buttonGroups) {
+                simpleDialog->AddButtonList(buttonGroup.first, buttonGroup.second);
             }
         }
     }
@@ -161,9 +166,9 @@ void DialogFactory::InitDialog(const Game::IDialog::Ptr& dialog, const nlohmann:
         auto inventoryDialog = std::dynamic_pointer_cast<Game::InventoryDialog>(dialog);
         auto buttonsJsonIt = dialogNode.find("buttonGroups");
         if (buttonsJsonIt != dialogNode.end()) {
-            auto buttonLists = ReadButtonLists(*buttonsJsonIt, inventoryDialog);
-            for (auto buttonList : buttonLists) {
-                inventoryDialog->AddButtonList(buttonList.first, buttonList.second);
+            auto buttonGroups = ReadButtonGroups(*buttonsJsonIt);
+            for (auto buttonGroup : buttonGroups) {
+                inventoryDialog->AddButtonList(buttonGroup.first, buttonGroup.second);
             }
         }
     }
@@ -180,59 +185,78 @@ void DialogFactory::ReadRootDialog(const nlohmann::json& rootNode)
     }
 }
 
-std::vector<std::pair<std::string, Game::IButtonList::Ptr>> DialogFactory::ReadButtonLists(const nlohmann::json& buttonsNode, const DialogPtr& dialog)
+void DialogFactory::ReadButtonLists(const nlohmann::json& buttonListsNode)
 {
-    std::vector<std::pair<std::string, Game::IButtonList::Ptr>> result;
-
-    if (!buttonsNode.is_array()) {
-        return result;
+    if (!buttonListsNode.is_array()) {
+        return;
     }
 
-    for (auto& jsonButons : buttonsNode) {
-        auto butonList = ReadButtonList(jsonButons, dialog);
-        auto id = Utils::Read(jsonButons, "actionKey", std::string());
-        result.emplace_back(id, butonList);
+    for (auto& jsonButonList : buttonListsNode) {
+        auto butonList = ReadButtonList(jsonButonList);
+        auto id = Utils::Read(jsonButonList, "id", std::string());
+        _buttonLists.emplace(id, butonList);
     }
-
-    return result;
 }
 
-Game::IButtonList::Ptr DialogFactory::ReadButtonList(const nlohmann::json& buttonsNode, const DialogPtr& dialog)
+Game::IButtonList::Ptr DialogFactory::ReadButtonList(const nlohmann::json& buttonListNode)
 {
-    std::string typeId = Utils::Read(buttonsNode, "type", std::string());
+    std::string typeId = Utils::Read(buttonListNode, "type", std::string());
     if (typeId == "Simple") {
 
-        auto containerId = Utils::Read(buttonsNode, "container", std::string());
+        auto containerId = Utils::Read(buttonListNode, "container", std::string());
         auto container = _rootFactory->GetRootCaseContainer(containerId);
 
-        bool show = Utils::Read<bool>(buttonsNode, "show", false);
+        bool show = Utils::Read<bool>(buttonListNode, "show", false);
 
-        auto error = Utils::Read(buttonsNode, "error", QuestCore::TextString());
-        return std::make_shared<Game::SimpleButtonList>(dialog, _output, error, container, show);
+        auto error = Utils::Read(buttonListNode, "error", QuestCore::TextString());
+        return std::make_shared<Game::SimpleButtonList>(_output, error, container, show);
     }
     else if (typeId == "Inventory") {
 
-        auto inventoryId = Utils::Read(buttonsNode, "inventory", std::string());
+        auto inventoryId = Utils::Read(buttonListNode, "inventory", std::string());
         auto inventory = _rootFactory->GetInventory(inventoryId);
 
-        auto error = Utils::Read(buttonsNode, "error", QuestCore::TextString());
+        auto error = Utils::Read(buttonListNode, "error", QuestCore::TextString());
 
         std::vector<int> counts;
 
-        auto foundIt = buttonsNode.find("counts");
-        if (foundIt != buttonsNode.end()) {
+        auto foundIt = buttonListNode.find("counts");
+        if (foundIt != buttonListNode.end()) {
             for (auto& count : *foundIt) {
                 counts.push_back(count.get<int>());
             }
         }
 
-        auto putMessage = Utils::Read(buttonsNode, "put", QuestCore::TextString());
-        auto throwMessage = Utils::Read(buttonsNode, "throw", QuestCore::TextString());
+        auto putMessage = Utils::Read(buttonListNode, "put", QuestCore::TextString());
+        auto throwMessage = Utils::Read(buttonListNode, "throw", QuestCore::TextString());
 
-        return std::make_shared<Game::InventoryButtonList>(dialog, _output, error, inventory, counts, putMessage, throwMessage);
+        return std::make_shared<Game::InventoryButtonList>(_output, error, inventory, counts, putMessage, throwMessage);
     }
-    
+
     return nullptr;
+}
+
+std::vector<std::pair<std::string, Game::IButtonList::Ptr>> DialogFactory::ReadButtonGroups(const nlohmann::json& buttonGroupsNode)
+{
+    std::vector<std::pair<std::string, Game::IButtonList::Ptr>> result;
+
+    if (!buttonGroupsNode.is_array()) {
+        return result;
+    }
+
+    for (auto& jsonButons : buttonGroupsNode) {
+        auto buttonListId = Utils::Read(jsonButons, "buttonList", std::string());
+        auto foundIt = _buttonLists.find(buttonListId);
+        assert(foundIt != _buttonLists.end());
+        if (foundIt == _buttonLists.end()) {
+            continue;
+        }
+
+        auto actionKey = Utils::Read(jsonButons, "actionKey", std::string());
+        result.emplace_back(actionKey, foundIt->second);
+    }
+
+    return result;
 }
 
 Game::IDialog::Ptr DialogFactory::GetRootDialog()

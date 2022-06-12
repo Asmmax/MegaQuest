@@ -1,45 +1,59 @@
 {
 	"rootDialog":"root",
+	"buttonLists":[
+	{
+		"id":"root_buttons",
+		"type":"Simple",
+		"container":"root",
+		"show":true,
+		"error":"Вводить можно только цифру из предложенных!"
+	},
+	{
+		"id":"to_inventory_button",
+		"type":"Simple",
+		"container":"to_inventory"
+	},
+	{
+		"id":"inventory_buttons",
+		"type":"Inventory",
+		"inventory":"player",
+		"counts":[1,10],
+		"put":"Добавить ",
+		"throw":"Выкинуть ",
+		"error":"Вводить можно только цифру из предложенных!"
+	}
+	],
 	"dialogs":[
 	{
-		"key":"main",
+		"id":"main",
 		"type":"Simple",
 		"paragraph":"root",
 		"intro":"Вы можете ввести Quit, Inventory или цифры.",
 		"buttonGroups":[
 		{
-			"actionKey":"default",
-			"type":"Simple",
-			"container":"root",
-			"show":true,
-			"error":"Вводить можно только цифру из предложенных!"
+			"buttonList":"root_buttons",
+			"actionKey":"default"
 		},
 		{
-			"actionKey":"inventory",
-			"type":"Simple",
-			"container":"to_inventory"
+			"buttonList":"to_inventory_button",
+			"actionKey":"inventory"
 		}
 		]
 	},
 	{
-		"key":"inventory",
+		"id":"inventory",
 		"type":"Inventory",
 		"inventory":"player",
 		"intro":"Инвентарь игрока. Вы можете ввести Quit или цифры.",
 		"buttonGroups":[
 		{
-			"actionKey":"default",
-			"type":"Inventory",
-			"inventory":"player",
-			"counts":[1,10],
-			"put":"Добавить ",
-			"throw":"Выкинуть ",
-			"error":"Вводить можно только цифру из предложенных!"
+			"buttonList":"inventory_buttons",
+			"actionKey":"default"
 		}
 		]
 	},
 	{
-		"key":"root",
+		"id":"root",
 		"type":"Switch",
 		"intro":"Добро пожаловать в квест!",
 		"dialogs":["main", "inventory"]

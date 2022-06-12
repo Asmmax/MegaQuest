@@ -1,24 +1,27 @@
 #include "Game/ButtonLists/ButtonListBase.hpp"
 #include "Game/IOutput.hpp"
-#include "Game/IDialog.hpp"
 #include "IO/Logger.hpp"
 
 using namespace Game;
 
-ButtonListBase::ButtonListBase(const DialogWeakPtr& parent,
-	const IOutput::Ptr& output,
+ButtonListBase::ButtonListBase(const IOutput::Ptr& output,
 	const QuestCore::TextString& error) :
 
-	_parent(parent),
 	_output(output),
 	_error(error)
 {
 }
 
-void ButtonListBase::AddButton(const QuestCore::TextString& text, const std::function<void()>& callback)
+void ButtonListBase::AddButton(const Button& button)
 {
-	Button button{ text, callback};
-	_buttons.push_back(button);
+	Button copyButton(button);
+	copyButton.callback = [callback = copyButton.callback, afterCallback = _buttonDone]() {
+		callback();
+		if (afterCallback) {
+			afterCallback();
+		}
+	};
+	_buttons.push_back(copyButton);
 }
 
 void ButtonListBase::Do(int answer)
@@ -29,10 +32,6 @@ void ButtonListBase::Do(int answer)
 	}
 
 	_buttons[answer].callback();
-
-	if (auto ptr = _parent.lock()) {
-		ptr->Update();
-	}
 }
 
 std::vector<QuestCore::TextString> ButtonListBase::GetNames() const
@@ -42,6 +41,11 @@ std::vector<QuestCore::TextString> ButtonListBase::GetNames() const
 		_names.push_back(button.name);
 	}
 	return _names;
+}
+
+void ButtonListBase::SetButtonDoneCallback(const Callback& callback)
+{
+	_buttonDone = callback;
 }
 
 void ButtonListBase::Clear()

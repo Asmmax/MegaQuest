@@ -5,15 +5,14 @@
 
 using namespace Game;
 
-InventoryButtonList::InventoryButtonList(const DialogWeakPtr& parent,
-	const OutputPtr& output,
+InventoryButtonList::InventoryButtonList(const OutputPtr& output,
 	const QuestCore::TextString& error,
 	const InventoryPtr& inventory,
 	const std::vector<int>& counts,
 	const QuestCore::TextString& putMessage,
 	const QuestCore::TextString& throwMessage) :
 
-	ButtonListBase(parent, output, error),
+	ButtonListBase(output, error),
 	_inventory(inventory),
 	_counts(counts),
 	_putMessage(putMessage),
@@ -45,10 +44,13 @@ void InventoryButtonList::AddPutButton(const ItemPtr& item, int count)
 		return;
 	}
 
-	QuestCore::TextString text = _putMessage + item->GetContains(count);
-	AddButton(text, [inventory = _inventory, item, count]() {
+	Button button;
+	button.name = _putMessage + item->GetContains(count);
+	button.callback = [inventory = _inventory, item, count]() {
 		inventory->PutItem(item, count);
-		});
+	};
+
+	AddButton(button);
 }
 
 void InventoryButtonList::AddThrowButton(const ItemPtr& item, int count)
@@ -57,10 +59,13 @@ void InventoryButtonList::AddThrowButton(const ItemPtr& item, int count)
 		return;
 	}
 
-	QuestCore::TextString text = _throwMessage + item->GetContains(count);
-	AddButton(text, [inventory = _inventory, item, count]() {
+	Button button;
+	button.name = _throwMessage + item->GetContains(count);
+	button.callback = [inventory = _inventory, item, count]() {
 		inventory->ThrowItem(item, count);
-		});
+	};
+
+	AddButton(button);
 }
 
 std::vector<std::pair<QuestCore::Item::Ptr, int>> InventoryButtonList::GetOrderedItems()

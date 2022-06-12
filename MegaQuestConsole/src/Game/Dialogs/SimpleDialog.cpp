@@ -23,6 +23,9 @@ void SimpleDialog::AppendText(const QuestCore::TextString& text)
 void SimpleDialog::AddButtonList(const std::string& key, const IButtonList::Ptr& buttonList)
 {
 	_buttonGroups[key] = buttonList;
+	buttonList->SetButtonDoneCallback([this]() {
+		Update();
+		});
 }
 
 IButtonList::Ptr SimpleDialog::GetButtonList(const std::string& key)

@@ -18,6 +18,9 @@ InventoryDialog::InventoryDialog(const OutputPtr& output,
 void InventoryDialog::AddButtonList(const std::string& key, const IButtonList::Ptr& buttonList)
 {
 	_buttonGroups[key] = buttonList;
+	buttonList->SetButtonDoneCallback([this]() {
+		Update();
+		});
 }
 
 IButtonList::Ptr InventoryDialog::GetButtonList(const std::string& key)
