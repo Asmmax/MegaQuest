@@ -223,7 +223,7 @@ Game::IButtonList::Ptr DialogFactory::CreateButtonList(const nlohmann::json& but
         bool show = Utils::Read<bool>(buttonListNode, "show", false);
 
         auto error = Utils::Read(buttonListNode, "error", QuestCore::TextString());
-        return std::make_shared<Game::SimpleButtonList>(_output, error, container, show);
+        return std::make_shared<Game::SimpleButtonList>(_output, error, show, container);
     }
     else if (typeId == "Inventory") {
 
@@ -284,6 +284,13 @@ void DialogFactory::InitButtonList(const Game::IButtonList::Ptr& buttonList, con
             
         }
 
+        auto dialogId = Utils::Read(buttonListNode, "updateAfterDone", std::string());
+        auto dialogIt = _dialogs.find(dialogId);
+        assert(dialogIt != _dialogs.end());
+        if (dialogIt != _dialogs.end()) {
+            simpleButtonList->SetParentDialog(dialogIt->second);
+        }
+
     }
     else if (typeId == "Inventory") {
 
@@ -296,7 +303,13 @@ void DialogFactory::InitButtonList(const Game::IButtonList::Ptr& buttonList, con
             if (auto swicthButtonList = std::dynamic_pointer_cast<Game::SwitchButtonList>(foundIt->second)) {
                 inventoryButtonList->SetSwitchButtonList(swicthButtonList);
             }
+        }
 
+        auto dialogId = Utils::Read(buttonListNode, "updateAfterDone", std::string());
+        auto dialogIt = _dialogs.find(dialogId);
+        assert(dialogIt != _dialogs.end());
+        if (dialogIt != _dialogs.end()) {
+            inventoryButtonList->SetParentDialog(dialogIt->second);
         }
     }
     else if (typeId == "Switch") {

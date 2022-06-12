@@ -22,14 +22,13 @@ namespace Game
 
 		SimpleButtonList(const OutputPtr& output,
 			const QuestCore::TextString& error,
-			const CaseContainerPtr& container,
-			bool show);
+			bool show,
+			const CaseContainerPtr& container);
 
 		virtual void Update() override;
 		virtual void AddButton(const QuestCore::TextString& text, const QuestCore::IButtonGroup::Callback& callback) override;
 
 	private:
 		CaseContainerPtr _container;
-		bool _show;
 	};
 }

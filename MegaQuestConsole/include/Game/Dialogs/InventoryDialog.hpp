@@ -1,6 +1,5 @@
 #pragma once
-#include "Game/Dialogs/IntroDialog.hpp"
-#include <vector>
+#include "Game/Dialogs/DialogBase.hpp"
 
 namespace QuestCore
 {
@@ -11,20 +10,16 @@ namespace Game
 {
 	class IOutput;
 
-	class InventoryDialog : public IntroDialog
+	class InventoryDialog : public DialogBase
 	{
 		using InventoryPtr = std::shared_ptr<QuestCore::Inventory>;
 		using OutputPtr = std::shared_ptr<IOutput>;
-		using ButtonListPtr = std::shared_ptr<IButtonList>;
 
 	public:
 		InventoryDialog(const OutputPtr& output, const QuestCore::TextString& intro, const InventoryPtr& inventory);
-
-		void AddButtonList(const ButtonListPtr& buttonList);
-		virtual void Update() override;
+		virtual void Draw() override;
 		
 	private:
 		InventoryPtr _inventory;
-		std::vector<ButtonListPtr> _buttonGroups;
 	};
 }

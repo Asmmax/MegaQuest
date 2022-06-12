@@ -23,6 +23,7 @@ int main()
     if (model) {
         model->Init();
         model->Update();
+        model->Draw();
     }
 
     auto commandsFactory = std::make_shared<CommandsFactory>(settings.GetCommandsPath(), dialogFactory);

@@ -6,25 +6,19 @@ using namespace Game;
 
 SimpleButtonList::SimpleButtonList(const OutputPtr& output,
 	const QuestCore::TextString& error,
-	const CaseContainerPtr& container,
-	bool show):
+	bool show,
+	const CaseContainerPtr& container):
 
-	ButtonListBase(output, error),
-	_container(container),
-	_show(show)
+	ButtonListBase(output, error, show),
+	_container(container)
 {
 }
 
 void SimpleButtonList::Update()
 {
+	ButtonListBase::Update();
 	Clear();
 	_container->Print(*this);
-
-	ButtonListBase::Update();
-
-	if (_show) {
-		Print();
-	}
 }
 
 void SimpleButtonList::AddButton(const QuestCore::TextString& text, const QuestCore::IButtonGroup::Callback& callback)

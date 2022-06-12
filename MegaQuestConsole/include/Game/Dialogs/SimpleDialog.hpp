@@ -1,8 +1,6 @@
 #pragma once
 #include "ITextView.hpp"
-#include "Game/Dialogs/IntroDialog.hpp"
-
-#include <vector>
+#include "Game/Dialogs/DialogBase.hpp"
 
 namespace QuestCore
 {
@@ -13,10 +11,9 @@ namespace Game
 {
 	class IOutput;
 
-	class SimpleDialog : public IntroDialog, public QuestCore::ITextView
+	class SimpleDialog : public DialogBase, public QuestCore::ITextView
 	{
 		using OutputPtr = std::shared_ptr<IOutput>;
-		using ButtonListPtr = std::shared_ptr<IButtonList>;
 		using ParagraphPtr = std::shared_ptr<QuestCore::IParagraph>;
 
 	public:
@@ -27,12 +24,10 @@ namespace Game
 			const ParagraphPtr& paragraph);
 
 		virtual void AppendText(const QuestCore::TextString& text) override;
-		void AddButtonList(const ButtonListPtr& buttonList);
-		virtual void Update() override;
+		virtual void Draw() override;
 
 	private:
 		ParagraphPtr _paragraph;
 		QuestCore::TextString _text;
-		std::vector<ButtonListPtr> _buttonGroups;
 	};
 }

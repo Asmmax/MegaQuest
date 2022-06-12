@@ -10,20 +10,12 @@ InventoryDialog::InventoryDialog(const OutputPtr& output,
 	const QuestCore::TextString& intro,
 	const InventoryPtr& inventory):
 
-	IntroDialog(output, intro),
+	DialogBase(output, intro),
 	_inventory(inventory)
 {
 }
 
-void InventoryDialog::AddButtonList(const IButtonList::Ptr& buttonList)
-{
-	_buttonGroups.push_back(buttonList);
-	buttonList->SetButtonDoneCallback([this]() {
-		Update();
-		});
-}
-
-void InventoryDialog::Update()
+void InventoryDialog::Draw()
 {
 	auto&& output = GetOutput();
 	auto& items = _inventory->GetItems();
@@ -32,7 +24,6 @@ void InventoryDialog::Update()
 		output->WriteLn(item.first->GetContains(item.second));
 	}
 
-	for (auto& buttonGroup : _buttonGroups) {
-		buttonGroup->Update();
-	}
+	DialogBase::Draw();
 }
+

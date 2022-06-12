@@ -11,6 +11,6 @@ namespace Game
 
 		virtual void Do(int answer = 0) = 0;
 		virtual void Update() = 0;
-		virtual  void SetButtonDoneCallback(const Callback& callback) = 0;
+		virtual void Draw() = 0;
 	};
 }

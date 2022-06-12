@@ -7,13 +7,15 @@
 		"container":"root",
 		"show":true,
 		"error":"Вводить можно только цифру из предложенных!",
-		"switch":"default"
+		"switch":"default",
+		"updateAfterDone":"main"
 	},
 	{
 		"id":"to_inventory_button",
 		"type":"Simple",
 		"container":"to_inventory",
-		"switch":"inventory"
+		"switch":"inventory",
+		"updateAfterDone":"main"
 	},
 	{
 		"id":"inventory_buttons",
@@ -23,7 +25,8 @@
 		"put":"Добавить ",
 		"throw":"Выкинуть ",
 		"error":"Вводить можно только цифру из предложенных!",
-		"switch":"default"
+		"switch":"default",
+		"updateAfterDone":"inventory"
 	},
 	{
 		"id":"default",

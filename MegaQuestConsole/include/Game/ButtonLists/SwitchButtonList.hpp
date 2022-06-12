@@ -12,7 +12,7 @@ namespace Game
 
 		virtual void Do(int answer = 0) override;
 		virtual void Update() override;
-		virtual void SetButtonDoneCallback(const Callback& callback) override;
+		virtual void Draw() override;
 		void Switch(const IButtonList* buttonList);
 		void AddButtonList(const IButtonList::Ptr& buttonList);
 

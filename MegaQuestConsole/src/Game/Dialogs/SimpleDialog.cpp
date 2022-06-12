@@ -10,7 +10,7 @@ SimpleDialog::SimpleDialog(const OutputPtr& output,
 	const QuestCore::TextString& intro,
 	const ParagraphPtr& paragraph) :
 
-	IntroDialog(output, intro),
+	DialogBase(output, intro),
 	_paragraph(paragraph)
 {
 }
@@ -20,23 +20,13 @@ void SimpleDialog::AppendText(const QuestCore::TextString& text)
 	_text += text;
 }
 
-void SimpleDialog::AddButtonList(const IButtonList::Ptr& buttonList)
-{
-	_buttonGroups.push_back(buttonList);
-	buttonList->SetButtonDoneCallback([this]() {
-		Update();
-		});
-}
-
-void SimpleDialog::Update()
+void SimpleDialog::Draw()
 {
 	auto&& output = GetOutput();
 
 	_text = QuestCore::TextString();
 	_paragraph->Print(*this);
 	output->WriteLn(_text);
-	
-	for (auto& buttonGroup : _buttonGroups) {
-		buttonGroup->Update();
-	}
+
+	DialogBase::Draw();
 }

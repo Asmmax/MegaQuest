@@ -1,17 +1,14 @@
 #pragma once
-#include "Game/Dialogs/IntroDialog.hpp"
-#include <memory>
+#include "Game/Dialogs/DialogBase.hpp"
 #include <vector>
-#include <string>
 
 namespace Game
 {
 	class IOutput;
 
-	class SwitchDialog : public IntroDialog
+	class SwitchDialog : public DialogBase
 	{
 		using DialogPtr = std::shared_ptr<IDialog>;
-		using ButtonListPtr = std::shared_ptr<IButtonList>;
 		using OutputPtr = std::shared_ptr<IOutput>;
 
 	public:
@@ -19,14 +16,13 @@ namespace Game
 
 		SwitchDialog(const OutputPtr& output, const QuestCore::TextString& intro);
 		void AddDialog(const DialogPtr& dialog);
-		void AddButtonList(const ButtonListPtr& buttonList);
 		virtual void Init() override;
 		virtual void Update() override;
+		virtual void Draw() override;
 		void Next();
 
 	private:
 		std::vector<DialogPtr> _dialogs;
 		DialogPtr _currentDialog;
-		std::vector<ButtonListPtr> _buttonGroups;
 	};
 }

@@ -14,7 +14,7 @@ void SwitchButtonList::Update()
 	_currentButtonList = nullptr;
 }
 
-void SwitchButtonList::SetButtonDoneCallback(const Callback& /*callback*/)
+void SwitchButtonList::Draw()
 {
 }
 

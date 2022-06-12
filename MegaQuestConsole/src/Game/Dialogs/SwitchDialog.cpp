@@ -7,7 +7,7 @@
 using namespace Game;
 
 SwitchDialog::SwitchDialog(const OutputPtr& output, const QuestCore::TextString& intro):
-	IntroDialog(output, intro)
+	DialogBase(output, intro)
 {
 }
 
@@ -20,27 +20,22 @@ void SwitchDialog::AddDialog(const DialogPtr& dialog)
 	_dialogs.push_back(dialog);
 }
 
-void SwitchDialog::AddButtonList(const IButtonList::Ptr& buttonList)
-{
-	_buttonGroups.push_back(buttonList);
-	buttonList->SetButtonDoneCallback([this]() {
-		Update();
-		});
-}
-
 void SwitchDialog::Init()
 {
-	IntroDialog::Init();
+	DialogBase::Init();
 	_currentDialog->Init();
 }
 
 void SwitchDialog::Update()
 {
-	for (auto& buttonGroup : _buttonGroups) {
-		buttonGroup->Update();
-	}
-
+	DialogBase::Update();
 	_currentDialog->Update();
+}
+
+void SwitchDialog::Draw()
+{
+	_currentDialog->Draw();
+	DialogBase::Draw();
 }
 
 void SwitchDialog::Next()
@@ -63,4 +58,5 @@ void SwitchDialog::Next()
 	_currentDialog = _dialogs[nextId];
 	_currentDialog->Init();
 	Update();
+	Draw();
 }

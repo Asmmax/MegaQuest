@@ -1,15 +1,18 @@
 #include "Game/ButtonLists/ButtonListBase.hpp"
 #include "Game/ButtonLists/SwitchButtonList.hpp"
 #include "Game/IOutput.hpp"
+#include "Game/IDialog.hpp"
 #include "IO/Logger.hpp"
 
 using namespace Game;
 
 ButtonListBase::ButtonListBase(const IOutput::Ptr& output,
-	const QuestCore::TextString& error) :
+	const QuestCore::TextString& error,
+	bool show) :
 
 	_output(output),
-	_error(error)
+	_error(error),
+	_show(show)
 {
 }
 
@@ -27,14 +30,30 @@ void ButtonListBase::Do(int answer)
 
 	_buttons[answer].callback();
 
-	if (_buttonDone) {
-		_buttonDone();
+	if (auto ptr = _parentDialog.lock()) {
+		ptr->Update();
+		ptr->Draw();
 	}
 }
 
 void ButtonListBase::Update()
 {
-	_switchList->Switch(this);
+	if (auto ptr = _switchList.lock()) {
+		ptr->Switch(this);
+	}
+}
+
+void ButtonListBase::Draw() 
+{
+	if (!_show) {
+		return;
+	}
+
+	auto names = GetNames();
+	int num = 1;
+	for (auto& name : names) {
+		_output->WriteLn(QuestCore::TextString(num++) + QuestCore::TextString::FromUtf8(u8". ") + name);
+	}
 }
 
 std::vector<QuestCore::TextString> ButtonListBase::GetNames() const
@@ -46,23 +65,14 @@ std::vector<QuestCore::TextString> ButtonListBase::GetNames() const
 	return _names;
 }
 
-void ButtonListBase::SetButtonDoneCallback(const Callback& callback)
-{
-	_buttonDone = callback;
-}
-
 void ButtonListBase::Clear()
 {
 	_buttons.clear();
 }
 
-void ButtonListBase::Print()
+void ButtonListBase::SetParentDialog(const DialogWeakPtr& dialog)
 {
-	auto names = GetNames();
-	int num = 1;
-	for (auto& name : names) {
-		_output->WriteLn(QuestCore::TextString(num++) + QuestCore::TextString::FromUtf8(u8". ") + name);
-	}
+	_parentDialog = dialog;
 }
 
 void ButtonListBase::SetSwitchButtonList(const SwitchButtonListPtr& switchList)

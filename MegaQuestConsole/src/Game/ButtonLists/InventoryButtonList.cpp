@@ -22,6 +22,7 @@ InventoryButtonList::InventoryButtonList(const OutputPtr& output,
 
 void InventoryButtonList::Update()
 {
+	ButtonListBase::Update();
 	Clear();
 
 	auto& items = GetOrderedItems();
@@ -34,10 +35,6 @@ void InventoryButtonList::Update()
 			}
 		}
 	}
-
-	ButtonListBase::Update();
-
-	Print();
 }
 
 void InventoryButtonList::AddPutButton(const ItemPtr& item, int count)
