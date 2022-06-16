@@ -3,6 +3,13 @@
 
 using namespace QuestCore;
 
+Inventory::Inventory(const std::vector<ItemRecord>& items)
+{
+    for (auto& item : items) {
+        _items.emplace(item.item, item.count);
+    }
+}
+
 void Inventory::PutItem(const ItemPtr& item, int count)
 {
     auto res = _items.emplace(item, count);

@@ -10,10 +10,14 @@ namespace QuestCore
 	class ParagraphSwitching : public IAction
 	{
 	public:
-		ParagraphSwitching(const std::shared_ptr<ParagraphStateMachine>& stateMachine, const std::shared_ptr<IParagraph>& nextParagraph);
+		/// @inject
+		void SetStateMachine(const std::weak_ptr<ParagraphStateMachine>& stateMachine);
+		/// @inject
+		void SetNextParagraph(const std::weak_ptr<IParagraph>& nextParagraph);
+
 		virtual void Do() override;
 	private:
-		std::shared_ptr<ParagraphStateMachine> _stateMachine;
-		std::shared_ptr<IParagraph> _nextParagraph;
+		std::weak_ptr<ParagraphStateMachine> _stateMachine;
+		std::weak_ptr<IParagraph> _nextParagraph;
 	};
 }

@@ -7,6 +7,7 @@ namespace QuestCore
 	class SimpleCaseContainer: public ICaseContainer
 	{
 	public:
+		SimpleCaseContainer(const std::vector<Case>& cases = std::vector<Case>());
 		virtual void Print(IButtonGroup& buttons) override;
 
 		void Clear();

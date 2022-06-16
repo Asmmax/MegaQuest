@@ -3,11 +3,26 @@
 
 using namespace QuestCore;
 
+ConditionalCaseContainer::ConditionalCaseContainer(const std::vector<std::shared_ptr<ICondition>>& conditions):
+	_conditions(conditions)
+{
+}
+
+void ConditionalCaseContainer::SetThenContainer(const ICaseContainer::Ptr& thenContainer)
+{
+	_thenContainer = thenContainer;
+}
+
+void ConditionalCaseContainer::SetElseContainer(const ICaseContainer::Ptr& elseContainer)
+{
+	_elseContainer = elseContainer;
+}
+
 void ConditionalCaseContainer::Print(IButtonGroup& buttons)
 {
     if (IsAllowed()) {
         if (_thenContainer) {
-            _thenContainer->Print(buttons);
+			_thenContainer->Print(buttons);
         }
 	}
 	else {
@@ -16,16 +31,6 @@ void ConditionalCaseContainer::Print(IButtonGroup& buttons)
 			_elseContainer->Print(buttons);
 		}
 	}
-}
-
-void ConditionalCaseContainer::SetThenContainer(const ICaseContainer::Ptr& thenContainer)
-{
-    _thenContainer = thenContainer;
-}
-
-void ConditionalCaseContainer::SetElseContainer(const ICaseContainer::Ptr& elseContainer)
-{
-	_elseContainer = elseContainer;
 }
 
 void ConditionalCaseContainer::ClearConditions()

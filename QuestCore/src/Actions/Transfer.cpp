@@ -1,48 +1,51 @@
 #include "Actions/Transfer.hpp"
-#include "Inventory.hpp"
 #include "Item.hpp"
 
 using namespace QuestCore;
 
-Transfer::Transfer(const std::shared_ptr<Inventory>& source, const std::shared_ptr<Inventory>& target):
+Transfer::Transfer(const std::shared_ptr<Inventory>& source, 
+    const std::shared_ptr<Inventory>& target,
+    const std::vector<ItemRecord>& items) :
     _source(source),
-    _target(target)
+    _target(target),
+    _things(items)
 {
 }
 
 void Transfer::Do()
 {
-    std::vector<ItemQuery> things = BoudThingsBy(_source);
+    std::vector<ItemRecord> things = BoundThingsBy(_source);
     if (_source) {
         for (auto& thing : things) {
-            _source->ThrowItem(thing.first, thing.second);
+            _source->ThrowItem(thing.item, thing.count);
         }
     }
 
     if (_target) {
         for (auto& thing : things) {
-            _target->PutItem(thing.first, thing.second);
+            _target->PutItem(thing.item, thing.count);
         }
     }
 }
 
 void Transfer::AddThings(const ItemPtr& thing, int count)
 {
-    _things.emplace_back(thing, count);
+    ItemRecord item{ thing, count };
+    _things.push_back(item);
 }
 
-std::vector<Transfer::ItemQuery> Transfer::BoudThingsBy(const std::shared_ptr<Inventory>& inventory)
+std::vector<ItemRecord> Transfer::BoundThingsBy(const std::shared_ptr<Inventory>& inventory)
 {
-    std::vector<ItemQuery> things(_things);
+    std::vector<ItemRecord> things(_things);
     if (_source) {
         auto& items = _source->GetItems();
         for (auto& thing : things) {
-            auto itemIt = items.find(thing.first);
+            auto itemIt = items.find(thing.item);
             if (itemIt == items.end()) {
-                thing.second = 0;
+                thing.count = 0;
             }
-            else if (itemIt->second < thing.second) {
-                thing.second = itemIt->second;
+            else if (itemIt->second < thing.count) {
+                thing.count = itemIt->second;
             }
         }
     }

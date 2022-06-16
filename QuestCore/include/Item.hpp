@@ -4,6 +4,7 @@
 
 namespace QuestCore
 {
+	/// @serializable @shared
 	class Item
 	{
 	public:

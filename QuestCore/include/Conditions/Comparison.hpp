@@ -6,17 +6,18 @@ namespace QuestCore
 {
 	class Value;
 
+	/// @serializable
 	enum class Operation {None, Less, Greater, Equal, NotLess, NotGreater, NotEqual};
 
 	class Comparison : public ICondition
 	{
 	public:
-		Comparison(const std::shared_ptr<Value>& left, const std::shared_ptr<Value>& right, Operation op);
+		Comparison(std::unique_ptr<Value> left, std::unique_ptr<Value> right, Operation op);
 		virtual bool IsAllowed() override;
 
 	private:
-		std::shared_ptr<Value> _left;
-		std::shared_ptr<Value> _right;
+		std::unique_ptr<Value> _left;
+		std::unique_ptr<Value> _right;
 		Operation _op;
 	};
 }

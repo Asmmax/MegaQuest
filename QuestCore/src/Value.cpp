@@ -15,7 +15,7 @@ int SimpleValue::Get() const
 
 
 
-InventoryValue::InventoryValue(const std::shared_ptr<Item>& item, const std::shared_ptr<Inventory>& inventory):
+InventoryValue::InventoryValue(const std::weak_ptr<Item>& item, const std::weak_ptr<Inventory>& inventory):
 	_item(item),
 	_inventory(inventory)
 {
@@ -23,12 +23,13 @@ InventoryValue::InventoryValue(const std::shared_ptr<Item>& item, const std::sha
 
 int InventoryValue::Get() const
 {
-	if (!_inventory) {
+	auto inventoryPtr = _inventory.lock();
+	if (!inventoryPtr) {
 		return 0;
 	}
 
-	auto& items = _inventory->GetItems();
-	auto foundIt = items.find(_item);
+	auto& items = inventoryPtr->GetItems();
+	auto foundIt = items.find(_item.lock());
 	if (foundIt == items.end()) {
 		return 0;
 	}

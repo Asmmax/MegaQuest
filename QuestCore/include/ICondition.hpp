@@ -3,6 +3,7 @@
 
 namespace QuestCore
 {
+	/// @serializable @abstract
 	class ICondition
 	{
 	public:

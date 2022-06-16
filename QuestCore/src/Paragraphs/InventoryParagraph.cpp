@@ -27,13 +27,17 @@ int InventoryParagraph::ItemOrganizer::GetOrder(const Item::Ptr& item) const
 InventoryParagraph::InventoryParagraph(const FormatedString& prefix, 
 	const TextString& gap, 
 	const FormatedString& postfix,
-	const Inventory::Ptr& inventory):
+	const Inventory::Ptr& inventory,
+	const std::vector<ItemOrder>& itemOrders):
 
 	_prefix(prefix),
 	_gap(gap),
 	_postfix(postfix),
 	_inventory(inventory)
 {
+	for (auto& itemOrder : itemOrders) {
+		SetItemOrder(itemOrder.item, itemOrder.order);
+	}
 }
 
 void InventoryParagraph::Print(ITextView& view)

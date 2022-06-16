@@ -53,7 +53,7 @@ private:
 
 	std::vector<std::shared_ptr<QuestCore::ICondition>> ReadConditions(const nlohmann::json& conditionsNode);
 	std::shared_ptr<QuestCore::ICondition> ReadCondition(const nlohmann::json& conditionNode);
-	std::shared_ptr<QuestCore::Value> ReadValue(const nlohmann::json& valueNode);
+	std::unique_ptr<QuestCore::Value> ReadValue(const nlohmann::json& valueNode);
 	QuestCore::Operation ReadOperation(const nlohmann::json& opNode);
 
 	std::vector<std::pair<std::shared_ptr<QuestCore::Item>, int>> ReadGiftItems(const nlohmann::json& itemsNode);

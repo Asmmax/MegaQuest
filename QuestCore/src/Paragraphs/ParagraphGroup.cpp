@@ -8,6 +8,11 @@ ParagraphGroup::ParagraphGroup(const TextString& gap):
 {
 }
 
+void ParagraphGroup::SetChildren(const std::vector<IParagraph::Ptr>& children)
+{
+	_paragraphs = children;
+}
+
 void ParagraphGroup::Clear()
 {
 	_paragraphs.clear();

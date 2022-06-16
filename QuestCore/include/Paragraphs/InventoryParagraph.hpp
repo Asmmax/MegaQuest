@@ -9,6 +9,13 @@ namespace QuestCore
 	class Inventory;
 	class Item;
 
+	/// @serializable
+	struct ItemOrder
+	{
+		std::shared_ptr<Item> item;
+		int order;
+	};
+
 	class InventoryParagraph: public IParagraph
 	{
 		using FormPtr = std::shared_ptr<FormBase>;
@@ -29,7 +36,8 @@ namespace QuestCore
 		InventoryParagraph(const FormatedString& prefix,
 			const TextString& gap,
 			const FormatedString& postfix,
-			const InventoryPtr& inventory);
+			const std::shared_ptr<Inventory>& inventory,
+			const std::vector<ItemOrder>& itemOrders = std::vector<ItemOrder>());
 
 		virtual void Print(ITextView& view) override;
 		void SetItemOrder(const ItemPtr& item, int order);

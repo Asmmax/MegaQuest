@@ -10,10 +10,14 @@ namespace QuestCore
 	class CaseContainerSwitching : public IAction
 	{
 	public:
-		CaseContainerSwitching(const std::shared_ptr<CaseContainerStateMachine>& stateMachine, const std::shared_ptr<ICaseContainer>& nextContainer);
+		/// @inject
+		void SetStateMachine(const std::weak_ptr<CaseContainerStateMachine>& stateMachine);
+		/// @inject
+		void SetNextContainer(const std::weak_ptr<ICaseContainer>& nextContainer);
+
 		virtual void Do() override;
 	private:
-		std::shared_ptr<CaseContainerStateMachine> _stateMachine;
-		std::shared_ptr<ICaseContainer> _nextContainer;
+		std::weak_ptr<CaseContainerStateMachine> _stateMachine;
+		std::weak_ptr<ICaseContainer> _nextContainer;
 	};
 }

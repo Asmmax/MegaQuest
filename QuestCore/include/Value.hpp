@@ -6,6 +6,7 @@ namespace QuestCore
 	class Item;
 	class Inventory;
 
+	/// @serializable @abstract
 	class Value 
 	{
 	public:
@@ -25,10 +26,10 @@ namespace QuestCore
 	class InventoryValue : public Value
 	{
 	public:
-		InventoryValue(const std::shared_ptr<Item>& item, const std::shared_ptr<Inventory>& inventory);
+		InventoryValue(const std::weak_ptr<Item>& item, const std::weak_ptr<Inventory>& inventory);
 		virtual int Get() const override;
 	private:
-		std::shared_ptr<Inventory> _inventory;
-		std::shared_ptr<Item> _item;
+		std::weak_ptr<Inventory> _inventory;
+		std::weak_ptr<Item> _item;
 	};
 }

@@ -628,7 +628,11 @@ std::shared_ptr<QuestCore::IAction> JsonQuestFactory::ReadAction(const nlohmann:
             return nullptr;
         }
 
-        return std::make_shared<QuestCore::ParagraphSwitching>(stateMachine, foundIt->second);
+        auto paragraphSwitching = std::make_shared<QuestCore::ParagraphSwitching>();
+        paragraphSwitching->SetStateMachine(stateMachine);
+        paragraphSwitching->SetNextParagraph(foundIt->second);
+
+        return paragraphSwitching;
     }
     else if (typeId == "CasesSwitching") {
 
@@ -652,7 +656,11 @@ std::shared_ptr<QuestCore::IAction> JsonQuestFactory::ReadAction(const nlohmann:
             return nullptr;
         }
 
-        return std::make_shared<QuestCore::CaseContainerSwitching>(stateMachine, foundIt->second);
+        auto containerSwitching = std::make_shared<QuestCore::CaseContainerSwitching>();
+        containerSwitching->SetStateMachine(stateMachine);
+        containerSwitching->SetNextContainer(foundIt->second);
+
+        return containerSwitching;
     }
     else if (typeId == "Transfer") {
 
@@ -754,17 +762,17 @@ std::shared_ptr<QuestCore::ICondition> JsonQuestFactory::ReadCondition(const nlo
     std::string typeId = Utils::Read(conditionNode, "type", std::string());
     if (typeId == "Comparison") {
 
-        auto leftPtr = std::shared_ptr<Value>();
+        auto leftPtr = std::unique_ptr<Value>();
         auto foundIt = conditionNode.find("left");
         if (foundIt != conditionNode.end()) {
-            leftPtr = ReadValue(*foundIt);
+            leftPtr = std::move(ReadValue(*foundIt));
         }
         assert(leftPtr);
 
-        auto rightPtr = std::shared_ptr<Value>();
+        auto rightPtr = std::unique_ptr<Value>();
         foundIt = conditionNode.find("right");
         if (foundIt != conditionNode.end()) {
-            rightPtr = ReadValue(*foundIt);
+            rightPtr = std::move(ReadValue(*foundIt));
         }
         assert(rightPtr);
 
@@ -774,18 +782,18 @@ std::shared_ptr<QuestCore::ICondition> JsonQuestFactory::ReadCondition(const nlo
             op = ReadOperation(*foundOpIt);
         }
 
-        return std::make_shared<QuestCore::Comparison>(leftPtr, rightPtr, op);
+        return std::make_shared<QuestCore::Comparison>(std::move(leftPtr), std::move(rightPtr), op);
     }
 
     return nullptr;
 }
 
-std::shared_ptr<QuestCore::Value> JsonQuestFactory::ReadValue(const nlohmann::json& valueNode)
+std::unique_ptr<QuestCore::Value> JsonQuestFactory::ReadValue(const nlohmann::json& valueNode)
 {
     std::string typeId = Utils::Read(valueNode, "type", std::string());
     if (typeId == "Simple") {
         int value = Utils::Read(valueNode, "value", 0);
-        return std::make_shared<SimpleValue>(value);
+        return std::make_unique<SimpleValue>(value);
     }
     else if (typeId == "Inventory") {
         
@@ -805,7 +813,7 @@ std::shared_ptr<QuestCore::Value> JsonQuestFactory::ReadValue(const nlohmann::js
             inventory = foundInventoryIt->second;
         }
         
-        return std::make_shared<InventoryValue>(item, inventory);
+        return std::make_unique<InventoryValue>(item, inventory);
     }
 
     return nullptr;

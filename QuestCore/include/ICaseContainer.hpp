@@ -8,10 +8,12 @@ namespace QuestCore
 {
 	class IButtonGroup;
 
+	/// @serializable @shared @abstract
 	class ICaseContainer
 	{
 	public:
 		using Ptr = std::shared_ptr<ICaseContainer>;
+		using WeakPtr = std::weak_ptr<ICaseContainer>;
 
 		virtual ~ICaseContainer() = default;
 

@@ -4,6 +4,11 @@
 
 using namespace QuestCore;
 
+ConditionalParagraph::ConditionalParagraph(const std::vector<std::shared_ptr<ICondition>>& conditions):
+	_conditions(conditions)
+{
+}
+
 void ConditionalParagraph::Print(ITextView& view)
 {
 	if (IsAllowed()) {

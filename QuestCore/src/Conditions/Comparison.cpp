@@ -3,9 +3,9 @@
 
 using namespace QuestCore;
 
-Comparison::Comparison(const std::shared_ptr<Value>& left, const std::shared_ptr<Value>& right, Operation op):
-	_left(left),
-	_right(right),
+Comparison::Comparison(std::unique_ptr<Value> left, std::unique_ptr<Value> right, Operation op):
+	_left(std::move(left)),
+	_right(std::move(right)),
 	_op(op)
 {
 }

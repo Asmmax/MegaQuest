@@ -6,11 +6,12 @@ namespace QuestCore
 	class CaseContainerStateMachine : public ICaseContainer
 	{
 	public:
+		/// @inject
+		void SetState(const ICaseContainer::WeakPtr& newState);
+
 		virtual void Print(IButtonGroup& buttons) override;
 
-		inline void SetState(const ICaseContainer::Ptr& newState) { _state = newState; }
-
 	private:
-		ICaseContainer::Ptr _state;
+		ICaseContainer::WeakPtr _state;
 	};
 }

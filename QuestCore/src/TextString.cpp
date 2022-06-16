@@ -3,10 +3,6 @@
 
 using namespace QuestCore;
 
-TextString::TextString()
-{
-}
-
 TextString::TextString(const TextString& other):
 	_u8(other._u8)
 {

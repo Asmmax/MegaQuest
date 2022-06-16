@@ -8,11 +8,12 @@ namespace QuestCore
 	class ParagraphStateMachine : public IParagraph
 	{
 	public:
-		virtual void Print(ITextView& view) override;
+		/// @inject
+		void SetState(const std::weak_ptr<IParagraph>& state);
 
-		inline void SetState(const IParagraph::Ptr& newState) { _state = newState; }
+		virtual void Print(ITextView& view) override;
 	
 	private:
-		IParagraph::Ptr _state;
+		IParagraph::WeakPtr _state;
 	};
 }

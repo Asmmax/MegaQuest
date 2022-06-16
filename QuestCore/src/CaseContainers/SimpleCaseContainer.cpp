@@ -1,7 +1,13 @@
 #include "CaseContainers/SimpleCaseContainer.hpp"
 #include "IButtonGroup.hpp"
+#include "Case.hpp"
 
 using namespace QuestCore;
+
+SimpleCaseContainer::SimpleCaseContainer(const std::vector<Case>& cases):
+	_cases(cases)
+{
+}
 
 void SimpleCaseContainer::Print(IButtonGroup& buttons)
 {

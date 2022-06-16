@@ -6,10 +6,12 @@ namespace QuestCore
 	class ITextView;
 	class TextString;
 
+	/// @serializable @shared @abstract
 	class IParagraph
 	{
 	public:
 		using Ptr = std::shared_ptr<IParagraph>;
+		using WeakPtr = std::weak_ptr<IParagraph>;
 
 		virtual ~IParagraph() = default;
 

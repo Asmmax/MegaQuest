@@ -8,6 +8,8 @@ namespace QuestCore {
 	{
 	public:
 		ParagraphGroup(const TextString& gap);
+		/// @inject
+		void SetChildren(const std::vector<std::shared_ptr<IParagraph>>& children);
 		void Clear();
 		void AddParagraph(const IParagraph::Ptr& paragraph);
 

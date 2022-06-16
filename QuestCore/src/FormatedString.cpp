@@ -3,6 +3,11 @@
 
 using namespace QuestCore;
 
+FormatedString::FormatedString(const std::vector<FormPtr>& forms):
+	_forms(forms)
+{
+}
+
 void FormatedString::ClearForms()
 {
 	_forms.clear();
