@@ -12,12 +12,13 @@ namespace QuestCore
 	class Comparison : public ICondition
 	{
 	public:
-		Comparison(std::unique_ptr<Value> left, std::unique_ptr<Value> right, Operation op);
+		Comparison(std::shared_ptr<Value> left, std::shared_ptr<Value> right, Operation op);
+
 		virtual bool IsAllowed() override;
 
 	private:
-		std::unique_ptr<Value> _left;
-		std::unique_ptr<Value> _right;
+		std::shared_ptr<Value> _left;
+		std::shared_ptr<Value> _right;
 		Operation _op;
 	};
 }

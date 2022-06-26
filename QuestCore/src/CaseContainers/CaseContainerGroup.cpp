@@ -2,9 +2,9 @@
 
 using namespace QuestCore;
 
-void CaseContainerGroup::SetChildren(const std::vector<std::shared_ptr<ICaseContainer>>& children)
+CaseContainerGroup::CaseContainerGroup(const std::vector<std::shared_ptr<ICaseContainer>>& children):
+	_containers(children)
 {
-	_containers = children;
 }
 
 void CaseContainerGroup::Clear()

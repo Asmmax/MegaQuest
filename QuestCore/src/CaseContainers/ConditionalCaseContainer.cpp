@@ -3,19 +3,15 @@
 
 using namespace QuestCore;
 
-ConditionalCaseContainer::ConditionalCaseContainer(const std::vector<std::shared_ptr<ICondition>>& conditions):
+ConditionalCaseContainer::ConditionalCaseContainer(
+	const std::shared_ptr<ICaseContainer>& thenContainer,
+	const std::shared_ptr<ICaseContainer>& elseContainer, 
+	const std::vector<std::shared_ptr<ICondition>>& conditions):
+
+	_thenContainer(thenContainer),
+	_elseContainer(elseContainer),
 	_conditions(conditions)
 {
-}
-
-void ConditionalCaseContainer::SetThenContainer(const ICaseContainer::Ptr& thenContainer)
-{
-	_thenContainer = thenContainer;
-}
-
-void ConditionalCaseContainer::SetElseContainer(const ICaseContainer::Ptr& elseContainer)
-{
-	_elseContainer = elseContainer;
 }
 
 void ConditionalCaseContainer::Print(IButtonGroup& buttons)

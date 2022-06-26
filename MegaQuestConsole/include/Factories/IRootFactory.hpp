@@ -19,7 +19,7 @@ protected:
 public:
 	virtual ~IRootFactory() = default;
 
-	virtual ParagraphPtr GetRootParagraph(const std::string& rootKey) = 0;
-	virtual CaseContainerPtr GetRootCaseContainer(const std::string& rootKey) = 0;
+	virtual ParagraphPtr GetParagraph(const std::string& rootKey) = 0;
+	virtual CaseContainerPtr GetCaseContainer(const std::string& rootKey) = 0;
 	virtual InventoryPtr GetInventory(const std::string& inventoryKey) = 0;
 };

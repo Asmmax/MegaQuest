@@ -6,7 +6,7 @@ namespace QuestCore
 	class Item;
 	class Inventory;
 
-	/// @serializable @abstract
+	/// @serializable @unique @abstract
 	class Value 
 	{
 	public:

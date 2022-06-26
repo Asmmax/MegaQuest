@@ -3,7 +3,7 @@
 
 namespace QuestCore 
 {
-	/// @serializable
+	/// @serializable @unique
 	class FormBase
 	{
 	public:

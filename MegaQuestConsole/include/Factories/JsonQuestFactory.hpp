@@ -1,75 +1,77 @@
 #pragma once
 #include "IRootFactory.hpp"
-#include "TextString.hpp"
-#include "FormatedString.hpp"
-#include "json.hpp"
+#include "Containers/ContainerBase.hpp"
+#include "Containers/IFactory.hpp"
 
 namespace QuestCore
 {
 	class Item;
-	class FormBase;
 	class IAction;
+	class FormBase;
 	class ICondition;
 	class Value;
 	struct Case;
-	enum class Operation;
-}
+	class TextString;
+	class FormatedString;
+	struct ItemRecord;
+	struct ItemOrder;
 
-class ITextViewFactory;
-class IButtonPanelFactory;
+	class CaseContainerStateMachine;
+	class ParagraphStateMachine;
+}
 
 class JsonQuestFactory : public IRootFactory
 {
 public:
 	JsonQuestFactory(const std::string& filename);
 
-	virtual ParagraphPtr GetRootParagraph(const std::string& rootKey) override;
-	virtual CaseContainerPtr GetRootCaseContainer(const std::string& rootKey) override;
+	virtual ParagraphPtr GetParagraph(const std::string& rootKey) override;
+	virtual CaseContainerPtr GetCaseContainer(const std::string& rootKey) override;
 	virtual InventoryPtr GetInventory(const std::string& inventoryKey) override;
 
 private:
+	void InitContainers();
 	bool Read();
-	void ReadHotKeys(const nlohmann::json& keysNode);
-	void ReadInputParagraphs(const nlohmann::json& inputsNode);
-	void ReadInputContainers(const nlohmann::json& inputsNode);
-	void ReadItems(const nlohmann::json& itemsNode);
-	void ReadForms(const nlohmann::json& formStrNode, QuestCore::FormatedString& formString);
-	std::shared_ptr<QuestCore::FormBase> ReadForm(const nlohmann::json& formNode);
-	void ReadInventory(const nlohmann::json& inventoriesNode);
 
-	void CreateParagraphs(const nlohmann::json& paragraphsNode);
-	void ReadParagraphs(const nlohmann::json& paragraphsNode);
-	std::shared_ptr<QuestCore::IParagraph> CreateParagraph(const nlohmann::json& paragraphNode);
-	void InitParagraph(const std::shared_ptr<QuestCore::IParagraph>& paragraph, const nlohmann::json& paragraphNode);
+	void InitItems();
+	void InitParagraphs();
+	void InitCaseContainers();
+	void InitInventories();
+	void InitActions();
 
-	void CreateContainers(const nlohmann::json& containersNode);
-	void ReadContainers(const nlohmann::json& containersNode);
-	std::shared_ptr<QuestCore::ICaseContainer> CreateContainer(const nlohmann::json& containerNode);
-	void InitContainer(const std::shared_ptr<QuestCore::ICaseContainer>& container, const nlohmann::json& containerNode);
+	void InitForms();
+	void InitConditions();
+	void InitValues();
 
-	QuestCore::Case ReadCase(const nlohmann::json& caseNode);
-	std::vector<std::shared_ptr<QuestCore::IAction>> ReadActions(const nlohmann::json& actionsNode);
-	std::shared_ptr<QuestCore::IAction> ReadAction(const nlohmann::json& actionNode);
-
-	std::vector<std::shared_ptr<QuestCore::ICondition>> ReadConditions(const nlohmann::json& conditionsNode);
-	std::shared_ptr<QuestCore::ICondition> ReadCondition(const nlohmann::json& conditionNode);
-	std::unique_ptr<QuestCore::Value> ReadValue(const nlohmann::json& valueNode);
-	QuestCore::Operation ReadOperation(const nlohmann::json& opNode);
-
-	std::vector<std::pair<std::shared_ptr<QuestCore::Item>, int>> ReadGiftItems(const nlohmann::json& itemsNode);
-	std::pair<std::shared_ptr<QuestCore::Item>, int> ReadGiftItem(const nlohmann::json& itemNode);
-
-	std::vector<std::pair<std::shared_ptr<QuestCore::Item>, int>> ReadItemOrders(const nlohmann::json& itemsNode);
-	std::pair<std::shared_ptr<QuestCore::Item>, int> ReadItemOrder(const nlohmann::json& itemNode);
+	void InitCases();
+	void InitTextStrings();
+	void InitFormatedStrings();
+	void InitItemOrders();
+	void InitItemRecords();
 
 private:
 	bool _isRed;
 	std::string _filename;
-	std::vector<std::string> _hotKeys;
-	std::map<std::string, ParagraphPtr> _rootParagraphs;
-	std::map<std::string, CaseContainerPtr> _rootContainers;
-	std::map<std::string, std::shared_ptr<QuestCore::Item>> _items;
-	std::map<std::string, std::shared_ptr<QuestCore::IParagraph>> _paragraphs;
-	std::map<std::string, std::shared_ptr<QuestCore::ICaseContainer>> _containers;
-	std::map<std::string, std::shared_ptr<QuestCore::Inventory>> _inventories;
+	
+	//shared
+	std::shared_ptr<ContainerBase<QuestCore::Item>> _items;
+	std::shared_ptr<ContainerBase<QuestCore::IParagraph>> _paragraphs;
+	std::shared_ptr<ContainerBase<QuestCore::ICaseContainer>> _containers;
+	std::shared_ptr<ContainerBase<QuestCore::Inventory>> _inventories;
+	std::shared_ptr<ContainerBase<QuestCore::IAction>> _actions;
+
+	std::shared_ptr<ContainerBase<QuestCore::CaseContainerStateMachine>> _stateMachineContainers;
+	std::shared_ptr<ContainerBase<QuestCore::ParagraphStateMachine>> _stateMachineParagraphs;
+
+	//unique
+	std::shared_ptr<IFactory<std::shared_ptr<QuestCore::FormBase>>> _formBaseFactory;
+	std::shared_ptr<IFactory<std::shared_ptr<QuestCore::ICondition>>> _conditionFactory;
+	std::shared_ptr<IFactory<std::shared_ptr<QuestCore::Value>>> _valueFactory;
+
+	//simple
+	std::shared_ptr<IFactory<QuestCore::Case>> _caseFactory;
+	std::shared_ptr<IFactory<QuestCore::TextString>> _textFactory;
+	std::shared_ptr<IFactory<QuestCore::FormatedString>> _formatedTextFactory;
+	std::shared_ptr<IFactory<QuestCore::ItemRecord>> _itemRecordFactory;
+	std::shared_ptr<IFactory<QuestCore::ItemOrder>> _itemOrderFactory;
 };

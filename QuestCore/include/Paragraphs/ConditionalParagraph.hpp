@@ -12,11 +12,9 @@ namespace QuestCore
 		using ConditionPtr = std::shared_ptr<ICondition>;
 
 	public:
-		ConditionalParagraph(const std::vector<std::shared_ptr<ICondition>>& conditions = std::vector<std::shared_ptr<ICondition>>());
-		/// @inject
-		void SetThenParagraph(const std::shared_ptr<IParagraph>& thenParagraph);
-		/// @inject
-		void SetElseParagraph(const std::shared_ptr<IParagraph>& elseParagraph);
+		ConditionalParagraph(const std::shared_ptr<IParagraph>& thenParagraph,
+			const std::shared_ptr<IParagraph>& elseParagraph,
+			const std::vector<std::shared_ptr<ICondition>>& conditions = std::vector<std::shared_ptr<ICondition>>());
 
 		virtual void Print(ITextView& view) override;
 		void ClearConditions();

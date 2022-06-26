@@ -101,7 +101,7 @@ Game::IDialog::Ptr DialogFactory::CreateDialog(const nlohmann::json& dialogNode)
     if (typeId == "Simple") {
 
         auto paragraphId = Utils::Read(dialogNode, "paragraph", std::string());
-        auto paragraph = _rootFactory->GetRootParagraph(paragraphId);
+        auto paragraph = _rootFactory->GetParagraph(paragraphId);
 
         auto intro = Utils::Read(dialogNode, "intro", QuestCore::TextString());
         return std::make_shared<Game::SimpleDialog>(_output, intro, paragraph);
@@ -218,7 +218,7 @@ Game::IButtonList::Ptr DialogFactory::CreateButtonList(const nlohmann::json& but
     if (typeId == "Simple") {
 
         auto containerId = Utils::Read(buttonListNode, "container", std::string());
-        auto container = _rootFactory->GetRootCaseContainer(containerId);
+        auto container = _rootFactory->GetCaseContainer(containerId);
 
         bool show = Utils::Read<bool>(buttonListNode, "show", false);
 

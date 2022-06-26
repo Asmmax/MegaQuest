@@ -11,11 +11,9 @@ namespace QuestCore
 		using ConditionPtr = std::shared_ptr<ICondition>;
 
 	public:
-		ConditionalCaseContainer(const std::vector<std::shared_ptr<ICondition>>& conditions = std::vector<std::shared_ptr<ICondition>>());
-		/// @inject
-		void SetThenContainer(const std::shared_ptr<ICaseContainer>& thenContainer);
-		/// @inject
-		void SetElseContainer(const std::shared_ptr<ICaseContainer>& elseContainer);
+		ConditionalCaseContainer(const std::shared_ptr<ICaseContainer>& thenContainer,
+			const std::shared_ptr<ICaseContainer>& elseContainer,
+			const std::vector<std::shared_ptr<ICondition>>& conditions = std::vector<std::shared_ptr<ICondition>>());
 
 		virtual void Print(IButtonGroup& buttons) override;
 		void ClearConditions();
