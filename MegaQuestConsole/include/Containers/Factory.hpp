@@ -22,6 +22,12 @@ public:
 		return GetImpl(typeId, node, _inheritors, std::index_sequence_for<Impls...>());
 	}
 
+	void InitDependencies(const nlohmann::json& node) override
+	{
+		auto typeId = Utils::Read<std::string>(node, "type", std::string());
+		InitDependenciesImpl(typeId, node, _inheritors, std::index_sequence_for<Impls...>());
+	}
+
 private:
 	template<std::size_t... Is>
 	Type GetImpl(const std::string& typeId, const nlohmann::json& node,
@@ -43,6 +49,29 @@ private:
 	Type GetImpl(const std::string& typeId, const nlohmann::json& node)
 	{
 		return Type();
+	}
+
+
+
+	template<std::size_t... Is>
+	void InitDependenciesImpl(const std::string& typeId, const nlohmann::json& node,
+		Inheritors& inheritors, std::index_sequence<Is...>)
+	{
+		return InitDependenciesImpl(typeId, node, std::get<Is>(inheritors)...);
+	}
+
+	template<typename Current, typename... Other>
+	void InitDependenciesImpl(const std::string& typeId, const nlohmann::json& node, Current& inheritor, Other&... inheritors)
+	{
+		if (inheritor.type == typeId) {
+			return inheritor.impl->InitDependencies(node);
+		}
+
+		return InitDependenciesImpl(typeId, node, inheritors...);
+	}
+
+	void InitDependenciesImpl(const std::string& typeId, const nlohmann::json& node)
+	{
 	}
 
 private:

@@ -15,9 +15,12 @@ public:
 
 	Type Get(const nlohmann::json& node)
 	{
-		auto result = CreateElement(node, _readers, std::index_sequence_for<Readers...>());
+		return CreateElement(node, _readers, std::index_sequence_for<Readers...>());
+	}
+
+	void InitDependencies(const nlohmann::json& node)
+	{
 		InitDependencies(node, _readers, std::index_sequence_for<Readers...>());
-		return result;
 	}
 
 private:
@@ -61,9 +64,12 @@ public:
 
 	TypePtr Get(const nlohmann::json& node)
 	{
-		auto result = CreateElement(node, _readers, std::index_sequence_for<Readers...>());
+		return CreateElement(node, _readers, std::index_sequence_for<Readers...>());
+	}
+
+	void InitDependencies(const nlohmann::json& node)
+	{
 		InitDependencies(node, _readers, std::index_sequence_for<Readers...>());
-		return result;
 	}
 
 private:

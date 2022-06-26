@@ -28,8 +28,13 @@ public:
 
 	void Init(const nlohmann::json& node)
 	{
-		InitDependencies(node, _readers, std::index_sequence_for<Readers...>());
 		auto id = Utils::Read<std::string>(node, "id", std::string());
+		if (std::find(_isInited.begin(), _isInited.end(), id) != _isInited.end()) {
+			return;
+		}
+		_isInited.emplace_back(id);
+
+		InitDependencies(node, _readers, std::index_sequence_for<Readers...>());
 		auto element = Get(id);
 		_initializer(element, node);
 	}
@@ -73,6 +78,7 @@ private:
 
 private:
 	std::map<std::string, TypePtr> _elements;
+	std::vector<std::string> _isInited; //оптимизация, исключаем повторное создание структур и unique сущностей
 	Initializer _initializer;
 	std::tuple<Readers...> _readers;
 };

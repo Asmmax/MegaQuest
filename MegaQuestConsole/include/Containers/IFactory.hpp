@@ -9,4 +9,5 @@ public:
 
 	virtual ~IFactory() = default;
 	virtual Type Get(const nlohmann::json& node) = 0;
+	virtual void InitDependencies(const nlohmann::json& node) = 0;
 };

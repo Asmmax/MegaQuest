@@ -22,8 +22,11 @@ public:
 		return factoryPtr->Get(node);
 	}
 
-	void Init(const nlohmann::json& /*node*/)
+	void Init(const nlohmann::json& node)
 	{
+		auto factoryPtr = _factory.lock();
+		assert(factoryPtr);
+		factoryPtr->InitDependencies(node);
 	}
 
 private:

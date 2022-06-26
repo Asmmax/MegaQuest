@@ -337,7 +337,7 @@ void JsonQuestFactory::InitActions()
             });
 
     MethodInitializer<ParagraphSwitching, std::shared_ptr<IParagraph>, ContainerReader>
-        paragraphInitializer("nextContainer", paragraphReader, nullptr,
+        paragraphInitializer("nextParagraph", paragraphReader, nullptr,
             [](const std::shared_ptr<ParagraphSwitching>& element, const std::shared_ptr<IParagraph>& arg) {
                 element->SetNextParagraph(arg);
             });
