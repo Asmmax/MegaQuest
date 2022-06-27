@@ -10,7 +10,7 @@
 //FormatedString
 
 using FormatedStringImpl = FactoryImpl<QuestCore::FormatedString,
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::FormBase>>, FactoryReader>
+    PropertyReader<std::vector<std::shared_ptr<QuestCore::FormBase>>, FactoryReader<std::shared_ptr<QuestCore::FormBase>>>
 >;
 
 //Factories

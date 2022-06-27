@@ -63,9 +63,6 @@ void JsonQuestFactory::InitContainers()
     _inventories = std::make_shared<InventoryContainer>("inventories");
     _actions = std::make_shared<IActionContainer>("actions");
 
-    _stateMachineParagraphs = std::make_shared<ParagraphStateMachineContainer>("paragraphs");
-    _stateMachineContainers = std::make_shared<CaseContainerStateMachineContainer>("containers");
-
     _formBaseFactory = std::make_shared<FormBaseFactory>();
     _conditionFactory = std::make_shared<IConditionFactory>();
     _valueFactory = std::make_shared<ValueFactory>();
@@ -101,13 +98,13 @@ void JsonQuestFactory::InitItems()
 
     // Item
 
-    PropertyReader<std::string, PrimitiveReader>
+    PropertyReader<std::string, PrimitiveReader<std::string>>
         nameProperty("name", stringReader, std::string());
 
-    PropertyReader<FormatedString, FactoryReader>
+    PropertyReader<FormatedString, FactoryReader<FormatedString>>
         textProperty("text", formatedTextReader, FormatedString());
 
-    PropertyReader<bool, PrimitiveReader>
+    PropertyReader<bool, PrimitiveReader<bool>>
         isNullableProperty("isNullable", boolReader, false);
 
     auto itemImpl = std::make_shared<ItemImpl>(ContainerInitializer<Item>(),
@@ -132,13 +129,13 @@ void JsonQuestFactory::InitParagraphs()
 
     //ConditionalParagraph
 
-    PropertyReader<std::shared_ptr<IParagraph>, ContainerReader>
+    PropertyReader<std::shared_ptr<IParagraph>, ContainerReader<std::shared_ptr<IParagraph>>>
         thenParagraphReader("thenParagraph", paragraphReader, nullptr);
 
-    PropertyReader<std::shared_ptr<IParagraph>, ContainerReader>
+    PropertyReader<std::shared_ptr<IParagraph>, ContainerReader<std::shared_ptr<IParagraph>>>
         elseParagraphReader("elseParagraph", paragraphReader, nullptr);
 
-    PropertyReader<std::vector<std::shared_ptr<ICondition>>, FactoryReader>
+    PropertyReader<std::vector<std::shared_ptr<ICondition>>, FactoryReader<std::shared_ptr<ICondition>>>
         conditionsReader("conditions", conditionalReader, std::vector<std::shared_ptr<ICondition>>());
 
     auto conditionalParagraphImpl = std::make_shared<ConditionalParagraphImpl>(
@@ -147,19 +144,19 @@ void JsonQuestFactory::InitParagraphs()
 
     //InventoryParagraph
 
-    PropertyReader<FormatedString, FactoryReader>
+    PropertyReader<FormatedString, FactoryReader<FormatedString>>
         prefixReader("prefix", formatedTextReader, FormatedString());
 
-    PropertyReader<TextString, FactoryReader>
+    PropertyReader<TextString, FactoryReader<TextString>>
         gapReader("gap", textFactoryReader, TextString());
 
-    PropertyReader<FormatedString, FactoryReader>
+    PropertyReader<FormatedString, FactoryReader<FormatedString>>
         postfixReader("postfix", formatedTextReader, FormatedString());
 
-    PropertyReader<std::shared_ptr<Inventory>, ContainerReader>
+    PropertyReader<std::shared_ptr<Inventory>, ContainerReader<std::shared_ptr<Inventory>>>
         inventoryReader("inventory", inventoryContainerReader, nullptr);
 
-    PropertyReader<std::vector<ItemOrder>, FactoryReader>
+    PropertyReader<std::vector<ItemOrder>, FactoryReader<ItemOrder>>
         itemOrdersReader("itemOrders", itemOrderReader, std::vector<ItemOrder>());
 
     auto inventoryParagraphImpl = std::make_shared<InventoryParagraphImpl>(
@@ -168,7 +165,7 @@ void JsonQuestFactory::InitParagraphs()
 
     // ParagraphGroup
 
-    PropertyReader<std::vector<std::shared_ptr<IParagraph>>, ContainerReader>
+    PropertyReader<std::vector<std::shared_ptr<IParagraph>>, ContainerReader<std::shared_ptr<IParagraph>>>
         childrenReader("children", paragraphReader, std::vector<std::shared_ptr<IParagraph>>());
 
     auto paragraphGroupImpl = std::make_shared<ParagraphGroupImpl>(
@@ -177,7 +174,7 @@ void JsonQuestFactory::InitParagraphs()
 
     // ParagraphStateMachine
 
-    MethodInitializer<ParagraphStateMachine, std::shared_ptr<IParagraph>, ContainerReader>
+    MethodInitializer<ParagraphStateMachine, std::shared_ptr<IParagraph>, ContainerReader<std::shared_ptr<IParagraph>>>
         stateInitializer("state", paragraphReader, nullptr,
             [](const std::shared_ptr<ParagraphStateMachine>& element, const std::shared_ptr<IParagraph>& arg) {
                 element->SetState(arg);
@@ -189,7 +186,7 @@ void JsonQuestFactory::InitParagraphs()
 
     // TextParagraph
 
-    PropertyReader<TextString, FactoryReader>
+    PropertyReader<TextString, FactoryReader<TextString>>
         textReader("text", textFactoryReader, TextString());
 
     auto textParagraphImpl = std::make_shared<TextParagraphImpl>(
@@ -206,11 +203,6 @@ void JsonQuestFactory::InitParagraphs()
         ReaderImplRecord<ParagraphStateMachineImpl>{ "ParagraphStateMachine", paragraphStateMachineImpl },
         ReaderImplRecord<TextParagraphImpl>{ "TextParagraph", textParagraphImpl }
     );
-
-    auto stateMachineParagraphs = std::dynamic_pointer_cast<ParagraphStateMachineContainer>(_stateMachineParagraphs);
-    stateMachineParagraphs->SetInheritors(
-        ReaderImplRecord<ParagraphStateMachineImpl>{ "ParagraphStateMachine", paragraphStateMachineImpl }
-    );
 }
 
 void JsonQuestFactory::InitCaseContainers()
@@ -221,7 +213,7 @@ void JsonQuestFactory::InitCaseContainers()
 
     // CaseContainerGroup
 
-    PropertyReader<std::vector<std::shared_ptr<ICaseContainer>>, ContainerReader>
+    PropertyReader<std::vector<std::shared_ptr<ICaseContainer>>, ContainerReader<std::shared_ptr<ICaseContainer>>>
         childrenReader("children", caseContainerReader, std::vector<std::shared_ptr<ICaseContainer>>());
 
     auto caseContainerGroupImpl = std::make_shared<CaseContainerGroupImpl>(
@@ -230,7 +222,7 @@ void JsonQuestFactory::InitCaseContainers()
 
     // CaseContainerStateMachine
 
-    MethodInitializer<CaseContainerStateMachine, std::shared_ptr<ICaseContainer>, ContainerReader>
+    MethodInitializer<CaseContainerStateMachine, std::shared_ptr<ICaseContainer>, ContainerReader<std::shared_ptr<ICaseContainer>>>
         stateInitializer("state", caseContainerReader, nullptr,
             [](const std::shared_ptr<CaseContainerStateMachine>& element, const std::shared_ptr<ICaseContainer>& arg) {
                 element->SetState(arg);
@@ -242,13 +234,13 @@ void JsonQuestFactory::InitCaseContainers()
 
     //ConditionalCaseContainer
 
-    PropertyReader<std::shared_ptr<ICaseContainer>, ContainerReader>
+    PropertyReader<std::shared_ptr<ICaseContainer>, ContainerReader<std::shared_ptr<ICaseContainer>>>
         thenContainerReader("thenContainer", caseContainerReader, nullptr);
 
-    PropertyReader<std::shared_ptr<ICaseContainer>, ContainerReader>
+    PropertyReader<std::shared_ptr<ICaseContainer>, ContainerReader<std::shared_ptr<ICaseContainer>>>
         elseContainerReader("elseContainer", caseContainerReader, nullptr);
 
-    PropertyReader<std::vector<std::shared_ptr<ICondition>>, FactoryReader>
+    PropertyReader<std::vector<std::shared_ptr<ICondition>>, FactoryReader<std::shared_ptr<ICondition>>>
         conditionsReader("conditions", conditionalReader, std::vector<std::shared_ptr<ICondition>>());
 
     auto conditionalCaseContainerImpl = std::make_shared<ConditionalCaseContainerImpl>(
@@ -257,7 +249,7 @@ void JsonQuestFactory::InitCaseContainers()
 
     // SimpleCaseContainer
 
-    PropertyReader<std::vector<Case>, FactoryReader>
+    PropertyReader<std::vector<Case>, FactoryReader<Case>>
         casesReader("cases", caseReader, std::vector<Case>());
 
     auto simpleCaseContainerImpl = std::make_shared<SimpleCaseContainerImpl>(
@@ -273,11 +265,6 @@ void JsonQuestFactory::InitCaseContainers()
         ReaderImplRecord<ConditionalCaseContainerImpl>{ "ConditionalCaseContainer", conditionalCaseContainerImpl },
         ReaderImplRecord<SimpleCaseContainerImpl>{ "SimpleCaseContainer", simpleCaseContainerImpl }
     );
-
-    auto stateMachineContainers = std::dynamic_pointer_cast<CaseContainerStateMachineContainer>(_stateMachineContainers);
-    stateMachineContainers->SetInheritors(
-        ReaderImplRecord<CaseContainerStateMachineImpl>{ "CaseContainerStateMachine", caseContainerStateMachineImpl }
-    );
 }
 
 void JsonQuestFactory::InitInventories()
@@ -286,7 +273,7 @@ void JsonQuestFactory::InitInventories()
 
     // Inventory
 
-    PropertyReader<std::vector<ItemRecord>, FactoryReader>
+    PropertyReader<std::vector<ItemRecord>, FactoryReader<ItemRecord>>
         itemsProperty("items", itemRecordReader, std::vector<ItemRecord>());
 
     auto inventoryImpl = std::make_shared<InventoryImpl>(
@@ -304,22 +291,22 @@ void JsonQuestFactory::InitInventories()
 void JsonQuestFactory::InitActions()
 {
     ContainerReader<std::shared_ptr<IParagraph>> paragraphReader(_paragraphs);
-    ContainerReader<std::shared_ptr<ParagraphStateMachine>> stateMachineParagraphReader(_stateMachineParagraphs);
+    ContainerReader<std::shared_ptr<IParagraph>, std::shared_ptr<ParagraphStateMachine>> paragraphStateMachineReader(_paragraphs);
     ContainerReader<std::shared_ptr<ICaseContainer>> containerReader(_containers);
-    ContainerReader<std::shared_ptr<CaseContainerStateMachine>> stateMachineContainerReader(_stateMachineContainers);
+    ContainerReader<std::shared_ptr<ICaseContainer>, std::shared_ptr<CaseContainerStateMachine>> containerStateMachineReader(_containers);
     ContainerReader<std::shared_ptr<Inventory>> inventoryReader(_inventories);
 
     FactoryReader<ItemRecord> itemRecordReader(_itemRecordFactory);
 
     //CaseContainerSwitching
 
-    MethodInitializer<CaseContainerSwitching, std::shared_ptr<CaseContainerStateMachine>, ContainerReader>
-        caseContainerStateMachineInitializer("stateMachine", stateMachineContainerReader, nullptr,
+    MethodInitializer<CaseContainerSwitching, std::shared_ptr<CaseContainerStateMachine>, ContainerReader<std::shared_ptr<ICaseContainer>, std::shared_ptr<CaseContainerStateMachine>>>
+        caseContainerStateMachineInitializer("stateMachine", containerStateMachineReader, nullptr,
             [](const std::shared_ptr<CaseContainerSwitching>& element, const std::shared_ptr<CaseContainerStateMachine>& arg) {
                 element->SetStateMachine(arg);
             });
 
-    MethodInitializer<CaseContainerSwitching, std::shared_ptr<ICaseContainer>, ContainerReader>
+    MethodInitializer<CaseContainerSwitching, std::shared_ptr<ICaseContainer>, ContainerReader<std::shared_ptr<ICaseContainer>>>
         caseContainerInitializer("nextContainer", containerReader, nullptr,
             [](const std::shared_ptr<CaseContainerSwitching>& element, const std::shared_ptr<ICaseContainer>& arg) {
                 element->SetNextContainer(arg);
@@ -330,13 +317,13 @@ void JsonQuestFactory::InitActions()
 
     //ParagraphSwitching
 
-    MethodInitializer<ParagraphSwitching, std::shared_ptr<ParagraphStateMachine>, ContainerReader>
-        paragraphStateMachineInitializer("stateMachine", stateMachineParagraphReader, nullptr,
+    MethodInitializer<ParagraphSwitching, std::shared_ptr<ParagraphStateMachine>, ContainerReader<std::shared_ptr<IParagraph>, std::shared_ptr<ParagraphStateMachine>>>
+        paragraphStateMachineInitializer("stateMachine", paragraphStateMachineReader, nullptr,
             [](const std::shared_ptr<ParagraphSwitching>& element, const std::shared_ptr<ParagraphStateMachine>& arg) {
                 element->SetStateMachine(arg);
             });
 
-    MethodInitializer<ParagraphSwitching, std::shared_ptr<IParagraph>, ContainerReader>
+    MethodInitializer<ParagraphSwitching, std::shared_ptr<IParagraph>, ContainerReader<std::shared_ptr<IParagraph>>>
         paragraphInitializer("nextParagraph", paragraphReader, nullptr,
             [](const std::shared_ptr<ParagraphSwitching>& element, const std::shared_ptr<IParagraph>& arg) {
                 element->SetNextParagraph(arg);
@@ -347,17 +334,17 @@ void JsonQuestFactory::InitActions()
 
     // Clearing
 
-    PropertyReader<std::shared_ptr<Inventory>, ContainerReader>
+    PropertyReader<std::shared_ptr<Inventory>, ContainerReader<std::shared_ptr<Inventory>>>
         inventoryProperty("inventory", inventoryReader, nullptr);
 
     auto clearingImpl = std::make_shared<ClearingImpl>(ContainerInitializer<Clearing>(), inventoryProperty);
 
     // Copying
 
-    PropertyReader<std::shared_ptr<Inventory>, ContainerReader>
+    PropertyReader<std::shared_ptr<Inventory>, ContainerReader<std::shared_ptr<Inventory>>>
         inventorySourceProperty("source", inventoryReader, nullptr);
 
-    PropertyReader<std::shared_ptr<Inventory>, ContainerReader>
+    PropertyReader<std::shared_ptr<Inventory>, ContainerReader<std::shared_ptr<Inventory>>>
         inventoryTargetProperty("target", inventoryReader, nullptr);
 
     auto copyingImpl = std::make_shared<CopyingImpl>(ContainerInitializer<Copying>(),
@@ -365,7 +352,7 @@ void JsonQuestFactory::InitActions()
 
     // Transfer
 
-    PropertyReader<std::vector<ItemRecord>, FactoryReader>
+    PropertyReader<std::vector<ItemRecord>, FactoryReader<ItemRecord>>
         itemsProperty("items", itemRecordReader, std::vector<ItemRecord>());
 
     auto transferImpl = std::make_shared<TransferImpl>(ContainerInitializer<Transfer>(),
@@ -390,24 +377,24 @@ void JsonQuestFactory::InitForms()
 
     // FormBase
 
-    PropertyReader<TextString, FactoryReader>
+    PropertyReader<TextString, FactoryReader<TextString>>
         textProperty("text", textFactoryReader, TextString());
 
     auto formBaseImpl = std::make_shared<FormBaseImpl>(textProperty);
 
     // SpecificForm
 
-    PropertyReader<std::vector<int>, PrimitiveReader>
+    PropertyReader<std::vector<int>, PrimitiveReader<int>>
         countsProperty("counts", intReader, std::vector<int>());
 
     auto specificFormImpl = std::make_shared<SpecificFormImpl>(countsProperty, textProperty);
 
     // TailForm
 
-    PropertyReader<int, PrimitiveReader>
+    PropertyReader<int, PrimitiveReader<int>>
         notationProperty("notation", intReader, 0);
 
-    PropertyReader<std::vector<int>, PrimitiveReader>
+    PropertyReader<std::vector<int>, PrimitiveReader<int>>
         digitsProperty("digits", intReader, std::vector<int>());
 
     auto tailFormImpl = std::make_shared<TailFormImpl>(notationProperty, digitsProperty, textProperty);
@@ -438,13 +425,13 @@ void JsonQuestFactory::InitConditions()
 
     // Comparison
 
-    PropertyReader<std::shared_ptr<Value>, FactoryReader>
+    PropertyReader<std::shared_ptr<Value>, FactoryReader<std::shared_ptr<Value>>>
         leftProperty("left", valueReader, nullptr);
 
-    PropertyReader<std::shared_ptr<Value>, FactoryReader>
+    PropertyReader<std::shared_ptr<Value>, FactoryReader<std::shared_ptr<Value>>>
         rightProperty("right", valueReader, nullptr);
 
-    PropertyReader<QuestCore::Operation, EnumReader>
+    PropertyReader<Operation, EnumReader<Operation>>
         operationReader("op", operationEnumReader, Operation::None);
 
     auto comparisonImpl = std::make_shared<ComparisonImpl>(leftProperty, rightProperty, operationReader);
@@ -465,17 +452,17 @@ void JsonQuestFactory::InitValues()
 
     //SimpleValue
 
-    PropertyReader<int, PrimitiveReader>
+    PropertyReader<int, PrimitiveReader<int>>
         valueReader("value", intReader, 0);
 
     auto simpleValueImpl = std::make_shared<SimpleValueImpl>(valueReader);
 
     //InventoryValue
 
-    PropertyReader<std::shared_ptr<Item>, ContainerReader>
+    PropertyReader<std::shared_ptr<Item>, ContainerReader<std::shared_ptr<Item>>>
         itemReader("item", itemContainerReader, nullptr);
 
-    PropertyReader<std::shared_ptr<Inventory>, ContainerReader>
+    PropertyReader<std::shared_ptr<Inventory>, ContainerReader<std::shared_ptr<Inventory>>>
         inventoryReader("inventory", inventoryContainerReader, nullptr);
 
     auto inventoryValueImpl = std::make_shared<InventoryValueImpl>(itemReader, inventoryReader);
@@ -496,11 +483,11 @@ void JsonQuestFactory::InitCases()
 
     // Case
 
-    PropertyReader<TextString, FactoryReader>
+    PropertyReader<TextString, FactoryReader<TextString>>
         nameProperty("name", textFactoryReader, TextString());
 
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::IAction>>, ContainerReader>
-        actionsProperty("actions", actionReader, std::vector<std::shared_ptr<QuestCore::IAction>>());
+    PropertyReader<std::vector<std::shared_ptr<IAction>>, ContainerReader<std::shared_ptr<IAction>>>
+        actionsProperty("actions", actionReader, std::vector<std::shared_ptr<IAction>>());
 
     auto caseImpl = std::make_shared<CaseImpl>(nameProperty, actionsProperty);
 
@@ -517,7 +504,7 @@ void JsonQuestFactory::InitTextStrings()
 
     // TextString
 
-    PropertyReader<std::string, PrimitiveReader>
+    PropertyReader<std::string, PrimitiveReader<std::string>>
         u8Property("u8", stringReader, std::string());
 
     auto textStringImpl = std::make_shared<TextStringImpl>(u8Property);
@@ -535,8 +522,8 @@ void JsonQuestFactory::InitFormatedStrings()
 
     // FormatedString
 
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::FormBase>>, FactoryReader>
-        formsProperty("forms", formBaseReader, std::vector<std::shared_ptr<QuestCore::FormBase>>());
+    PropertyReader<std::vector<std::shared_ptr<FormBase>>, FactoryReader<std::shared_ptr<FormBase>>>
+        formsProperty("forms", formBaseReader, std::vector<std::shared_ptr<FormBase>>());
 
     auto formatedStringImpl = std::make_shared<FormatedStringImpl>(formsProperty);
 
@@ -554,10 +541,10 @@ void JsonQuestFactory::InitItemOrders()
 
     // ItemOrder
 
-    PropertyReader<std::shared_ptr<Item>, ContainerReader>
+    PropertyReader<std::shared_ptr<Item>, ContainerReader<std::shared_ptr<Item>>>
         itemProperty("item", itemReader, nullptr);
 
-    PropertyReader<int, PrimitiveReader>
+    PropertyReader<int, PrimitiveReader<int>>
         orderProperty("order", intReader, 0);
 
     auto itemOrderImpl = std::make_shared<ItemOrderImpl>(itemProperty, orderProperty);
@@ -576,10 +563,10 @@ void JsonQuestFactory::InitItemRecords()
 
     // ItemRecord
 
-    PropertyReader<std::shared_ptr<Item>, ContainerReader>
+    PropertyReader<std::shared_ptr<Item>, ContainerReader<std::shared_ptr<Item>>>
         itemProperty("item", itemReader, nullptr);
 
-    PropertyReader<int, PrimitiveReader>
+    PropertyReader<int, PrimitiveReader<int>>
         countProperty("count", intReader, 0);
 
     auto itemRecordImpl = std::make_shared<ItemRecordImpl>(itemProperty, countProperty);
@@ -625,26 +612,20 @@ bool JsonQuestFactory::Read()
     _items->AddRoot(root);
     _inventories->AddRoot(root);
     _paragraphs->AddRoot(root);
-    _stateMachineParagraphs->AddRoot(root);
     _containers->AddRoot(root);
-    _stateMachineContainers->AddRoot(root);
     _actions->AddRoot(root);
 
     _items->CreateAll();
     _inventories->CreateAll();
     _actions->CreateAll();
     _paragraphs->CreateAll();
-    _stateMachineParagraphs->CreateAll();
     _containers->CreateAll();
-    _stateMachineContainers->CreateAll();
 
     _items->InitAll();
     _inventories->InitAll();
     _actions->InitAll();
     _paragraphs->InitAll();
-    _stateMachineParagraphs->InitAll();
     _containers->InitAll();
-    _stateMachineContainers->InitAll();
 
     _isRed = true;
     return true;

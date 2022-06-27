@@ -11,8 +11,8 @@
 //Case
 
 using CaseImpl = FactoryImpl<QuestCore::Case,
-    PropertyReader<QuestCore::TextString, FactoryReader>,
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::IAction>>, ContainerReader>
+    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>,
+    PropertyReader<std::vector<std::shared_ptr<QuestCore::IAction>>, ContainerReader<std::shared_ptr<QuestCore::IAction>>>
 >;
 
 //Factories

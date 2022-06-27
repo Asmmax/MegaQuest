@@ -10,7 +10,7 @@
 //TextString
 
 using TextStringImpl = FactoryImpl<QuestCore::TextString,
-    PropertyReader<std::string, PrimitiveReader>
+    PropertyReader<std::string, PrimitiveReader<std::string>>
 >;
 
 //Factories

@@ -28,8 +28,8 @@ namespace QuestCore
 //CaseContainerSwitching
 
 using ContainerSwitchingInitializer = ContainerInitializer<QuestCore::CaseContainerSwitching,
-    MethodInitializer<QuestCore::CaseContainerSwitching, std::shared_ptr<QuestCore::CaseContainerStateMachine>, ContainerReader>,
-    MethodInitializer<QuestCore::CaseContainerSwitching, std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader>
+    MethodInitializer<QuestCore::CaseContainerSwitching, std::shared_ptr<QuestCore::CaseContainerStateMachine>, ContainerReader<std::shared_ptr<QuestCore::ICaseContainer>, std::shared_ptr<QuestCore::CaseContainerStateMachine>>>,
+    MethodInitializer<QuestCore::CaseContainerSwitching, std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader<std::shared_ptr<QuestCore::ICaseContainer>>>
 >;
 
 using CaseContainerSwitchingImpl = ContainerImpl<QuestCore::CaseContainerSwitching,
@@ -39,8 +39,8 @@ using CaseContainerSwitchingImpl = ContainerImpl<QuestCore::CaseContainerSwitchi
 //ParagraphSwitching
 
 using ParagraphSwitchingInitializer = ContainerInitializer<QuestCore::ParagraphSwitching,
-    MethodInitializer<QuestCore::ParagraphSwitching, std::shared_ptr<QuestCore::ParagraphStateMachine>, ContainerReader>,
-    MethodInitializer<QuestCore::ParagraphSwitching, std::shared_ptr<QuestCore::IParagraph>, ContainerReader>
+    MethodInitializer<QuestCore::ParagraphSwitching, std::shared_ptr<QuestCore::ParagraphStateMachine>, ContainerReader<std::shared_ptr<QuestCore::IParagraph>, std::shared_ptr<QuestCore::ParagraphStateMachine>>>,
+    MethodInitializer<QuestCore::ParagraphSwitching, std::shared_ptr<QuestCore::IParagraph>, ContainerReader<std::shared_ptr<QuestCore::IParagraph>>>
 >;
 
 using ParagraphSwitchingImpl = ContainerImpl<QuestCore::ParagraphSwitching,
@@ -51,24 +51,24 @@ using ParagraphSwitchingImpl = ContainerImpl<QuestCore::ParagraphSwitching,
 
 using ClearingImpl = ContainerImpl<QuestCore::Clearing,
     ContainerInitializer<QuestCore::Clearing>,
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>
+    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader<std::shared_ptr<QuestCore::Inventory>>>
 >;
 
 // Copying
 
 using CopyingImpl = ContainerImpl<QuestCore::Copying,
     ContainerInitializer<QuestCore::Copying>,
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>,
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>
+    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader<std::shared_ptr<QuestCore::Inventory>>>,
+    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader<std::shared_ptr<QuestCore::Inventory>>>
 >;
 
 // Transfer
 
 using TransferImpl = ContainerImpl<QuestCore::Transfer,
     ContainerInitializer<QuestCore::Transfer>,
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>,
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>,
-    PropertyReader<std::vector<QuestCore::ItemRecord>, FactoryReader>
+    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader<std::shared_ptr<QuestCore::Inventory>>>,
+    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader<std::shared_ptr<QuestCore::Inventory>>>,
+    PropertyReader<std::vector<QuestCore::ItemRecord>, FactoryReader<QuestCore::ItemRecord>>
 >;
 
 //Containers

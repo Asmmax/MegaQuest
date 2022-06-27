@@ -4,28 +4,28 @@
 #include <memory>
 #include <assert.h>
 
-template<typename ResultType>
+template<typename Type, typename ResultType = Type>
 class ContainerReader;
 
-template<typename Type>
-class ContainerReader<std::shared_ptr<Type>>
+template<typename Type, typename ResultType>
+class ContainerReader<std::shared_ptr<Type>, std::shared_ptr<ResultType>>
 {
 	using ContainerPtr = std::weak_ptr<ContainerBase<Type>>;
-	using TypePtr = std::shared_ptr<Type>;
-
+	using ResultTypePtr = std::shared_ptr<ResultType>;
+	static_assert(std::is_base_of<Type, ResultType>::value);
 public:
 	ContainerReader(const ContainerPtr& container) :
 		_container(container)
 	{
 	}
 
-	TypePtr Create(const nlohmann::json& node)
+	ResultTypePtr Create(const nlohmann::json& node)
 	{
 		auto containerPtr = _container.lock();
 		assert(containerPtr);
 		auto id = node.get<std::string>();
 		containerPtr->CreateById(id);
-		return containerPtr->Get(id);
+		return std::dynamic_pointer_cast<ResultType>(containerPtr->Get(id));
 	}
 
 	void Init(const nlohmann::json& node)

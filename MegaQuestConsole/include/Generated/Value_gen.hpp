@@ -11,14 +11,14 @@
 //SimpleValue
 
 using SimpleValueImpl = FactoryImpl<std::shared_ptr<QuestCore::SimpleValue>,
-    PropertyReader<int, PrimitiveReader>
+    PropertyReader<int, PrimitiveReader<int>>
 >;
 
 //InventoryValue
 
 using InventoryValueImpl = FactoryImpl<std::shared_ptr<QuestCore::InventoryValue>,
-    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader>,
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>
+    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader<std::shared_ptr<QuestCore::Item>>>,
+    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader<std::shared_ptr<QuestCore::Inventory>>>
 >;
 
 //Factories

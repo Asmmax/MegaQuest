@@ -19,9 +19,9 @@ namespace QuestCore
 
 using ItemImpl = ContainerImpl<QuestCore::Item,
     ContainerInitializer<QuestCore::Item>,
-    PropertyReader<std::string, PrimitiveReader>,
-    PropertyReader<QuestCore::FormatedString, FactoryReader>,
-    PropertyReader<bool, PrimitiveReader>
+    PropertyReader<std::string, PrimitiveReader<std::string>>,
+    PropertyReader<QuestCore::FormatedString, FactoryReader<QuestCore::FormatedString>>,
+    PropertyReader<bool, PrimitiveReader<bool>>
 >;
 
 //Containers

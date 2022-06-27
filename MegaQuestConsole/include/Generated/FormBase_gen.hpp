@@ -12,22 +12,22 @@
 //FormBase
 
 using FormBaseImpl = FactoryImpl<std::shared_ptr<QuestCore::FormBase>,
-    PropertyReader<QuestCore::TextString, FactoryReader>
+    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>
 >;
 
 //SpecificForm
 
 using SpecificFormImpl = FactoryImpl<std::shared_ptr<QuestCore::SpecificForm>,
-    PropertyReader<std::vector<int>, PrimitiveReader>,
-    PropertyReader<QuestCore::TextString, FactoryReader>
+    PropertyReader<std::vector<int>, PrimitiveReader<int>>,
+    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>
 >;
 
 //TailForm
 
 using TailFormImpl = FactoryImpl<std::shared_ptr<QuestCore::TailForm>,
-    PropertyReader<int, PrimitiveReader>,
-    PropertyReader<std::vector<int>, PrimitiveReader>,
-    PropertyReader<QuestCore::TextString, FactoryReader>
+    PropertyReader<int, PrimitiveReader<int>>,
+    PropertyReader<std::vector<int>, PrimitiveReader<int>>,
+    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>
 >;
 
 //Factories

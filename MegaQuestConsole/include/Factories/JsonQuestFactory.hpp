@@ -60,9 +60,6 @@ private:
 	std::shared_ptr<ContainerBase<QuestCore::Inventory>> _inventories;
 	std::shared_ptr<ContainerBase<QuestCore::IAction>> _actions;
 
-	std::shared_ptr<ContainerBase<QuestCore::CaseContainerStateMachine>> _stateMachineContainers;
-	std::shared_ptr<ContainerBase<QuestCore::ParagraphStateMachine>> _stateMachineParagraphs;
-
 	//unique
 	std::shared_ptr<IFactory<std::shared_ptr<QuestCore::FormBase>>> _formBaseFactory;
 	std::shared_ptr<IFactory<std::shared_ptr<QuestCore::ICondition>>> _conditionFactory;

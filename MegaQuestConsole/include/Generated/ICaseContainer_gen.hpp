@@ -22,13 +22,13 @@ namespace QuestCore
 
 using CaseContainerGroupImpl = ContainerImpl<QuestCore::CaseContainerGroup,
     ContainerInitializer<QuestCore::CaseContainerGroup>,
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICaseContainer>>, ContainerReader>
+    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICaseContainer>>, ContainerReader<std::shared_ptr<QuestCore::ICaseContainer>>>
 >;
 
 // CaseContainerStateMachine
 
 using CaseContainerStateMachineInitializer = ContainerInitializer<QuestCore::CaseContainerStateMachine,
-    MethodInitializer<QuestCore::CaseContainerStateMachine, std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader>
+    MethodInitializer<QuestCore::CaseContainerStateMachine, std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader<std::shared_ptr<QuestCore::ICaseContainer>>>
 >;
 
 using CaseContainerStateMachineImpl = ContainerImpl<QuestCore::CaseContainerStateMachine,
@@ -39,16 +39,16 @@ using CaseContainerStateMachineImpl = ContainerImpl<QuestCore::CaseContainerStat
 
 using ConditionalCaseContainerImpl = ContainerImpl<QuestCore::ConditionalCaseContainer,
     ContainerInitializer<QuestCore::ConditionalCaseContainer>,
-    PropertyReader<std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader>,
-    PropertyReader<std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader>,
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICondition>>, FactoryReader>
+    PropertyReader<std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader<std::shared_ptr<QuestCore::ICaseContainer>>>,
+    PropertyReader<std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader<std::shared_ptr<QuestCore::ICaseContainer>>>,
+    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICondition>>, FactoryReader<std::shared_ptr<QuestCore::ICondition>>>
 >;
 
 // SimpleCaseContainer
 
 using SimpleCaseContainerImpl = ContainerImpl<QuestCore::SimpleCaseContainer,
     ContainerInitializer<QuestCore::SimpleCaseContainer>,
-    PropertyReader<std::vector<QuestCore::Case>, FactoryReader>
+    PropertyReader<std::vector<QuestCore::Case>, FactoryReader<QuestCore::Case>>
 >;
 
 //Containers

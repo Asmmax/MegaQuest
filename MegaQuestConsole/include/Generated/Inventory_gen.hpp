@@ -12,7 +12,7 @@
 
 using InventoryImpl = ContainerImpl<QuestCore::Inventory,
     ContainerInitializer<QuestCore::Inventory>,
-    PropertyReader<std::vector<QuestCore::ItemRecord>, FactoryReader>
+    PropertyReader<std::vector<QuestCore::ItemRecord>, FactoryReader<QuestCore::ItemRecord>>
 >;
 
 //Containers

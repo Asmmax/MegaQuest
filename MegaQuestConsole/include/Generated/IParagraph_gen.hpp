@@ -26,34 +26,34 @@ namespace QuestCore
 
 using ConditionalParagraphImpl = ContainerImpl<QuestCore::ConditionalParagraph,
     ContainerInitializer<QuestCore::ConditionalParagraph>,
-    PropertyReader<std::shared_ptr<QuestCore::IParagraph>, ContainerReader>,
-    PropertyReader<std::shared_ptr<QuestCore::IParagraph>, ContainerReader>,
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICondition>>, FactoryReader>
+    PropertyReader<std::shared_ptr<QuestCore::IParagraph>, ContainerReader<std::shared_ptr<QuestCore::IParagraph>>>,
+    PropertyReader<std::shared_ptr<QuestCore::IParagraph>, ContainerReader<std::shared_ptr<QuestCore::IParagraph>>>,
+    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICondition>>, FactoryReader<std::shared_ptr<QuestCore::ICondition>>>
 >;
 
 //InventoryParagraph
 
 using InventoryParagraphImpl = ContainerImpl<QuestCore::InventoryParagraph,
     ContainerInitializer<QuestCore::InventoryParagraph>,
-    PropertyReader<QuestCore::FormatedString, FactoryReader>,
-    PropertyReader<QuestCore::TextString, FactoryReader>,
-    PropertyReader<QuestCore::FormatedString, FactoryReader>,
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>,
-    PropertyReader<std::vector<QuestCore::ItemOrder>, FactoryReader>
+    PropertyReader<QuestCore::FormatedString, FactoryReader<QuestCore::FormatedString>>,
+    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>,
+    PropertyReader<QuestCore::FormatedString, FactoryReader<QuestCore::FormatedString>>,
+    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader<std::shared_ptr<QuestCore::Inventory>>>,
+    PropertyReader<std::vector<QuestCore::ItemOrder>, FactoryReader<QuestCore::ItemOrder>>
 >;
 
 // ParagraphGroup
 
 using ParagraphGroupImpl = ContainerImpl<QuestCore::ParagraphGroup,
     ContainerInitializer<QuestCore::ParagraphGroup>,
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::IParagraph>>, ContainerReader>,
-    PropertyReader<QuestCore::TextString, FactoryReader>
+    PropertyReader<std::vector<std::shared_ptr<QuestCore::IParagraph>>, ContainerReader<std::shared_ptr<QuestCore::IParagraph>>>,
+    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>
 >;
 
 // ParagraphStateMachine
 
 using ParagraphStateMachineInitializer = ContainerInitializer<QuestCore::ParagraphStateMachine,
-    MethodInitializer<QuestCore::ParagraphStateMachine, std::shared_ptr<QuestCore::IParagraph>, ContainerReader>
+    MethodInitializer<QuestCore::ParagraphStateMachine, std::shared_ptr<QuestCore::IParagraph>, ContainerReader<std::shared_ptr<QuestCore::IParagraph>>>
 >;
 
 using ParagraphStateMachineImpl = ContainerImpl<QuestCore::ParagraphStateMachine,
@@ -64,7 +64,7 @@ using ParagraphStateMachineImpl = ContainerImpl<QuestCore::ParagraphStateMachine
 
 using TextParagraphImpl = ContainerImpl<QuestCore::TextParagraph,
     ContainerInitializer<QuestCore::TextParagraph>,
-    PropertyReader<QuestCore::TextString, FactoryReader>
+    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>
 >;
 
 //Containers

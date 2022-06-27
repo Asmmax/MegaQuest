@@ -16,8 +16,8 @@ namespace QuestCore
 //ItemOrder
 
 using ItemOrderImpl = FactoryImpl<QuestCore::ItemOrder,
-    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader>,
-    PropertyReader<int, PrimitiveReader>
+    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader<std::shared_ptr<QuestCore::Item>>>,
+    PropertyReader<int, PrimitiveReader<int>>
 >;
 
 //Factories

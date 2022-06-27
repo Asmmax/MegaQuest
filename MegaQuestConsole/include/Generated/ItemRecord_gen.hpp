@@ -16,8 +16,8 @@ namespace QuestCore
 //ItemRecord
 
 using ItemRecordImpl = FactoryImpl<QuestCore::ItemRecord,
-    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader>,
-    PropertyReader<int, PrimitiveReader>
+    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader<std::shared_ptr<QuestCore::Item>>>,
+    PropertyReader<int, PrimitiveReader<int>>
 >;
 
 //Factories
