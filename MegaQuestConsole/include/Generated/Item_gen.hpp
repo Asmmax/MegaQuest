@@ -7,13 +7,10 @@
 #include "Containers/ReaderStrategy/ContainerReader.hpp"
 #include "Containers/ReaderStrategy/PrimitiveReader.hpp"
 #include "Containers/ReaderStrategy/FactoryReader.hpp"
-#include "Containers/Container.hpp"
 #include "Containers/ContainerInitializer.hpp"
 
-namespace QuestCore
-{
-    class FormatedString;
-}
+#include "Containers/Container.hpp"
+#include "Containers/GlobalContext.hpp"
 
 //Item
 
@@ -24,6 +21,16 @@ using ItemImpl = ContainerImpl<QuestCore::Item,
     PropertyReader<bool, PrimitiveReader<bool>>
 >;
 
-//Containers
+class ItemImpl_Binder
+{
+public:
+    ItemImpl_Binder();
+
+private:
+    static ItemImpl_Binder instance;
+};
 
 using ItemContainer = Container<QuestCore::Item, ItemImpl>;
+
+template<>
+const std::shared_ptr<ContainerBase<QuestCore::Item>>& GlobalContext::GetContainer<QuestCore::Item>();

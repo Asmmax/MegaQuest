@@ -12,7 +12,6 @@ class ContainerReader<std::shared_ptr<Type>, std::shared_ptr<ResultType>>
 {
 	using ContainerPtr = std::weak_ptr<ContainerBase<Type>>;
 	using ResultTypePtr = std::shared_ptr<ResultType>;
-	static_assert(std::is_base_of<Type, ResultType>::value);
 public:
 	ContainerReader(const ContainerPtr& container) :
 		_container(container)

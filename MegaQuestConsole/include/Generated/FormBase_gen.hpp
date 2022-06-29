@@ -1,35 +1,26 @@
 #pragma once
 
 #include "FormBase.hpp"
-#include "Forms.hpp"
 
-#include "Containers/FactoryImpl.hpp"
-#include "Containers/PropertyReader.hpp"
-#include "Containers/ReaderStrategy/FactoryReader.hpp"
-#include "Containers/ReaderStrategy/PrimitiveReader.hpp"
+#include "Generated/Forms_gen.hpp"
+
 #include "Containers/Factory.hpp"
-
-//FormBase
+#include "Containers/GlobalContext.hpp"
 
 using FormBaseImpl = FactoryImpl<std::shared_ptr<QuestCore::FormBase>,
     PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>
 >;
 
-//SpecificForm
+class FormBaseImpl_Binder
+{
+public:
+    FormBaseImpl_Binder();
 
-using SpecificFormImpl = FactoryImpl<std::shared_ptr<QuestCore::SpecificForm>,
-    PropertyReader<std::vector<int>, PrimitiveReader<int>>,
-    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>
->;
-
-//TailForm
-
-using TailFormImpl = FactoryImpl<std::shared_ptr<QuestCore::TailForm>,
-    PropertyReader<int, PrimitiveReader<int>>,
-    PropertyReader<std::vector<int>, PrimitiveReader<int>>,
-    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>
->;
-
-//Factories
+private:
+    static FormBaseImpl_Binder instance;
+};
 
 using FormBaseFactory = Factory<std::shared_ptr<QuestCore::FormBase>, FormBaseImpl, SpecificFormImpl, TailFormImpl>;
+
+template<>
+const std::shared_ptr<IFactory<std::shared_ptr<QuestCore::FormBase>>>& GlobalContext::GetFactory<std::shared_ptr<QuestCore::FormBase>>();

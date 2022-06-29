@@ -1,6 +1,7 @@
 #pragma once
 #include "ContainerBase.hpp"
 #include "ReaderImplRecord.hpp"
+#include "GlobalRootReader.hpp"
 #include <tuple>
 #include <utility>
 
@@ -14,11 +15,18 @@ public:
 	Container(const std::string& groupName) :
 		ContainerBase<Type>(groupName)
 	{
+		GlobalRootReader::Instance().AddContainer<Type>();
 	}
 
 	void SetInheritors(const ReaderImplRecord<Impls>&... inheritors)
 	{
 		_inheritors = std::make_tuple(inheritors...);
+	}
+
+	template<typename T>
+	void SetInheritor(const ReaderImplRecord<T>& inheritor)
+	{
+		SetInheritorImpl(inheritor, _inheritors, std::index_sequence_for<Impls...>());
 	}
 
 	void Create(const nlohmann::json& node) override
@@ -40,6 +48,35 @@ public:
 	}
 
 private:
+
+	template<typename T, std::size_t... Is>
+	void SetInheritorImpl(const ReaderImplRecord<T>& inheritor,	Inheritors& inheritors, std::index_sequence<Is...>)
+	{
+		SetInheritorImpl(inheritor, std::get<Is>(inheritors)...);
+	}
+
+	template<typename T, typename Current, typename... Other>
+	void SetInheritorImpl(const ReaderImplRecord<T>& inheritor, ReaderImplRecord<Current>& currentInheritor, ReaderImplRecord<Other>&... inheritors)
+	{
+		SetInheritorImpl(inheritor, inheritors...);
+	}
+
+	template<typename T, typename... Other>
+	void SetInheritorImpl(const ReaderImplRecord<T>& inheritor, ReaderImplRecord<T>& currentInheritor, ReaderImplRecord<Other>&... inheritors)
+	{
+		currentInheritor = inheritor;
+	}
+
+	template<typename T>
+	void SetInheritorImpl(const ReaderImplRecord<T>& inheritor)
+	{
+		static_assert(false);
+	}
+
+
+
+
+
 
 	template<std::size_t... Is>
 	void CreateImpl(const std::string& typeId, const nlohmann::json& node, 

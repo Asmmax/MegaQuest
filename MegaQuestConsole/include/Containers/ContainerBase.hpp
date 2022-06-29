@@ -14,7 +14,8 @@ public:
 
 	virtual ~ContainerBase() = default;
 
-	void AddRoot(const nlohmann::json& root) {
+	void AddRoot(const nlohmann::json& root) 
+	{
 		auto foundIt = root.find(_groupName);
 		if (foundIt == root.end()) {
 			return;
