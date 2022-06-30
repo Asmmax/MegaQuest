@@ -3,14 +3,14 @@
 #include "json.hpp"
 #include <functional>
 
-template<typename ElementType, typename ResultType, typename ReaderStrategy>
+template<typename ElementType, typename ResultType, template<typename> typename ReaderStrategy>
 class MethodInitializer : public PropertyReader<ResultType, ReaderStrategy>
 {
 	using ElementPtr = std::shared_ptr<ElementType>;
 	using Callback = std::function<void(const ElementPtr&, const ResultType&)>;
 public:
 	MethodInitializer(const std::string& property, 
-		const ReaderStrategy& reader, 
+		const ReaderStrategy<ResultType>& reader,
 		const ResultType& defValue, 
 		const Callback& method) :
 
@@ -31,14 +31,14 @@ private:
 };
 
 // vector specialization
-template<typename ElementType, typename Type, typename ReaderStrategy>
+template<typename ElementType, typename Type, template<typename> typename ReaderStrategy>
 class MethodInitializer<ElementType, std::vector<Type>, ReaderStrategy> : public PropertyReader<std::vector<Type>, ReaderStrategy>
 {
 	using ElementPtr = std::shared_ptr<ElementType>;
 	using Callback = std::function<void(const ElementPtr&, const std::vector<Type>&)>;
 public:
 	MethodInitializer(const std::string& property,
-		const ReaderStrategy& reader,
+		const ReaderStrategy<Type>& reader,
 		const std::vector<Type>& defValue,
 		const Callback& method) :
 

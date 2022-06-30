@@ -7,9 +7,9 @@
 #include "Containers/ReaderStrategy/EnumReader.hpp"
 
 using ComparisonImpl = FactoryImpl<std::shared_ptr<QuestCore::Comparison>,
-    PropertyReader<std::shared_ptr<QuestCore::Value>, FactoryReader<std::shared_ptr<QuestCore::Value>>>,
-    PropertyReader<std::shared_ptr<QuestCore::Value>, FactoryReader<std::shared_ptr<QuestCore::Value>>>,
-    PropertyReader<QuestCore::Operation, EnumReader<QuestCore::Operation>>
+    PropertyReader<std::shared_ptr<QuestCore::Value>, FactoryReader>,
+    PropertyReader<std::shared_ptr<QuestCore::Value>, FactoryReader>,
+    PropertyReader<QuestCore::Operation, EnumReader>
 >;
 
 class ComparisonImpl_Binder

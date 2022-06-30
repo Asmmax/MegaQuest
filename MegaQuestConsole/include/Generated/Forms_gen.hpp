@@ -10,8 +10,8 @@
 //SpecificForm
 
 using SpecificFormImpl = FactoryImpl<std::shared_ptr<QuestCore::SpecificForm>,
-    PropertyReader<std::vector<int>, PrimitiveReader<int>>,
-    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>
+    PropertyReader<std::vector<int>, PrimitiveReader>,
+    PropertyReader<QuestCore::TextString, FactoryReader>
 >;
 
 class SpecificFormImpl_Binder
@@ -26,9 +26,9 @@ private:
 //TailForm
 
 using TailFormImpl = FactoryImpl<std::shared_ptr<QuestCore::TailForm>,
-    PropertyReader<int, PrimitiveReader<int>>,
-    PropertyReader<std::vector<int>, PrimitiveReader<int>>,
-    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>
+    PropertyReader<int, PrimitiveReader>,
+    PropertyReader<std::vector<int>, PrimitiveReader>,
+    PropertyReader<QuestCore::TextString, FactoryReader>
 >;
 
 class TailFormImpl_Binder

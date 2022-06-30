@@ -10,7 +10,7 @@ ClearingImpl_Binder::ClearingImpl_Binder()
     ContainerReader<std::shared_ptr<QuestCore::Inventory>>
         inventoryReader(inventoryContainer);
 
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader<std::shared_ptr<QuestCore::Inventory>>>
+    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>
         inventoryProperty("inventory", inventoryReader, nullptr);
 
     auto clearingImpl = std::make_shared<ClearingImpl>(ContainerInitializer<QuestCore::Clearing>(), inventoryProperty);

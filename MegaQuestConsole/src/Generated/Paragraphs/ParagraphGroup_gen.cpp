@@ -13,10 +13,10 @@ ParagraphGroupImpl_Binder::ParagraphGroupImpl_Binder()
     FactoryReader<QuestCore::TextString>
         textFactoryReader(textFactory);
 
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::IParagraph>>, ContainerReader<std::shared_ptr<QuestCore::IParagraph>>>
+    PropertyReader<std::vector<std::shared_ptr<QuestCore::IParagraph>>, ContainerReader>
         childrenReader("children", paragraphReader, std::vector<std::shared_ptr<QuestCore::IParagraph>>());
 
-    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>
+    PropertyReader<QuestCore::TextString, FactoryReader>
         gapReader("gap", textFactoryReader, QuestCore::TextString());
 
     auto paragraphGroupImpl = std::make_shared<ParagraphGroupImpl>(

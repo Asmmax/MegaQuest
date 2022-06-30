@@ -10,7 +10,7 @@
 #include "Containers/GlobalContext.hpp"
 
 using FormatedStringImpl = FactoryImpl<QuestCore::FormatedString,
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::FormBase>>, FactoryReader<std::shared_ptr<QuestCore::FormBase>>>
+    PropertyReader<std::vector<std::shared_ptr<QuestCore::FormBase>>, FactoryReader>
 >;
 
 class FormatedStringImpl_Binder

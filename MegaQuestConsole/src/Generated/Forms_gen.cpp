@@ -12,10 +12,10 @@ SpecificFormImpl_Binder::SpecificFormImpl_Binder()
 
     PrimitiveReader<int> intReader;
 
-    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>
+    PropertyReader<QuestCore::TextString, FactoryReader>
         textProperty("text", textFactoryReader, QuestCore::TextString());
 
-    PropertyReader<std::vector<int>, PrimitiveReader<int>>
+    PropertyReader<std::vector<int>, PrimitiveReader>
         countsProperty("counts", intReader, std::vector<int>());
 
     auto specificFormImpl = std::make_shared<SpecificFormImpl>(countsProperty, textProperty);
@@ -37,13 +37,13 @@ TailFormImpl_Binder::TailFormImpl_Binder()
 
     PrimitiveReader<int> intReader;
 
-    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>
+    PropertyReader<QuestCore::TextString, FactoryReader>
         textProperty("text", textFactoryReader, QuestCore::TextString());
 
-    PropertyReader<int, PrimitiveReader<int>>
+    PropertyReader<int, PrimitiveReader>
         notationProperty("notation", intReader, 0);
 
-    PropertyReader<std::vector<int>, PrimitiveReader<int>>
+    PropertyReader<std::vector<int>, PrimitiveReader>
         digitsProperty("digits", intReader, std::vector<int>());
 
     auto tailFormImpl = std::make_shared<TailFormImpl>(notationProperty, digitsProperty, textProperty);

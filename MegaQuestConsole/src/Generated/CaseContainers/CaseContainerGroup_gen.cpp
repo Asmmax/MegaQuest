@@ -10,7 +10,7 @@ CaseContainerGroupImpl_Binder::CaseContainerGroupImpl_Binder()
     ContainerReader<std::shared_ptr<QuestCore::ICaseContainer>>
         caseContainerReader(iCaseContainerContainer);
 
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICaseContainer>>, ContainerReader<std::shared_ptr<QuestCore::ICaseContainer>>>
+    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICaseContainer>>, ContainerReader>
         childrenReader("children", caseContainerReader, std::vector<std::shared_ptr<QuestCore::ICaseContainer>>());
 
     auto caseContainerGroupImpl = std::make_shared<CaseContainerGroupImpl>(

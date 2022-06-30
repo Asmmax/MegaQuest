@@ -7,7 +7,7 @@ FormatedStringImpl_Binder::FormatedStringImpl_Binder()
     auto formBaseFactory = GlobalContext::GetFactory<std::shared_ptr<QuestCore::FormBase>>();
     FactoryReader<std::shared_ptr<QuestCore::FormBase>> formBaseReader(formBaseFactory);
 
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::FormBase>>, FactoryReader<std::shared_ptr<QuestCore::FormBase>>>
+    PropertyReader<std::vector<std::shared_ptr<QuestCore::FormBase>>, FactoryReader>
         formsProperty("forms", formBaseReader, std::vector<std::shared_ptr<QuestCore::FormBase>>());
 
     auto formatedStringImpl = std::make_shared<FormatedStringImpl>(formsProperty);

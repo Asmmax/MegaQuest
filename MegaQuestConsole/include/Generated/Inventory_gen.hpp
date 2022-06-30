@@ -2,8 +2,6 @@
 
 #include "Inventory.hpp"
 
-#include "Item.hpp"
-
 #include "Containers/ContainerImpl.hpp"
 #include "Containers/FactoryImpl.hpp"
 #include "Containers/PropertyReader.hpp"
@@ -19,8 +17,8 @@
 //ItemRecord
 
 using ItemRecordImpl = FactoryImpl<QuestCore::ItemRecord,
-    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader<std::shared_ptr<QuestCore::Item>>>,
-    PropertyReader<int, PrimitiveReader<int>>
+    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader>,
+    PropertyReader<int, PrimitiveReader>
 >;
 
 class ItemRecordImpl_Binder
@@ -41,7 +39,7 @@ const std::shared_ptr<IFactory<QuestCore::ItemRecord>>& GlobalContext::GetFactor
 
 using InventoryImpl = ContainerImpl<QuestCore::Inventory,
     ContainerInitializer<QuestCore::Inventory>,
-    PropertyReader<std::vector<QuestCore::ItemRecord>, FactoryReader<QuestCore::ItemRecord>>
+    PropertyReader<std::vector<QuestCore::ItemRecord>, FactoryReader>
 >;
 
 class InventoryImpl_Binder

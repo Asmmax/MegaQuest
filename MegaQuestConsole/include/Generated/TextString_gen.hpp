@@ -12,7 +12,7 @@
 //TextString
 
 using TextStringImpl = FactoryImpl<QuestCore::TextString,
-    PropertyReader<std::string, PrimitiveReader<std::string>>
+    PropertyReader<std::string, PrimitiveReader>
 >;
 
 class TextStringImpl_Binder

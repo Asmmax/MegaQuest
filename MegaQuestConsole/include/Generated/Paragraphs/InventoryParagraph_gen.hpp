@@ -1,9 +1,6 @@
 #pragma once
 #include "Paragraphs/InventoryParagraph.hpp"
 
-#include "Item.hpp"
-#include "Inventory.hpp"
-
 #include "Containers/ContainerInitializer.hpp"
 #include "Containers/ReaderStrategy/ContainerReader.hpp"
 #include "Containers/ContainerImpl.hpp"
@@ -18,8 +15,8 @@
 //ItemOrder
 
 using ItemOrderImpl = FactoryImpl<QuestCore::ItemOrder,
-    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader<std::shared_ptr<QuestCore::Item>>>,
-    PropertyReader<int, PrimitiveReader<int>>
+    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader>,
+    PropertyReader<int, PrimitiveReader>
 >;
 
 class ItemOrderImpl_Binder
@@ -40,11 +37,11 @@ const std::shared_ptr<IFactory<QuestCore::ItemOrder>>& GlobalContext::GetFactory
 
 using InventoryParagraphImpl = ContainerImpl<QuestCore::InventoryParagraph,
     ContainerInitializer<QuestCore::InventoryParagraph>,
-    PropertyReader<QuestCore::FormatedString, FactoryReader<QuestCore::FormatedString>>,
-    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>,
-    PropertyReader<QuestCore::FormatedString, FactoryReader<QuestCore::FormatedString>>,
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader<std::shared_ptr<QuestCore::Inventory>>>,
-    PropertyReader<std::vector<QuestCore::ItemOrder>, FactoryReader<QuestCore::ItemOrder>>
+    PropertyReader<QuestCore::FormatedString, FactoryReader>,
+    PropertyReader<QuestCore::TextString, FactoryReader>,
+    PropertyReader<QuestCore::FormatedString, FactoryReader>,
+    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>,
+    PropertyReader<std::vector<QuestCore::ItemOrder>, FactoryReader>
 >;
 
 class InventoryParagraphImpl_Binder

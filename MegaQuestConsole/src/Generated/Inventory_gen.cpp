@@ -11,10 +11,10 @@ ItemRecordImpl_Binder::ItemRecordImpl_Binder()
 
     PrimitiveReader<int> intReader;
 
-    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader<std::shared_ptr<QuestCore::Item>>>
+    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader>
         itemProperty("item", itemReader, nullptr);
 
-    PropertyReader<int, PrimitiveReader<int>>
+    PropertyReader<int, PrimitiveReader>
         countProperty("count", intReader, 0);
 
     auto itemRecordImpl = std::make_shared<ItemRecordImpl>(itemProperty, countProperty);
@@ -43,7 +43,7 @@ InventoryImpl_Binder::InventoryImpl_Binder()
     auto itemRecordFactory = GlobalContext::GetFactory<QuestCore::ItemRecord>();
     FactoryReader<QuestCore::ItemRecord> itemRecordReader(itemRecordFactory);
 
-    PropertyReader<std::vector<QuestCore::ItemRecord>, FactoryReader<QuestCore::ItemRecord>>
+    PropertyReader<std::vector<QuestCore::ItemRecord>, FactoryReader>
         itemsProperty("items", itemRecordReader, std::vector<QuestCore::ItemRecord>());
 
     auto inventoryImpl = std::make_shared<InventoryImpl>(

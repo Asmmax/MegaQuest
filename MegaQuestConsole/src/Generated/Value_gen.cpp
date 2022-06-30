@@ -8,7 +8,7 @@ SimpleValueImpl_Binder::SimpleValueImpl_Binder()
 {
     PrimitiveReader<int> intReader;
 
-    PropertyReader<int, PrimitiveReader<int>>
+    PropertyReader<int, PrimitiveReader>
         valueReader("value", intReader, 0);
 
     auto simpleValueImpl = std::make_shared<SimpleValueImpl>(valueReader);
@@ -31,10 +31,10 @@ InventoryValueImpl_Binder::InventoryValueImpl_Binder()
     auto inventoryContainer = GlobalContext::GetContainer<QuestCore::Inventory>();
     ContainerReader<std::shared_ptr<QuestCore::Inventory>> inventoryContainerReader(inventoryContainer);
 
-    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader<std::shared_ptr<QuestCore::Item>>>
+    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader>
         itemReader("item", itemContainerReader, nullptr);
 
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader<std::shared_ptr<QuestCore::Inventory>>>
+    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>
         inventoryReader("inventory", inventoryContainerReader, nullptr);
 
     auto inventoryValueImpl = std::make_shared<InventoryValueImpl>(itemReader, inventoryReader);

@@ -6,16 +6,16 @@ ParagraphSwitchingImpl_Binder ParagraphSwitchingImpl_Binder::instance;
 ParagraphSwitchingImpl_Binder::ParagraphSwitchingImpl_Binder()
 {
     auto iParagraphContainer = GlobalContext::GetContainer<QuestCore::IParagraph>();
-
-    ContainerReader<std::shared_ptr<QuestCore::IParagraph>, std::shared_ptr<QuestCore::ParagraphStateMachine>>
-        paragraphStateMachineReader(iParagraphContainer);
-
     ContainerReader<std::shared_ptr<QuestCore::IParagraph>>
         paragraphReader(iParagraphContainer);
 
+    auto paragraphStateMachineContainer = GlobalContext::GetContainer<QuestCore::ParagraphStateMachine>();
+    ContainerReader<std::shared_ptr<QuestCore::ParagraphStateMachine>>
+        paragraphStateMachineReader(paragraphStateMachineContainer);
+
     MethodInitializer<QuestCore::ParagraphSwitching, 
         std::shared_ptr<QuestCore::ParagraphStateMachine>, 
-        ContainerReader<std::shared_ptr<QuestCore::IParagraph>, std::shared_ptr<QuestCore::ParagraphStateMachine>>
+        ContainerReader
     >
         paragraphStateMachineInitializer("stateMachine", paragraphStateMachineReader, nullptr,
             [](const std::shared_ptr<QuestCore::ParagraphSwitching>& element, const std::shared_ptr<QuestCore::ParagraphStateMachine>& arg) {
@@ -24,7 +24,7 @@ ParagraphSwitchingImpl_Binder::ParagraphSwitchingImpl_Binder()
 
     MethodInitializer<QuestCore::ParagraphSwitching, 
         std::shared_ptr<QuestCore::IParagraph>, 
-        ContainerReader<std::shared_ptr<QuestCore::IParagraph>>
+        ContainerReader
     >
         paragraphInitializer("nextParagraph", paragraphReader, nullptr,
             [](const std::shared_ptr<QuestCore::ParagraphSwitching>& element, const std::shared_ptr<QuestCore::IParagraph>& arg) {

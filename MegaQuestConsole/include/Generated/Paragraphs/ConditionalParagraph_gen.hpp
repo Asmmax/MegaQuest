@@ -9,9 +9,9 @@
 
 using ConditionalParagraphImpl = ContainerImpl<QuestCore::ConditionalParagraph,
     ContainerInitializer<QuestCore::ConditionalParagraph>,
-    PropertyReader<std::shared_ptr<QuestCore::IParagraph>, ContainerReader<std::shared_ptr<QuestCore::IParagraph>>>,
-    PropertyReader<std::shared_ptr<QuestCore::IParagraph>, ContainerReader<std::shared_ptr<QuestCore::IParagraph>>>,
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICondition>>, FactoryReader<std::shared_ptr<QuestCore::ICondition>>>
+    PropertyReader<std::shared_ptr<QuestCore::IParagraph>, ContainerReader>,
+    PropertyReader<std::shared_ptr<QuestCore::IParagraph>, ContainerReader>,
+    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICondition>>, FactoryReader>
 >;
 
 class ConditionalParagraphImpl_Binder

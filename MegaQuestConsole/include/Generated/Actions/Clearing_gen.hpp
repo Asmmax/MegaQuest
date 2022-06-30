@@ -1,8 +1,6 @@
 #pragma once
 #include "Actions/Clearing.hpp"
 
-#include "Inventory.hpp"
-
 #include "Containers/ContainerInitializer.hpp"
 #include "Containers/ReaderStrategy/ContainerReader.hpp"
 #include "Containers/ContainerImpl.hpp"
@@ -10,7 +8,7 @@
 
 using ClearingImpl = ContainerImpl<QuestCore::Clearing,
     ContainerInitializer<QuestCore::Clearing>,
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader<std::shared_ptr<QuestCore::Inventory>>>
+    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>
 >;
 
 class ClearingImpl_Binder

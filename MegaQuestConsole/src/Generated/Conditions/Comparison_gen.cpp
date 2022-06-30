@@ -18,13 +18,13 @@ ComparisonImpl_Binder::ComparisonImpl_Binder()
         { "NotEqual", QuestCore::Operation::NotEqual }
     });
 
-    PropertyReader<std::shared_ptr<QuestCore::Value>, FactoryReader<std::shared_ptr<QuestCore::Value>>>
+    PropertyReader<std::shared_ptr<QuestCore::Value>, FactoryReader>
         leftProperty("left", valueReader, nullptr);
 
-    PropertyReader<std::shared_ptr<QuestCore::Value>, FactoryReader<std::shared_ptr<QuestCore::Value>>>
+    PropertyReader<std::shared_ptr<QuestCore::Value>, FactoryReader>
         rightProperty("right", valueReader, nullptr);
 
-    PropertyReader<QuestCore::Operation, EnumReader<QuestCore::Operation>>
+    PropertyReader<QuestCore::Operation, EnumReader>
         operationReader("op", operationEnumReader, QuestCore::Operation::None);
 
     auto comparisonImpl = std::make_shared<ComparisonImpl>(leftProperty, rightProperty, operationReader);

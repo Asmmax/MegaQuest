@@ -2,9 +2,6 @@
 
 #include "Value.hpp"
 
-#include "Item.hpp"
-#include "Inventory.hpp"
-
 #include "Containers/FactoryImpl.hpp"
 #include "Containers/PropertyReader.hpp"
 #include "Containers/ReaderStrategy/ContainerReader.hpp"
@@ -16,7 +13,7 @@
 //SimpleValue
 
 using SimpleValueImpl = FactoryImpl<std::shared_ptr<QuestCore::SimpleValue>,
-    PropertyReader<int, PrimitiveReader<int>>
+    PropertyReader<int, PrimitiveReader>
 >;
 
 class SimpleValueImpl_Binder
@@ -31,8 +28,8 @@ private:
 //InventoryValue
 
 using InventoryValueImpl = FactoryImpl<std::shared_ptr<QuestCore::InventoryValue>,
-    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader<std::shared_ptr<QuestCore::Item>>>,
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader<std::shared_ptr<QuestCore::Inventory>>>
+    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader>,
+    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>
 >;
 
 class InventoryValueImpl_Binder

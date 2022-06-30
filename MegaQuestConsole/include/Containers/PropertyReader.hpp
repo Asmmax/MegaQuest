@@ -2,11 +2,11 @@
 #include "json.hpp"
 #include <vector>
 
-template<typename ResultType, typename ReaderStrategy>
+template<typename ResultType, template<typename> typename ReaderStrategy>
 class PropertyReader
 {
 public:
-	PropertyReader(const std::string& property, const ReaderStrategy& reader, const ResultType& defValue) :
+	PropertyReader(const std::string& property, const ReaderStrategy<ResultType>& reader, const ResultType& defValue) :
 		_propertyName(property),
 		_reader(reader),
 		_defValue(defValue)
@@ -33,16 +33,16 @@ public:
 	}
 private:
 	std::string _propertyName;
-	ReaderStrategy _reader;
+	ReaderStrategy<ResultType> _reader;
 	ResultType _defValue;
 };
 
 // vector specialization
-template<typename Type, typename ReaderStrategy>
+template<typename Type, template<typename> typename ReaderStrategy>
 class PropertyReader<std::vector<Type>, ReaderStrategy>
 {
 public:
-	PropertyReader(const std::string& property, const ReaderStrategy& reader, const std::vector<Type>& defValue) :
+	PropertyReader(const std::string& property, const ReaderStrategy<Type>& reader, const std::vector<Type>& defValue) :
 		_propertyName(property),
 		_reader(reader),
 		_defValue(defValue)
@@ -77,6 +77,6 @@ public:
 	}
 private:
 	std::string _propertyName;
-	ReaderStrategy _reader;
+	ReaderStrategy<Type> _reader;
 	std::vector<Type> _defValue;
 };

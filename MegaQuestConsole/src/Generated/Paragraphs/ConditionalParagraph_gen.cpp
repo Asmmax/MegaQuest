@@ -13,13 +13,13 @@ ConditionalParagraphImpl_Binder::ConditionalParagraphImpl_Binder()
     FactoryReader<std::shared_ptr<QuestCore::ICondition>>
         conditionReader(iConditionFactory);
 
-    PropertyReader<std::shared_ptr<QuestCore::IParagraph>, ContainerReader<std::shared_ptr<QuestCore::IParagraph>>>
+    PropertyReader<std::shared_ptr<QuestCore::IParagraph>, ContainerReader>
         thenParagraphReader("thenParagraph", paragraphReader, nullptr);
 
-    PropertyReader<std::shared_ptr<QuestCore::IParagraph>, ContainerReader<std::shared_ptr<QuestCore::IParagraph>>>
+    PropertyReader<std::shared_ptr<QuestCore::IParagraph>, ContainerReader>
         elseParagraphReader("elseParagraph", paragraphReader, nullptr);
 
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICondition>>, FactoryReader<std::shared_ptr<QuestCore::ICondition>>>
+    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICondition>>, FactoryReader>
         conditionsReader("conditions", conditionReader, std::vector<std::shared_ptr<QuestCore::ICondition>>());
 
     auto conditionalParagraphImpl = std::make_shared<ConditionalParagraphImpl>(

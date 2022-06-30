@@ -10,10 +10,10 @@ CaseImpl_Binder::CaseImpl_Binder()
     auto actionContainer = GlobalContext::GetContainer<QuestCore::IAction>();
     ContainerReader<std::shared_ptr<QuestCore::IAction>> actionReader(actionContainer);
 
-    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>
+    PropertyReader<QuestCore::TextString, FactoryReader>
         nameProperty("name", textFactoryReader, QuestCore::TextString());
 
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::IAction>>, ContainerReader<std::shared_ptr<QuestCore::IAction>>>
+    PropertyReader<std::vector<std::shared_ptr<QuestCore::IAction>>, ContainerReader>
         actionsProperty("actions", actionReader, std::vector<std::shared_ptr<QuestCore::IAction>>());
 
     auto caseImpl = std::make_shared<CaseImpl>(nameProperty, actionsProperty);

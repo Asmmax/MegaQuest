@@ -8,7 +8,7 @@
 
 using SimpleCaseContainerImpl = ContainerImpl<QuestCore::SimpleCaseContainer,
     ContainerInitializer<QuestCore::SimpleCaseContainer>,
-    PropertyReader<std::vector<QuestCore::Case>, FactoryReader<QuestCore::Case>>
+    PropertyReader<std::vector<QuestCore::Case>, FactoryReader>
 >;
 
 class SimpleCaseContainerImpl_Binder

@@ -6,16 +6,17 @@ CaseContainerSwitchingImpl_Binder CaseContainerSwitchingImpl_Binder::instance;
 CaseContainerSwitchingImpl_Binder::CaseContainerSwitchingImpl_Binder()
 {
     auto iCaseContainerContainer = GlobalContext::GetContainer<QuestCore::ICaseContainer>();
+    ContainerReader<std::shared_ptr<QuestCore::ICaseContainer>>
+        containerReader(iCaseContainerContainer);
 
-    ContainerReader<std::shared_ptr<QuestCore::ICaseContainer>, std::shared_ptr<QuestCore::CaseContainerStateMachine>> 
-    containerStateMachineReader(iCaseContainerContainer);
+    auto caseContainerStateMachineContainer = GlobalContext::GetContainer<QuestCore::CaseContainerStateMachine>();
+    ContainerReader<std::shared_ptr<QuestCore::CaseContainerStateMachine>> 
+        containerStateMachineReader(caseContainerStateMachineContainer);
 
-    ContainerReader<std::shared_ptr<QuestCore::ICaseContainer>> 
-    containerReader(iCaseContainerContainer);
 
     MethodInitializer<QuestCore::CaseContainerSwitching, 
     std::shared_ptr<QuestCore::CaseContainerStateMachine>, 
-    ContainerReader<std::shared_ptr<QuestCore::ICaseContainer>, std::shared_ptr<QuestCore::CaseContainerStateMachine>>
+    ContainerReader
     >
         caseContainerStateMachineInitializer("stateMachine", containerStateMachineReader, nullptr,
             [](const std::shared_ptr<QuestCore::CaseContainerSwitching>& element, const std::shared_ptr<QuestCore::CaseContainerStateMachine>& arg) {
@@ -24,7 +25,7 @@ CaseContainerSwitchingImpl_Binder::CaseContainerSwitchingImpl_Binder()
 
     MethodInitializer<QuestCore::CaseContainerSwitching, 
     std::shared_ptr<QuestCore::ICaseContainer>, 
-    ContainerReader<std::shared_ptr<QuestCore::ICaseContainer>>
+    ContainerReader
     >
         caseContainerInitializer("nextContainer", containerReader, nullptr,
             [](const std::shared_ptr<QuestCore::CaseContainerSwitching>& element, const std::shared_ptr<QuestCore::ICaseContainer>& arg) {

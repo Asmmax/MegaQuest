@@ -6,8 +6,11 @@
 #include "Containers/ReaderStrategy/ContainerReader.hpp"
 #include "Containers/ContainerImpl.hpp"
 
+#include "Containers/Container.hpp"
+#include "Containers/GlobalContext.hpp"
+
 using ParagraphStateMachineInitializer = ContainerInitializer<QuestCore::ParagraphStateMachine,
-    MethodInitializer<QuestCore::ParagraphStateMachine, std::shared_ptr<QuestCore::IParagraph>, ContainerReader<std::shared_ptr<QuestCore::IParagraph>>>
+    MethodInitializer<QuestCore::ParagraphStateMachine, std::shared_ptr<QuestCore::IParagraph>, ContainerReader>
 >;
 
 using ParagraphStateMachineImpl = ContainerImpl<QuestCore::ParagraphStateMachine,
@@ -22,3 +25,8 @@ public:
 private:
     static ParagraphStateMachineImpl_Binder instance;
 };
+
+using ParagraphStateMachineContainer = Container<QuestCore::ParagraphStateMachine, ParagraphStateMachineImpl>;
+
+template<>
+const std::shared_ptr<ContainerBase<QuestCore::ParagraphStateMachine>>& GlobalContext::GetContainer<QuestCore::ParagraphStateMachine>();

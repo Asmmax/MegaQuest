@@ -6,7 +6,7 @@ TextStringImpl_Binder::TextStringImpl_Binder()
 {
     PrimitiveReader<std::string> stringReader;
 
-    PropertyReader<std::string, PrimitiveReader<std::string>>
+    PropertyReader<std::string, PrimitiveReader>
         u8Property("u8", stringReader, std::string());
 
     auto textStringImpl = std::make_shared<TextStringImpl>(u8Property);

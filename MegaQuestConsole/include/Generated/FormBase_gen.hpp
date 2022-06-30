@@ -8,7 +8,7 @@
 #include "Containers/GlobalContext.hpp"
 
 using FormBaseImpl = FactoryImpl<std::shared_ptr<QuestCore::FormBase>,
-    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>
+    PropertyReader<QuestCore::TextString, FactoryReader>
 >;
 
 class FormBaseImpl_Binder

@@ -2,8 +2,6 @@
 
 #include "Case.hpp"
 
-#include "IAction.hpp"
-
 #include "Containers/FactoryImpl.hpp"
 #include "Containers/PropertyReader.hpp"
 #include "Containers/ReaderStrategy/ContainerReader.hpp"
@@ -13,8 +11,8 @@
 #include "Containers/GlobalContext.hpp"
 
 using CaseImpl = FactoryImpl<QuestCore::Case,
-    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>,
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::IAction>>, ContainerReader<std::shared_ptr<QuestCore::IAction>>>
+    PropertyReader<QuestCore::TextString, FactoryReader>,
+    PropertyReader<std::vector<std::shared_ptr<QuestCore::IAction>>, ContainerReader>
 >;
 
 class CaseImpl_Binder

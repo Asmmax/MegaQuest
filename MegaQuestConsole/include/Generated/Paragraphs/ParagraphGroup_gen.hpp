@@ -9,8 +9,8 @@
 
 using ParagraphGroupImpl = ContainerImpl<QuestCore::ParagraphGroup,
     ContainerInitializer<QuestCore::ParagraphGroup>,
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::IParagraph>>, ContainerReader<std::shared_ptr<QuestCore::IParagraph>>>,
-    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>
+    PropertyReader<std::vector<std::shared_ptr<QuestCore::IParagraph>>, ContainerReader>,
+    PropertyReader<QuestCore::TextString, FactoryReader>
 >;
 
 class ParagraphGroupImpl_Binder

@@ -7,7 +7,7 @@ FormBaseImpl_Binder::FormBaseImpl_Binder()
     auto textFactory = GlobalContext::GetFactory<QuestCore::TextString>();
     FactoryReader<QuestCore::TextString> textFactoryReader(textFactory);
 
-    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>
+    PropertyReader<QuestCore::TextString, FactoryReader>
         textProperty("text", textFactoryReader, QuestCore::TextString());
 
     auto formBaseImpl = std::make_shared<FormBaseImpl>(textProperty);

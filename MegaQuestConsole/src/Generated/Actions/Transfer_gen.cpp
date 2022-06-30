@@ -13,13 +13,13 @@ TransferImpl_Binder::TransferImpl_Binder()
     ContainerReader<std::shared_ptr<QuestCore::Inventory>>
         inventoryReader(inventoryContainer);
 
-    PropertyReader<std::vector<QuestCore::ItemRecord>, FactoryReader<QuestCore::ItemRecord>>
+    PropertyReader<std::vector<QuestCore::ItemRecord>, FactoryReader>
         itemsProperty("items", itemRecordReader, std::vector<QuestCore::ItemRecord>());
 
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader<std::shared_ptr<QuestCore::Inventory>>>
+    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>
         inventorySourceProperty("source", inventoryReader, nullptr);
 
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader<std::shared_ptr<QuestCore::Inventory>>>
+    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>
         inventoryTargetProperty("target", inventoryReader, nullptr);
 
     auto transferImpl = std::make_shared<TransferImpl>(ContainerInitializer<QuestCore::Transfer>(),

@@ -1,8 +1,6 @@
 #pragma once
 #include "Actions/Transfer.hpp"
 
-#include "Inventory.hpp"
-
 #include "Containers/ContainerInitializer.hpp"
 #include "Containers/ReaderStrategy/ContainerReader.hpp"
 #include "Containers/ContainerImpl.hpp"
@@ -11,9 +9,9 @@
 
 using TransferImpl = ContainerImpl<QuestCore::Transfer,
     ContainerInitializer<QuestCore::Transfer>,
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader<std::shared_ptr<QuestCore::Inventory>>>,
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader<std::shared_ptr<QuestCore::Inventory>>>,
-    PropertyReader<std::vector<QuestCore::ItemRecord>, FactoryReader<QuestCore::ItemRecord>>
+    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>,
+    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>,
+    PropertyReader<std::vector<QuestCore::ItemRecord>, FactoryReader>
 >;
 
 class TransferImpl_Binder

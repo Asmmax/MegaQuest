@@ -8,7 +8,7 @@
 
 using CaseContainerGroupImpl = ContainerImpl<QuestCore::CaseContainerGroup,
     ContainerInitializer<QuestCore::CaseContainerGroup>,
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICaseContainer>>, ContainerReader<std::shared_ptr<QuestCore::ICaseContainer>>>
+    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICaseContainer>>, ContainerReader>
 >;
 
 class CaseContainerGroupImpl_Binder

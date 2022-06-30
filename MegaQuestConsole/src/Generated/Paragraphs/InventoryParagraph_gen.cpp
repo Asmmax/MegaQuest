@@ -12,10 +12,10 @@ ItemOrderImpl_Binder::ItemOrderImpl_Binder()
 
     PrimitiveReader<int> intReader;
 
-    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader<std::shared_ptr<QuestCore::Item>>>
+    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader>
         itemProperty("item", itemReader, nullptr);
 
-    PropertyReader<int, PrimitiveReader<int>>
+    PropertyReader<int, PrimitiveReader>
         orderProperty("order", intReader, 0);
 
     auto itemOrderImpl = std::make_shared<ItemOrderImpl>(itemProperty, orderProperty);
@@ -56,19 +56,19 @@ InventoryParagraphImpl_Binder::InventoryParagraphImpl_Binder()
     ContainerReader<std::shared_ptr<QuestCore::Inventory>>
         inventoryContainerReader(inventoryContainer);
 
-    PropertyReader<QuestCore::FormatedString, FactoryReader<QuestCore::FormatedString>>
+    PropertyReader<QuestCore::FormatedString, FactoryReader>
         prefixReader("prefix", formatedTextReader, QuestCore::FormatedString());
 
-    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>
+    PropertyReader<QuestCore::TextString, FactoryReader>
         gapReader("gap", textFactoryReader, QuestCore::TextString());
 
-    PropertyReader<QuestCore::FormatedString, FactoryReader<QuestCore::FormatedString>>
+    PropertyReader<QuestCore::FormatedString, FactoryReader>
         postfixReader("postfix", formatedTextReader, QuestCore::FormatedString());
 
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader<std::shared_ptr<QuestCore::Inventory>>>
+    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>
         inventoryReader("inventory", inventoryContainerReader, nullptr);
 
-    PropertyReader<std::vector<QuestCore::ItemOrder>, FactoryReader<QuestCore::ItemOrder>>
+    PropertyReader<std::vector<QuestCore::ItemOrder>, FactoryReader>
         itemOrdersReader("itemOrders", itemOrderReader, std::vector<QuestCore::ItemOrder>());
 
     auto inventoryParagraphImpl = std::make_shared<InventoryParagraphImpl>(

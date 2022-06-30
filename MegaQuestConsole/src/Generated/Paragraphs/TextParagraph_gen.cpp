@@ -9,7 +9,7 @@ TextParagraphImpl_Binder::TextParagraphImpl_Binder()
     FactoryReader<QuestCore::TextString>
         textFactoryReader(textFactory);
 
-    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>
+    PropertyReader<QuestCore::TextString, FactoryReader>
         textReader("text", textFactoryReader, QuestCore::TextString());
 
     auto textParagraphImpl = std::make_shared<TextParagraphImpl>(

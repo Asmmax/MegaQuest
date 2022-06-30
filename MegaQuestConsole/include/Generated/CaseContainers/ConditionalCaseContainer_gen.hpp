@@ -9,9 +9,9 @@
 
 using ConditionalCaseContainerImpl = ContainerImpl<QuestCore::ConditionalCaseContainer,
     ContainerInitializer<QuestCore::ConditionalCaseContainer>,
-    PropertyReader<std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader<std::shared_ptr<QuestCore::ICaseContainer>>>,
-    PropertyReader<std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader<std::shared_ptr<QuestCore::ICaseContainer>>>,
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICondition>>, FactoryReader<std::shared_ptr<QuestCore::ICondition>>>
+    PropertyReader<std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader>,
+    PropertyReader<std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader>,
+    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICondition>>, FactoryReader>
 >;
 
 class ConditionalCaseContainerImpl_Binder

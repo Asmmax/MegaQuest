@@ -15,13 +15,13 @@ ConditionalCaseContainerImpl_Binder::ConditionalCaseContainerImpl_Binder()
     FactoryReader<std::shared_ptr<QuestCore::ICondition>>
         conditionReader(iConditionFactory);
 
-    PropertyReader<std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader<std::shared_ptr<QuestCore::ICaseContainer>>>
+    PropertyReader<std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader>
         thenContainerReader("thenContainer", caseContainerReader, nullptr);
 
-    PropertyReader<std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader<std::shared_ptr<QuestCore::ICaseContainer>>>
+    PropertyReader<std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader>
         elseContainerReader("elseContainer", caseContainerReader, nullptr);
 
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICondition>>, FactoryReader<std::shared_ptr<QuestCore::ICondition>>>
+    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICondition>>, FactoryReader>
         conditionsReader("conditions", conditionReader, std::vector<std::shared_ptr<QuestCore::ICondition>>());
 
     auto conditionalCaseContainerImpl = std::make_shared<ConditionalCaseContainerImpl>(

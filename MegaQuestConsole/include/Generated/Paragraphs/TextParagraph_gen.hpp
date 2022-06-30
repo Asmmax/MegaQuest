@@ -8,7 +8,7 @@
 
 using TextParagraphImpl = ContainerImpl<QuestCore::TextParagraph,
     ContainerInitializer<QuestCore::TextParagraph>,
-    PropertyReader<QuestCore::TextString, FactoryReader<QuestCore::TextString>>
+    PropertyReader<QuestCore::TextString, FactoryReader>
 >;
 
 class TextParagraphImpl_Binder

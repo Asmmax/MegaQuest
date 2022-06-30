@@ -9,7 +9,7 @@ SimpleCaseContainerImpl_Binder::SimpleCaseContainerImpl_Binder()
     FactoryReader<QuestCore::Case>
         caseReader(caseFactory);
 
-    PropertyReader<std::vector<QuestCore::Case>, FactoryReader<QuestCore::Case>>
+    PropertyReader<std::vector<QuestCore::Case>, FactoryReader>
         casesReader("cases", caseReader, std::vector<QuestCore::Case>());
 
     auto simpleCaseContainerImpl = std::make_shared<SimpleCaseContainerImpl>(

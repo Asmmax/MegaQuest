@@ -10,13 +10,13 @@ ItemImpl_Binder::ItemImpl_Binder()
     PrimitiveReader<std::string> stringReader;
     PrimitiveReader<bool> boolReader;
 
-    PropertyReader<std::string, PrimitiveReader<std::string>>
+    PropertyReader<std::string, PrimitiveReader>
         nameProperty("name", stringReader, std::string());
 
-    PropertyReader<QuestCore::FormatedString, FactoryReader<QuestCore::FormatedString>>
+    PropertyReader<QuestCore::FormatedString, FactoryReader>
         textProperty("text", formatedTextReader, QuestCore::FormatedString());
 
-    PropertyReader<bool, PrimitiveReader<bool>>
+    PropertyReader<bool, PrimitiveReader>
         isNullableProperty("isNullable", boolReader, false);
 
     auto itemImpl = std::make_shared<ItemImpl>(ContainerInitializer<QuestCore::Item>(),
