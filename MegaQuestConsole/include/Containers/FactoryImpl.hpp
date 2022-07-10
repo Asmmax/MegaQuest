@@ -1,35 +1,36 @@
 #pragma once
+#include "Containers/PropertyReader.hpp"
 #include "Utils/Reader.hpp"
 #include <tuple>
 #include <utility>
 
-template<typename... Readers>
+template<typename... Dependencies>
 class FactoryImplBase
 {
 public:
 
-	FactoryImplBase(const Readers&... readers) :
-		_readers(readers...)
+	FactoryImplBase(const PropertyReader<Dependencies>&... properties) :
+		_properties(properties...)
 	{
 	}
 
 	void InitDependencies(const nlohmann::json& node)
 	{
-		InitDependencies(node, _readers, std::index_sequence_for<Readers...>());
+		InitDependencies(node, _properties, std::index_sequence_for<Dependencies...>());
 	}
 
 private:
 
 	template<std::size_t... Is>
-	void InitDependencies(const nlohmann::json& node, std::tuple<Readers...>& tuple, std::index_sequence<Is...>) {
+	void InitDependencies(const nlohmann::json& node, std::tuple<PropertyReader<Dependencies>...>& tuple, std::index_sequence<Is...>) {
 		InitChildren(node, std::get<Is>(tuple)...);
 	}
 
 	template<typename Current, typename... Other>
-	void InitChildren(const nlohmann::json& node, Current& reader, Other&... readers)
+	void InitChildren(const nlohmann::json& node, PropertyReader<Current>& property, PropertyReader<Other>&... properties)
 	{
-		reader.Init(node);
-		InitChildren(node, readers...);
+		property.Init(node);
+		InitChildren(node, properties...);
 	}
 
 	void InitChildren(const nlohmann::json& node)
@@ -37,54 +38,54 @@ private:
 	}
 
 protected:
-	std::tuple<Readers...> _readers;
+	std::tuple<PropertyReader<Dependencies>...> _properties;
 };
 
 
-template<typename Type, typename... Readers>
-class FactoryImpl : public FactoryImplBase<Readers...>
+template<typename Type, typename... Dependencies>
+class FactoryImpl : public FactoryImplBase<Dependencies...>
 {
 public:
 
-	FactoryImpl(const Readers&... readers) :
-		FactoryImplBase<Readers...>(readers...)
+	FactoryImpl(const PropertyReader<Dependencies>&... properties) :
+		FactoryImplBase<Dependencies...>(properties...)
 	{
 	}
 
 	Type Get(const nlohmann::json& node)
 	{
-		return CreateElement(node, _readers, std::index_sequence_for<Readers...>());
+		return CreateElement(node, _properties, std::index_sequence_for<Dependencies...>());
 	}
 
 private:
 
 	template<std::size_t... Is>
-	Type CreateElement(const nlohmann::json& node, std::tuple<Readers...>& tuple, std::index_sequence<Is...>) {
+	Type CreateElement(const nlohmann::json& node, std::tuple<PropertyReader<Dependencies>...>& tuple, std::index_sequence<Is...>) {
 		return Type{ std::get<Is>(tuple).Create(node)... };
 	}
 };
 
 
-template<typename Type, typename... Readers>
-class FactoryImpl<std::shared_ptr<Type>, Readers...> : public FactoryImplBase<Readers...>
+template<typename Type, typename... Dependencies>
+class FactoryImpl<std::shared_ptr<Type>, Dependencies...> : public FactoryImplBase<Dependencies...>
 {
 	using TypePtr = std::shared_ptr<Type>;
 public:
 
-	FactoryImpl(const Readers&... readers) :
-		FactoryImplBase<Readers...>(readers...)
+	FactoryImpl(const PropertyReader<Dependencies>&... properties) :
+		FactoryImplBase<Dependencies...>(properties...)
 	{
 	}
 
 	TypePtr Get(const nlohmann::json& node)
 	{
-		return CreateElement(node, _readers, std::index_sequence_for<Readers...>());
+		return CreateElement(node, _properties, std::index_sequence_for<Dependencies...>());
 	}
 
 private:
 
 	template<std::size_t... Is>
-	TypePtr CreateElement(const nlohmann::json& node, std::tuple<Readers...>& tuple, std::index_sequence<Is...>) {
+	TypePtr CreateElement(const nlohmann::json& node, std::tuple<PropertyReader<Dependencies>...>& tuple, std::index_sequence<Is...>) {
 		return std::make_shared<Type>( std::get<Is>(tuple).Create(node)... );
 	}
 };

@@ -1,24 +1,38 @@
 #include "Generated/CaseContainers/CaseContainerGroup_gen.hpp"
-#include "Generated/ICaseContainer_gen.hpp"
+#include "Containers/ReaderStrategy/ContainerReader.hpp"
 
 CaseContainerGroupImpl_Binder CaseContainerGroupImpl_Binder::instance;
 
 CaseContainerGroupImpl_Binder::CaseContainerGroupImpl_Binder()
 {
-    auto iCaseContainerContainer = GlobalContext::GetContainer<QuestCore::ICaseContainer>();
+    auto impl = std::make_shared<CaseContainerGroupImpl>(
+        CaseContainerGroupInitializer(
+        )
+        , CreateProperty<std::vector<std::shared_ptr<QuestCore::ICaseContainer>>>("children", std::vector<std::shared_ptr<QuestCore::ICaseContainer>>())
+        );
 
-    ContainerReader<std::shared_ptr<QuestCore::ICaseContainer>>
-        caseContainerReader(iCaseContainerContainer);
+    ContainerBinder<QuestCore::CaseContainerGroup>().BindImpl("CaseContainerGroup", impl);
+    ContainerBinder<QuestCore::ICaseContainer>().BindImpl("CaseContainerGroup", impl);
+}
 
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICaseContainer>>, ContainerReader>
-        childrenReader("children", caseContainerReader, std::vector<std::shared_ptr<QuestCore::ICaseContainer>>());
+template<>
+template<>
+void ContainerBinder<QuestCore::CaseContainerGroup>::BindImpl(const std::string& implName, const std::shared_ptr<CaseContainerGroupImpl>& impl)
+{
+    BindImplWithCast<CaseContainerGroupContainer, CaseContainerGroupImpl>(implName, impl);
+}
 
-    auto caseContainerGroupImpl = std::make_shared<CaseContainerGroupImpl>(
-        ContainerInitializer<QuestCore::CaseContainerGroup>(),
-        childrenReader);
+template<>
+const std::shared_ptr<ContainerBase<QuestCore::CaseContainerGroup>>& GlobalContext::GetContainer<QuestCore::CaseContainerGroup>()
+{
+    static std::shared_ptr<ContainerBase<QuestCore::CaseContainerGroup>>
+        instancePtr = std::make_shared<CaseContainerGroupContainer>("containers");
+    return instancePtr;
+}
 
-    if (auto containerContainer = std::dynamic_pointer_cast<ICaseContainerContainer>(GlobalContext::GetContainer<QuestCore::ICaseContainer>())) {
-        containerContainer->SetInheritor<CaseContainerGroupImpl>(
-            ReaderImplRecord<CaseContainerGroupImpl>{ "CaseContainerGroup", caseContainerGroupImpl });
-    }
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::CaseContainerGroup>>> GetReader()
+{
+    auto container = GlobalContext::GetContainer<QuestCore::CaseContainerGroup>();
+    return std::make_shared<ContainerReader<std::shared_ptr<QuestCore::CaseContainerGroup>>>(container);
 }

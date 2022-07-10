@@ -1,21 +1,36 @@
 #include "Generated/FormBase_gen.hpp"
+#include "Containers/ReaderStrategy/FactoryReader.hpp"
 
 FormBaseImpl_Binder FormBaseImpl_Binder::instance;
 
 FormBaseImpl_Binder::FormBaseImpl_Binder()
 {
-    auto textFactory = GlobalContext::GetFactory<QuestCore::TextString>();
-    FactoryReader<QuestCore::TextString> textFactoryReader(textFactory);
+    auto impl = std::make_shared<FormBaseImpl>(
+        CreateProperty<QuestCore::TextString>("text", QuestCore::TextString())
+        );
 
-    PropertyReader<QuestCore::TextString, FactoryReader>
-        textProperty("text", textFactoryReader, QuestCore::TextString());
+    FactoryBinder<std::shared_ptr<QuestCore::FormBase>>().BindImpl("FormBase", impl);
+}
 
-    auto formBaseImpl = std::make_shared<FormBaseImpl>(textProperty);
+template<>
+template<>
+void FactoryBinder<std::shared_ptr<QuestCore::FormBase>>::BindImpl(const std::string& implName, const std::shared_ptr<FormBaseImpl>& impl)
+{
+    BindImplWithCast<FormBaseFactory, FormBaseImpl>(implName, impl);
+}
 
-    if (auto formBaseFactory = std::dynamic_pointer_cast<FormBaseFactory>(GlobalContext::GetFactory<std::shared_ptr<QuestCore::FormBase>>())) {
-        formBaseFactory->SetInheritor<FormBaseImpl>(
-            ReaderImplRecord<FormBaseImpl>{ "FormBase", formBaseImpl });
-    }
+template<>
+template<>
+void FactoryBinder<std::shared_ptr<QuestCore::FormBase>>::BindImpl(const std::string& implName, const std::shared_ptr<SpecificFormImpl>& impl)
+{
+    BindImplWithCast<FormBaseFactory, SpecificFormImpl>(implName, impl);
+}
+
+template<>
+template<>
+void FactoryBinder<std::shared_ptr<QuestCore::FormBase>>::BindImpl(const std::string& implName, const std::shared_ptr<TailFormImpl>& impl)
+{
+    BindImplWithCast<FormBaseFactory, TailFormImpl>(implName, impl);
 }
 
 template<>
@@ -24,4 +39,11 @@ const std::shared_ptr<IFactory<std::shared_ptr<QuestCore::FormBase>>>& GlobalCon
     static std::shared_ptr<IFactory<std::shared_ptr<QuestCore::FormBase>>>
         instancePtr = std::make_shared<FormBaseFactory>();
     return instancePtr;
+}
+
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::FormBase>>> GetReader()
+{
+    auto factory = GlobalContext::GetFactory<std::shared_ptr<QuestCore::FormBase>>();
+    return std::make_shared<FactoryReader<std::shared_ptr<QuestCore::FormBase>>>(factory);
 }

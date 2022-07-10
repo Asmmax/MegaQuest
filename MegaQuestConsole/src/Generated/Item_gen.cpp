@@ -1,31 +1,26 @@
 #include "Generated/Item_gen.hpp"
+#include "Containers/ReaderStrategy/ContainerReader.hpp"
 
 ItemImpl_Binder ItemImpl_Binder::instance;
 
 ItemImpl_Binder::ItemImpl_Binder()
 {
-    auto formatedTextFactory = GlobalContext::GetFactory<QuestCore::FormatedString>();
-    FactoryReader<QuestCore::FormatedString> formatedTextReader(formatedTextFactory);
+    auto impl = std::make_shared<ItemImpl>(
+        ItemInitializer(
+        )
+        , CreateProperty<std::string>("name", std::string())
+        , CreateProperty<QuestCore::FormatedString>("text", QuestCore::FormatedString())
+        , CreateProperty<bool>("isNullable", false)
+        );
 
-    PrimitiveReader<std::string> stringReader;
-    PrimitiveReader<bool> boolReader;
+    ContainerBinder<QuestCore::Item>().BindImpl("Item", impl);
+}
 
-    PropertyReader<std::string, PrimitiveReader>
-        nameProperty("name", stringReader, std::string());
-
-    PropertyReader<QuestCore::FormatedString, FactoryReader>
-        textProperty("text", formatedTextReader, QuestCore::FormatedString());
-
-    PropertyReader<bool, PrimitiveReader>
-        isNullableProperty("isNullable", boolReader, false);
-
-    auto itemImpl = std::make_shared<ItemImpl>(ContainerInitializer<QuestCore::Item>(),
-        nameProperty, textProperty, isNullableProperty);
-
-    if (auto itemContainer = std::dynamic_pointer_cast<ItemContainer>(GlobalContext::GetContainer<QuestCore::Item>())) {
-        itemContainer->SetInheritor<ItemImpl>(
-            ReaderImplRecord<ItemImpl>{ "Item", itemImpl });
-    }
+template<>
+template<>
+void ContainerBinder<QuestCore::Item>::BindImpl(const std::string& implName, const std::shared_ptr<ItemImpl>& impl)
+{
+    BindImplWithCast<ItemContainer, ItemImpl>(implName, impl);
 }
 
 template<>
@@ -34,4 +29,11 @@ const std::shared_ptr<ContainerBase<QuestCore::Item>>& GlobalContext::GetContain
     static std::shared_ptr<ContainerBase<QuestCore::Item>>
         instancePtr = std::make_shared<ItemContainer>("items");
     return instancePtr;
+}
+
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::Item>>> GetReader()
+{
+    auto container = GlobalContext::GetContainer<QuestCore::Item>();
+    return std::make_shared<ContainerReader<std::shared_ptr<QuestCore::Item>>>(container);
 }

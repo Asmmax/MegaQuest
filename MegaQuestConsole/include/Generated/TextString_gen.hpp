@@ -3,16 +3,16 @@
 #include "TextString.hpp"
 
 #include "Containers/FactoryImpl.hpp"
-#include "Containers/PropertyReader.hpp"
-#include "Containers/ReaderStrategy/PrimitiveReader.hpp"
 
 #include "Containers/Factory.hpp"
-#include "Containers/GlobalContext.hpp"
+#include "Containers/FactoryBinder.hpp"
+
+#include "Containers/Utils.hpp"
 
 //TextString
 
 using TextStringImpl = FactoryImpl<QuestCore::TextString,
-    PropertyReader<std::string, PrimitiveReader>
+    std::string
 >;
 
 class TextStringImpl_Binder
@@ -27,4 +27,11 @@ private:
 using TextStringFactory = Factory<QuestCore::TextString, TextStringImpl>;
 
 template<>
+template<>
+void FactoryBinder<QuestCore::TextString>::BindImpl(const std::string& implName, const std::shared_ptr<TextStringImpl>& impl);
+
+template<>
 const std::shared_ptr<IFactory<QuestCore::TextString>>& GlobalContext::GetFactory<QuestCore::TextString>();
+
+template <>
+std::shared_ptr<IReaderStrategy<QuestCore::TextString>> GetReader();

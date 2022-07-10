@@ -1,17 +1,18 @@
 #pragma once
+#include "Containers/PropertyReader.hpp"
 #include "Utils/Reader.hpp"
 #include <tuple>
 #include <utility>
 
-template<typename Type, typename Initializer, typename... Readers>
+template<typename Type, typename Initializer, typename... Dependencies>
 class ContainerImpl
 {
 	using TypePtr = std::shared_ptr<Type>;
 public:
 
-	ContainerImpl(const Initializer& initializer, const Readers&... readers):
+	ContainerImpl(const Initializer& initializer, const PropertyReader<Dependencies>&... properties):
 		_initializer(initializer),
-		_readers(readers...)
+		_properties(properties...)
 	{
 	}
 
@@ -22,7 +23,7 @@ public:
 			return;
 		}
 
-		auto result = CreateElement(node, _readers, std::index_sequence_for<Readers...>());
+		auto result = CreateElement(node, _properties, std::index_sequence_for<Dependencies...>());
 		Register(id, result);
 	}
 
@@ -34,7 +35,7 @@ public:
 		}
 		_isInited.emplace_back(id);
 
-		InitDependencies(node, _readers, std::index_sequence_for<Readers...>());
+		InitDependencies(node, _properties, std::index_sequence_for<Dependencies...>());
 		auto element = Get(id);
 		_initializer(element, node);
 	}
@@ -56,20 +57,20 @@ private:
 	}
 
 	template<std::size_t... Is>
-	TypePtr CreateElement(const nlohmann::json& node, std::tuple<Readers...>& tuple, std::index_sequence<Is...>) {
+	TypePtr CreateElement(const nlohmann::json& node, std::tuple<PropertyReader<Dependencies>...>& tuple, std::index_sequence<Is...>) {
 		return std::make_shared<Type>(std::get<Is>(tuple).Create(node)...);
 	}
 
 	template<std::size_t... Is>
-	void InitDependencies(const nlohmann::json& node, std::tuple<Readers...>& tuple, std::index_sequence<Is...>) {
+	void InitDependencies(const nlohmann::json& node, std::tuple<PropertyReader<Dependencies>...>& tuple, std::index_sequence<Is...>) {
 		InitChildren(node, std::get<Is>(tuple)...);
 	}
 
 	template<typename Current, typename... Other>
-	void InitChildren(const nlohmann::json& node, Current& reader, Other&... readers)
+	void InitChildren(const nlohmann::json& node, PropertyReader<Current>& property, PropertyReader<Other>&... properties)
 	{
-		reader.Init(node);
-		InitChildren(node, readers...);
+		property.Init(node);
+		InitChildren(node, properties...);
 	}
 
 	void InitChildren(const nlohmann::json& node)
@@ -80,5 +81,5 @@ private:
 	std::map<std::string, TypePtr> _elements;
 	std::vector<std::string> _isInited; //оптимизация, исключаем повторное создание структур и unique сущностей
 	Initializer _initializer;
-	std::tuple<Readers...> _readers;
+	std::tuple<PropertyReader<Dependencies>...> _properties;
 };

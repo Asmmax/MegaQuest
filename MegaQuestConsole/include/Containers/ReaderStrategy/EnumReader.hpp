@@ -1,9 +1,9 @@
 #pragma once
-#include "json.hpp"
+#include "Containers/IReaderStrategy.hpp"
 #include <map>
 
 template<typename EnumType>
-class EnumReader
+class EnumReader : public IReaderStrategy<EnumType>
 {
 public:
 	EnumReader(const std::map<std::string, EnumType>& values):
@@ -11,13 +11,13 @@ public:
 	{
 	}
 
-	EnumType Create(const nlohmann::json& node)
+	EnumType Create(const nlohmann::json& node) override
 	{
 		auto enumType = node.get<std::string>();
 		return _values[enumType];
 	}
 
-	void Init(const nlohmann::json& /*node*/)
+	void Init(const nlohmann::json& /*node*/) override
 	{
 	}
 

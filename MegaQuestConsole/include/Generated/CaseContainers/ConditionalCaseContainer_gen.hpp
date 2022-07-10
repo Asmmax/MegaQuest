@@ -2,16 +2,20 @@
 #include "CaseContainers/ConditionalCaseContainer.hpp"
 
 #include "Containers/ContainerInitializer.hpp"
-#include "Containers/ReaderStrategy/ContainerReader.hpp"
 #include "Containers/ContainerImpl.hpp"
-#include "Containers/ReaderStrategy/FactoryReader.hpp"
-#include "Containers/PropertyReader.hpp"
+
+#include "Containers/Container.hpp"
+#include "Containers/ContainerBinder.hpp"
+
+#include "Containers/Utils.hpp"
+
+using ConditionalCaseContainerInitializer = ContainerInitializer<QuestCore::ConditionalCaseContainer>;
 
 using ConditionalCaseContainerImpl = ContainerImpl<QuestCore::ConditionalCaseContainer,
-    ContainerInitializer<QuestCore::ConditionalCaseContainer>,
-    PropertyReader<std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader>,
-    PropertyReader<std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader>,
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICondition>>, FactoryReader>
+    ConditionalCaseContainerInitializer,
+    std::shared_ptr<QuestCore::ICaseContainer>,
+    std::shared_ptr<QuestCore::ICaseContainer>,
+    std::vector<std::shared_ptr<QuestCore::ICondition>>
 >;
 
 class ConditionalCaseContainerImpl_Binder
@@ -22,3 +26,15 @@ public:
 private:
     static ConditionalCaseContainerImpl_Binder instance;
 };
+
+using ConditionalCaseContainerContainer = Container<QuestCore::ConditionalCaseContainer, ConditionalCaseContainerImpl>;
+
+template<>
+template<>
+void ContainerBinder<QuestCore::ConditionalCaseContainer>::BindImpl(const std::string& implName, const std::shared_ptr<ConditionalCaseContainerImpl>& impl);
+
+template<>
+const std::shared_ptr<ContainerBase<QuestCore::ConditionalCaseContainer>>& GlobalContext::GetContainer<QuestCore::ConditionalCaseContainer>();
+
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::ConditionalCaseContainer>>> GetReader();

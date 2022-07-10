@@ -2,21 +2,21 @@
 #include "Paragraphs/InventoryParagraph.hpp"
 
 #include "Containers/ContainerInitializer.hpp"
-#include "Containers/ReaderStrategy/ContainerReader.hpp"
 #include "Containers/ContainerImpl.hpp"
 #include "Containers/FactoryImpl.hpp"
-#include "Containers/ReaderStrategy/FactoryReader.hpp"
-#include "Containers/PropertyReader.hpp"
-#include "Containers/ReaderStrategy/PrimitiveReader.hpp"
 
 #include "Containers/Factory.hpp"
-#include "Containers/GlobalContext.hpp"
+#include "Containers/Container.hpp"
+#include "Containers/FactoryBinder.hpp"
+#include "Containers/ContainerBinder.hpp"
+
+#include "Containers/Utils.hpp"
 
 //ItemOrder
 
 using ItemOrderImpl = FactoryImpl<QuestCore::ItemOrder,
-    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader>,
-    PropertyReader<int, PrimitiveReader>
+    std::shared_ptr<QuestCore::Item>,
+    int
 >;
 
 class ItemOrderImpl_Binder
@@ -31,17 +31,26 @@ private:
 using ItemOrderFactory = Factory<QuestCore::ItemOrder, ItemOrderImpl>;
 
 template<>
+template<>
+void FactoryBinder<QuestCore::ItemOrder>::BindImpl(const std::string& implName, const std::shared_ptr<ItemOrderImpl>& impl);
+
+template<>
 const std::shared_ptr<IFactory<QuestCore::ItemOrder>>& GlobalContext::GetFactory<QuestCore::ItemOrder>();
+
+template <>
+std::shared_ptr<IReaderStrategy<QuestCore::ItemOrder>> GetReader();
 
 //InventoryParagraph
 
+using InventoryParagraphInitializer = ContainerInitializer<QuestCore::InventoryParagraph>;
+
 using InventoryParagraphImpl = ContainerImpl<QuestCore::InventoryParagraph,
-    ContainerInitializer<QuestCore::InventoryParagraph>,
-    PropertyReader<QuestCore::FormatedString, FactoryReader>,
-    PropertyReader<QuestCore::TextString, FactoryReader>,
-    PropertyReader<QuestCore::FormatedString, FactoryReader>,
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>,
-    PropertyReader<std::vector<QuestCore::ItemOrder>, FactoryReader>
+    InventoryParagraphInitializer,
+    QuestCore::FormatedString, 
+    QuestCore::TextString, 
+    QuestCore::FormatedString,
+    std::shared_ptr<QuestCore::Inventory>,
+    std::vector<QuestCore::ItemOrder>
 >;
 
 class InventoryParagraphImpl_Binder
@@ -52,3 +61,15 @@ public:
 private:
     static InventoryParagraphImpl_Binder instance;
 };
+
+using InventoryParagraphContainer = Container<QuestCore::InventoryParagraph, InventoryParagraphImpl>;
+
+template<>
+template<>
+void ContainerBinder<QuestCore::InventoryParagraph>::BindImpl(const std::string& implName, const std::shared_ptr<InventoryParagraphImpl>& impl);
+
+template<>
+const std::shared_ptr<ContainerBase<QuestCore::InventoryParagraph>>& GlobalContext::GetContainer<QuestCore::InventoryParagraph>();
+
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::InventoryParagraph>>> GetReader();

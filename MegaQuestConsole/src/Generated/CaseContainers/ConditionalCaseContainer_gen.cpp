@@ -1,35 +1,40 @@
 #include "Generated/CaseContainers/ConditionalCaseContainer_gen.hpp"
-#include "Generated/ICaseContainer_gen.hpp"
+#include "Containers/ReaderStrategy/ContainerReader.hpp"
 
 ConditionalCaseContainerImpl_Binder ConditionalCaseContainerImpl_Binder::instance;
 
 ConditionalCaseContainerImpl_Binder::ConditionalCaseContainerImpl_Binder()
 {
-    auto iCaseContainerContainer = GlobalContext::GetContainer<QuestCore::ICaseContainer>();
+    auto impl = std::make_shared<ConditionalCaseContainerImpl>(
+        ConditionalCaseContainerInitializer(
+        )
+        , CreateProperty<std::shared_ptr<QuestCore::ICaseContainer>>("thenContainer", nullptr)
+        , CreateProperty<std::shared_ptr<QuestCore::ICaseContainer>>("elseContainer", nullptr)
+        , CreateProperty<std::vector<std::shared_ptr<QuestCore::ICondition>>>("conditions", std::vector<std::shared_ptr<QuestCore::ICondition>>())
+        );
 
-    ContainerReader<std::shared_ptr<QuestCore::ICaseContainer>>
-        caseContainerReader(iCaseContainerContainer);
+    ContainerBinder<QuestCore::ConditionalCaseContainer>().BindImpl("ConditionalCaseContainer", impl);
+    ContainerBinder<QuestCore::ICaseContainer>().BindImpl("ConditionalCaseContainer", impl);
+}
 
-    auto iConditionFactory = GlobalContext::GetFactory<std::shared_ptr<QuestCore::ICondition>>();
+template<>
+template<>
+void ContainerBinder<QuestCore::ConditionalCaseContainer>::BindImpl(const std::string& implName, const std::shared_ptr<ConditionalCaseContainerImpl>& impl)
+{
+    BindImplWithCast< ConditionalCaseContainerContainer, ConditionalCaseContainerImpl>(implName, impl);
+}
 
-    FactoryReader<std::shared_ptr<QuestCore::ICondition>>
-        conditionReader(iConditionFactory);
+template<>
+const std::shared_ptr<ContainerBase<QuestCore::ConditionalCaseContainer>>& GlobalContext::GetContainer<QuestCore::ConditionalCaseContainer>()
+{
+    static std::shared_ptr<ContainerBase<QuestCore::ConditionalCaseContainer>>
+        instancePtr = std::make_shared<ConditionalCaseContainerContainer>("containers");
+    return instancePtr;
+}
 
-    PropertyReader<std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader>
-        thenContainerReader("thenContainer", caseContainerReader, nullptr);
-
-    PropertyReader<std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader>
-        elseContainerReader("elseContainer", caseContainerReader, nullptr);
-
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICondition>>, FactoryReader>
-        conditionsReader("conditions", conditionReader, std::vector<std::shared_ptr<QuestCore::ICondition>>());
-
-    auto conditionalCaseContainerImpl = std::make_shared<ConditionalCaseContainerImpl>(
-        ContainerInitializer<QuestCore::ConditionalCaseContainer>(),
-        thenContainerReader, elseContainerReader, conditionsReader);
-
-    if (auto containerContainer = std::dynamic_pointer_cast<ICaseContainerContainer>(GlobalContext::GetContainer<QuestCore::ICaseContainer>())) {
-        containerContainer->SetInheritor<ConditionalCaseContainerImpl>(
-            ReaderImplRecord<ConditionalCaseContainerImpl>{ "ConditionalCaseContainer", conditionalCaseContainerImpl });
-    }
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::ConditionalCaseContainer>>> GetReader()
+{
+    auto container = GlobalContext::GetContainer<QuestCore::ConditionalCaseContainer>();
+    return std::make_shared<ContainerReader<std::shared_ptr<QuestCore::ConditionalCaseContainer>>>(container);
 }

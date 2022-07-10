@@ -1,23 +1,38 @@
 #include "Generated/Paragraphs/TextParagraph_gen.hpp"
-#include "Generated/IParagraph_gen.hpp"
+#include "Containers/ReaderStrategy/ContainerReader.hpp"
 
 TextParagraphImpl_Binder TextParagraphImpl_Binder::instance;
 
 TextParagraphImpl_Binder::TextParagraphImpl_Binder()
 {
-    auto textFactory = GlobalContext::GetFactory<QuestCore::TextString>();
-    FactoryReader<QuestCore::TextString>
-        textFactoryReader(textFactory);
+    auto impl = std::make_shared<TextParagraphImpl>(
+        TextParagraphInitializer(
+        )
+        , CreateProperty<QuestCore::TextString>("text", QuestCore::TextString())
+        );
 
-    PropertyReader<QuestCore::TextString, FactoryReader>
-        textReader("text", textFactoryReader, QuestCore::TextString());
+    ContainerBinder<QuestCore::TextParagraph>().BindImpl("TextParagraph", impl);
+    ContainerBinder<QuestCore::IParagraph>().BindImpl("TextParagraph", impl);
+}
 
-    auto textParagraphImpl = std::make_shared<TextParagraphImpl>(
-        ContainerInitializer<QuestCore::TextParagraph>(),
-        textReader);
+template<>
+template<>
+void ContainerBinder<QuestCore::TextParagraph>::BindImpl(const std::string& implName, const std::shared_ptr<TextParagraphImpl>& impl)
+{
+    BindImplWithCast<TextParagraphContainer, TextParagraphImpl>(implName, impl);
+}
 
-    if (auto paragraphContainer = std::dynamic_pointer_cast<IParagraphContainer>(GlobalContext::GetContainer<QuestCore::IParagraph>())) {
-        paragraphContainer->SetInheritor<TextParagraphImpl>(
-            ReaderImplRecord<TextParagraphImpl>{ "TextParagraph", textParagraphImpl });
-    }
+template<>
+const std::shared_ptr<ContainerBase<QuestCore::TextParagraph>>& GlobalContext::GetContainer<QuestCore::TextParagraph>()
+{
+    static std::shared_ptr<ContainerBase<QuestCore::TextParagraph>>
+        instancePtr = std::make_shared<TextParagraphContainer>("paragraphs");
+    return instancePtr;
+}
+
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::TextParagraph>>> GetReader()
+{
+    auto container = GlobalContext::GetContainer<QuestCore::TextParagraph>();
+    return std::make_shared<ContainerReader<std::shared_ptr<QuestCore::TextParagraph>>>(container);
 }

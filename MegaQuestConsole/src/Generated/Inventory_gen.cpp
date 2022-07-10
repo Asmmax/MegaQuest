@@ -1,4 +1,6 @@
 #include "Generated/Inventory_gen.hpp"
+#include "Containers/ReaderStrategy/FactoryReader.hpp"
+#include "Containers/ReaderStrategy/ContainerReader.hpp"
 
 //ItemRecord
 
@@ -6,23 +8,19 @@ ItemRecordImpl_Binder ItemRecordImpl_Binder::instance;
 
 ItemRecordImpl_Binder::ItemRecordImpl_Binder()
 {
-    auto itemContainer = GlobalContext::GetContainer<QuestCore::Item>();
-    ContainerReader<std::shared_ptr<QuestCore::Item>> itemReader(itemContainer);
+    auto impl = std::make_shared<ItemRecordImpl>(
+        CreateProperty<std::shared_ptr<QuestCore::Item>>("item", nullptr)
+        , CreateProperty<int>("count", 0)
+        );
 
-    PrimitiveReader<int> intReader;
+    FactoryBinder<QuestCore::ItemRecord>().BindImpl("ItemRecord", impl);
+}
 
-    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader>
-        itemProperty("item", itemReader, nullptr);
-
-    PropertyReader<int, PrimitiveReader>
-        countProperty("count", intReader, 0);
-
-    auto itemRecordImpl = std::make_shared<ItemRecordImpl>(itemProperty, countProperty);
-
-    if (auto itemRecordFactory = std::dynamic_pointer_cast<ItemRecordFactory>(GlobalContext::GetFactory<QuestCore::ItemRecord>())) {
-        itemRecordFactory->SetInheritor<ItemRecordImpl>(
-            ReaderImplRecord<ItemRecordImpl>{ "ItemRecord", itemRecordImpl });
-    }
+template<>
+template<>
+void FactoryBinder<QuestCore::ItemRecord>::BindImpl(const std::string& implName, const std::shared_ptr<ItemRecordImpl>& impl)
+{
+    BindImplWithCast<ItemRecordFactory, ItemRecordImpl>(implName, impl);
 }
 
 template<>
@@ -33,6 +31,13 @@ const std::shared_ptr<IFactory<QuestCore::ItemRecord>>& GlobalContext::GetFactor
     return instancePtr;
 }
 
+template <>
+std::shared_ptr<IReaderStrategy<QuestCore::ItemRecord>> GetReader()
+{
+    auto factory = GlobalContext::GetFactory<QuestCore::ItemRecord>();
+    return std::make_shared<FactoryReader<QuestCore::ItemRecord>>(factory);
+}
+
 
 //Inventory
 
@@ -40,20 +45,20 @@ InventoryImpl_Binder InventoryImpl_Binder::instance;
 
 InventoryImpl_Binder::InventoryImpl_Binder()
 {
-    auto itemRecordFactory = GlobalContext::GetFactory<QuestCore::ItemRecord>();
-    FactoryReader<QuestCore::ItemRecord> itemRecordReader(itemRecordFactory);
+    auto impl = std::make_shared<InventoryImpl>(
+        InventoryInitializer(
+        )
+        , CreateProperty<std::vector<QuestCore::ItemRecord>>("items", std::vector<QuestCore::ItemRecord>())
+        );
 
-    PropertyReader<std::vector<QuestCore::ItemRecord>, FactoryReader>
-        itemsProperty("items", itemRecordReader, std::vector<QuestCore::ItemRecord>());
+    ContainerBinder<QuestCore::Inventory>().BindImpl("Inventory", impl);
+}
 
-    auto inventoryImpl = std::make_shared<InventoryImpl>(
-        ContainerInitializer<QuestCore::Inventory>(),
-        itemsProperty);
-
-    if (auto inventoryContainer = std::dynamic_pointer_cast<InventoryContainer>(GlobalContext::GetContainer<QuestCore::Inventory>())) {
-        inventoryContainer->SetInheritor<InventoryImpl>(
-            ReaderImplRecord<InventoryImpl>{ "Inventory", inventoryImpl });
-    }
+template<>
+template<>
+void ContainerBinder<QuestCore::Inventory>::BindImpl(const std::string& implName, const std::shared_ptr<InventoryImpl>& impl)
+{
+    BindImplWithCast<InventoryContainer, InventoryImpl>(implName, impl);
 }
 
 template<>
@@ -62,4 +67,11 @@ const std::shared_ptr<ContainerBase<QuestCore::Inventory>>& GlobalContext::GetCo
     static std::shared_ptr<ContainerBase<QuestCore::Inventory>>
         instancePtr = std::make_shared<InventoryContainer>("inventories");
     return instancePtr;
+}
+
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::Inventory>>> GetReader()
+{
+    auto container = GlobalContext::GetContainer<QuestCore::Inventory>();
+    return std::make_shared<ContainerReader<std::shared_ptr<QuestCore::Inventory>>>(container);
 }

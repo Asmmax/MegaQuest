@@ -1,12 +1,14 @@
 #pragma once
+#include "Containers/IReaderStrategy.hpp"
 #include "json.hpp"
 #include <vector>
 
-template<typename ResultType, template<typename> typename ReaderStrategy>
+template<typename ResultType>
 class PropertyReader
 {
+	using ReaderPtr = std::shared_ptr<IReaderStrategy<ResultType>>;
 public:
-	PropertyReader(const std::string& property, const ReaderStrategy<ResultType>& reader, const ResultType& defValue) :
+	PropertyReader(const std::string& property, const ReaderPtr& reader, const ResultType& defValue) :
 		_propertyName(property),
 		_reader(reader),
 		_defValue(defValue)
@@ -20,7 +22,7 @@ public:
 			return _defValue;
 		}
 
-		return _reader.Create(*childIt);
+		return _reader->Create(*childIt);
 	}
 	void Init(const nlohmann::json& node)
 	{
@@ -29,20 +31,21 @@ public:
 			return;
 		}
 
-		_reader.Init(*childIt);
+		_reader->Init(*childIt);
 	}
 private:
 	std::string _propertyName;
-	ReaderStrategy<ResultType> _reader;
+	ReaderPtr _reader;
 	ResultType _defValue;
 };
 
 // vector specialization
-template<typename Type, template<typename> typename ReaderStrategy>
-class PropertyReader<std::vector<Type>, ReaderStrategy>
+template<typename Type>
+class PropertyReader<std::vector<Type>>
 {
+	using ReaderPtr = std::shared_ptr<IReaderStrategy<Type>>;
 public:
-	PropertyReader(const std::string& property, const ReaderStrategy<Type>& reader, const std::vector<Type>& defValue) :
+	PropertyReader(const std::string& property, const ReaderPtr& reader, const std::vector<Type>& defValue) :
 		_propertyName(property),
 		_reader(reader),
 		_defValue(defValue)
@@ -59,7 +62,7 @@ public:
 		}
 
 		for (auto child : *childIt) {
-			results.emplace_back(_reader.Create(child));
+			results.emplace_back(_reader->Create(child));
 		}
 
 		return results;
@@ -72,11 +75,11 @@ public:
 		}
 
 		for (auto child : *childIt) {
-			_reader.Init(child);
+			_reader->Init(child);
 		}
 	}
 private:
 	std::string _propertyName;
-	ReaderStrategy<Type> _reader;
+	ReaderPtr _reader;
 	std::vector<Type> _defValue;
 };

@@ -1,41 +1,45 @@
 #include "Generated/Actions/ParagraphSwitching_gen.hpp"
-#include "Generated/IAction_gen.hpp"
+#include "Containers/ReaderStrategy/ContainerReader.hpp"
 
 ParagraphSwitchingImpl_Binder ParagraphSwitchingImpl_Binder::instance;
 
 ParagraphSwitchingImpl_Binder::ParagraphSwitchingImpl_Binder()
 {
-    auto iParagraphContainer = GlobalContext::GetContainer<QuestCore::IParagraph>();
-    ContainerReader<std::shared_ptr<QuestCore::IParagraph>>
-        paragraphReader(iParagraphContainer);
+    auto impl = std::make_shared<ParagraphSwitchingImpl>(
+        ParagraphSwitchingInitializer(
+            CreateMethod<QuestCore::ParagraphSwitching,std::shared_ptr<QuestCore::ParagraphStateMachine>>("stateMachine", nullptr,
+                [](const std::shared_ptr<QuestCore::ParagraphSwitching>& element, const std::shared_ptr<QuestCore::ParagraphStateMachine>& arg) {
+                    element->SetStateMachine(arg);
+                }),
+            CreateMethod<QuestCore::ParagraphSwitching, std::shared_ptr<QuestCore::IParagraph>>("nextParagraph", nullptr,
+                [](const std::shared_ptr<QuestCore::ParagraphSwitching>& element, const std::shared_ptr<QuestCore::IParagraph>& arg) {
+                    element->SetNextParagraph(arg);
+                })
+        )
+        );
 
-    auto paragraphStateMachineContainer = GlobalContext::GetContainer<QuestCore::ParagraphStateMachine>();
-    ContainerReader<std::shared_ptr<QuestCore::ParagraphStateMachine>>
-        paragraphStateMachineReader(paragraphStateMachineContainer);
+    ContainerBinder<QuestCore::ParagraphSwitching>().BindImpl("ParagraphSwitching", impl);
+    ContainerBinder<QuestCore::IAction>().BindImpl("ParagraphSwitching", impl);
+}
 
-    MethodInitializer<QuestCore::ParagraphSwitching, 
-        std::shared_ptr<QuestCore::ParagraphStateMachine>, 
-        ContainerReader
-    >
-        paragraphStateMachineInitializer("stateMachine", paragraphStateMachineReader, nullptr,
-            [](const std::shared_ptr<QuestCore::ParagraphSwitching>& element, const std::shared_ptr<QuestCore::ParagraphStateMachine>& arg) {
-                element->SetStateMachine(arg);
-            });
+template<>
+template<>
+void ContainerBinder<QuestCore::ParagraphSwitching>::BindImpl(const std::string& implName, const std::shared_ptr<ParagraphSwitchingImpl>& impl)
+{
+    BindImplWithCast<ParagraphSwitchingContainer, ParagraphSwitchingImpl>(implName, impl);
+}
 
-    MethodInitializer<QuestCore::ParagraphSwitching, 
-        std::shared_ptr<QuestCore::IParagraph>, 
-        ContainerReader
-    >
-        paragraphInitializer("nextParagraph", paragraphReader, nullptr,
-            [](const std::shared_ptr<QuestCore::ParagraphSwitching>& element, const std::shared_ptr<QuestCore::IParagraph>& arg) {
-                element->SetNextParagraph(arg);
-            });
+template<>
+const std::shared_ptr<ContainerBase<QuestCore::ParagraphSwitching>>& GlobalContext::GetContainer<QuestCore::ParagraphSwitching>()
+{
+    static std::shared_ptr<ContainerBase<QuestCore::ParagraphSwitching>>
+        instancePtr = std::make_shared<ParagraphSwitchingContainer>("actions");
+    return instancePtr;
+}
 
-    ParagraphSwitchingInitializer paragraphSwitchingInitializer(paragraphStateMachineInitializer, paragraphInitializer);
-    auto paragraphSwitchingImpl = std::make_shared<ParagraphSwitchingImpl>(paragraphSwitchingInitializer);
-
-    if (auto actionContainer = std::dynamic_pointer_cast<IActionContainer>(GlobalContext::GetContainer<QuestCore::IAction>())) {
-        actionContainer->SetInheritor<ParagraphSwitchingImpl>(
-            ReaderImplRecord<ParagraphSwitchingImpl>{ "ParagraphSwitching", paragraphSwitchingImpl });
-    }
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::ParagraphSwitching>>> GetReader()
+{
+    auto container = GlobalContext::GetContainer<QuestCore::ParagraphSwitching>();
+    return std::make_shared<ContainerReader<std::shared_ptr<QuestCore::ParagraphSwitching>>>(container);
 }

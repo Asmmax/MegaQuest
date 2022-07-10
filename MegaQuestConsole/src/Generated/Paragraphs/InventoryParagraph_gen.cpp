@@ -1,5 +1,6 @@
 #include "Generated/Paragraphs/InventoryParagraph_gen.hpp"
-#include "Generated/IParagraph_gen.hpp"
+#include "Containers/ReaderStrategy/FactoryReader.hpp"
+#include "Containers/ReaderStrategy/ContainerReader.hpp"
 
 //ItemOrder
 
@@ -7,23 +8,19 @@ ItemOrderImpl_Binder ItemOrderImpl_Binder::instance;
 
 ItemOrderImpl_Binder::ItemOrderImpl_Binder()
 {
-    auto itemContainer = GlobalContext::GetContainer<QuestCore::Item>();
-    ContainerReader<std::shared_ptr<QuestCore::Item>> itemReader(itemContainer);
+    auto impl = std::make_shared<ItemOrderImpl>(
+        CreateProperty<std::shared_ptr<QuestCore::Item>>("item", nullptr)
+        , CreateProperty<int>("order", 0)
+        );
 
-    PrimitiveReader<int> intReader;
+    FactoryBinder<QuestCore::ItemOrder>().BindImpl("ItemOrder", impl);
+}
 
-    PropertyReader<std::shared_ptr<QuestCore::Item>, ContainerReader>
-        itemProperty("item", itemReader, nullptr);
-
-    PropertyReader<int, PrimitiveReader>
-        orderProperty("order", intReader, 0);
-
-    auto itemOrderImpl = std::make_shared<ItemOrderImpl>(itemProperty, orderProperty);
-
-    if (auto itemOrderFactory = std::dynamic_pointer_cast<ItemOrderFactory>(GlobalContext::GetFactory<QuestCore::ItemOrder>())) {
-        itemOrderFactory->SetInheritor<ItemOrderImpl>(
-            ReaderImplRecord<ItemOrderImpl>{ "ItemOrder", itemOrderImpl });
-    }
+template<>
+template<>
+void FactoryBinder<QuestCore::ItemOrder>::BindImpl(const std::string& implName, const std::shared_ptr<ItemOrderImpl>& impl)
+{
+    BindImplWithCast<ItemOrderFactory, ItemOrderImpl>(implName, impl);
 }
 
 template<>
@@ -34,49 +31,51 @@ const std::shared_ptr<IFactory<QuestCore::ItemOrder>>& GlobalContext::GetFactory
 	return instancePtr;
 }
 
+template <>
+std::shared_ptr<IReaderStrategy<QuestCore::ItemOrder>> GetReader()
+{
+    auto factory = GlobalContext::GetFactory<QuestCore::ItemOrder>();
+    return std::make_shared<FactoryReader<QuestCore::ItemOrder>>(factory);
+}
+
 //InventoryParagraph
 
 InventoryParagraphImpl_Binder InventoryParagraphImpl_Binder::instance;
 
 InventoryParagraphImpl_Binder::InventoryParagraphImpl_Binder()
 {
-    auto formatedTextFactory = GlobalContext::GetFactory<QuestCore::FormatedString>();
-    FactoryReader<QuestCore::FormatedString>
-        formatedTextReader(formatedTextFactory);
+    auto impl = std::make_shared<InventoryParagraphImpl>(
+        InventoryParagraphInitializer(
+        )
+        , CreateProperty<QuestCore::FormatedString>("prefix", QuestCore::FormatedString())
+        , CreateProperty<QuestCore::TextString>("gap", QuestCore::TextString())
+        , CreateProperty<QuestCore::FormatedString>("postfix", QuestCore::FormatedString())
+        , CreateProperty<std::shared_ptr<QuestCore::Inventory>>("inventory", nullptr)
+        , CreateProperty<std::vector<QuestCore::ItemOrder>>("itemOrders", std::vector<QuestCore::ItemOrder>())
+        );
 
-    auto textFactory = GlobalContext::GetFactory<QuestCore::TextString>();
-    FactoryReader<QuestCore::TextString>
-        textFactoryReader(textFactory);
+    ContainerBinder<QuestCore::InventoryParagraph>().BindImpl("InventoryParagraph", impl);
+    ContainerBinder<QuestCore::IParagraph>().BindImpl("InventoryParagraph", impl);
+}
 
-    auto itemOrderFactory = GlobalContext::GetFactory<QuestCore::ItemOrder>();
-    FactoryReader<QuestCore::ItemOrder>
-        itemOrderReader(itemOrderFactory);
+template<>
+template<>
+void ContainerBinder<QuestCore::InventoryParagraph>::BindImpl(const std::string& implName, const std::shared_ptr<InventoryParagraphImpl>& impl)
+{
+    BindImplWithCast<InventoryParagraphContainer, InventoryParagraphImpl>(implName, impl);
+}
 
-    auto inventoryContainer = GlobalContext::GetContainer<QuestCore::Inventory>();
-    ContainerReader<std::shared_ptr<QuestCore::Inventory>>
-        inventoryContainerReader(inventoryContainer);
+template<>
+const std::shared_ptr<ContainerBase<QuestCore::InventoryParagraph>>& GlobalContext::GetContainer<QuestCore::InventoryParagraph>()
+{
+    static std::shared_ptr<ContainerBase<QuestCore::InventoryParagraph>>
+        instancePtr = std::make_shared<InventoryParagraphContainer>("paragraphs");
+    return instancePtr;
+}
 
-    PropertyReader<QuestCore::FormatedString, FactoryReader>
-        prefixReader("prefix", formatedTextReader, QuestCore::FormatedString());
-
-    PropertyReader<QuestCore::TextString, FactoryReader>
-        gapReader("gap", textFactoryReader, QuestCore::TextString());
-
-    PropertyReader<QuestCore::FormatedString, FactoryReader>
-        postfixReader("postfix", formatedTextReader, QuestCore::FormatedString());
-
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>
-        inventoryReader("inventory", inventoryContainerReader, nullptr);
-
-    PropertyReader<std::vector<QuestCore::ItemOrder>, FactoryReader>
-        itemOrdersReader("itemOrders", itemOrderReader, std::vector<QuestCore::ItemOrder>());
-
-    auto inventoryParagraphImpl = std::make_shared<InventoryParagraphImpl>(
-        ContainerInitializer<QuestCore::InventoryParagraph>(),
-        prefixReader, gapReader, postfixReader, inventoryReader, itemOrdersReader);
-
-    if (auto paragraphContainer = std::dynamic_pointer_cast<IParagraphContainer>(GlobalContext::GetContainer<QuestCore::IParagraph>())) {
-        paragraphContainer->SetInheritor<InventoryParagraphImpl>(
-            ReaderImplRecord<InventoryParagraphImpl>{ "InventoryParagraph", inventoryParagraphImpl });
-    }
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::InventoryParagraph>>> GetReader()
+{
+    auto container = GlobalContext::GetContainer<QuestCore::InventoryParagraph>();
+    return std::make_shared<ContainerReader<std::shared_ptr<QuestCore::InventoryParagraph>>>(container);
 }

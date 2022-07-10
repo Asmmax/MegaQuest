@@ -3,22 +3,22 @@
 #include "Item.hpp"
 
 #include "Containers/ContainerImpl.hpp"
-#include "Containers/PropertyReader.hpp"
-#include "Containers/ReaderStrategy/ContainerReader.hpp"
-#include "Containers/ReaderStrategy/PrimitiveReader.hpp"
-#include "Containers/ReaderStrategy/FactoryReader.hpp"
 #include "Containers/ContainerInitializer.hpp"
 
 #include "Containers/Container.hpp"
-#include "Containers/GlobalContext.hpp"
+#include "Containers/ContainerBinder.hpp"
+
+#include "Containers/Utils.hpp"
 
 //Item
 
+using ItemInitializer = ContainerInitializer<QuestCore::Item>;
+
 using ItemImpl = ContainerImpl<QuestCore::Item,
-    ContainerInitializer<QuestCore::Item>,
-    PropertyReader<std::string, PrimitiveReader>,
-    PropertyReader<QuestCore::FormatedString, FactoryReader>,
-    PropertyReader<bool, PrimitiveReader>
+    ItemInitializer,
+    std::string,
+    QuestCore::FormatedString,
+    bool
 >;
 
 class ItemImpl_Binder
@@ -33,4 +33,11 @@ private:
 using ItemContainer = Container<QuestCore::Item, ItemImpl>;
 
 template<>
+template<>
+void ContainerBinder<QuestCore::Item>::BindImpl(const std::string& implName, const std::shared_ptr<ItemImpl>& impl);
+
+template<>
 const std::shared_ptr<ContainerBase<QuestCore::Item>>& GlobalContext::GetContainer<QuestCore::Item>();
+
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::Item>>> GetReader();

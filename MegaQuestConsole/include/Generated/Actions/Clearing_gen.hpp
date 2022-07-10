@@ -2,13 +2,18 @@
 #include "Actions/Clearing.hpp"
 
 #include "Containers/ContainerInitializer.hpp"
-#include "Containers/ReaderStrategy/ContainerReader.hpp"
 #include "Containers/ContainerImpl.hpp"
-#include "Containers/PropertyReader.hpp"
+
+#include "Containers/Container.hpp"
+#include "Containers/ContainerBinder.hpp"
+
+#include "Containers/Utils.hpp"
+
+using ClearingInitializer = ContainerInitializer<QuestCore::Clearing>;
 
 using ClearingImpl = ContainerImpl<QuestCore::Clearing,
-    ContainerInitializer<QuestCore::Clearing>,
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>
+    ClearingInitializer,
+    std::shared_ptr<QuestCore::Inventory>
 >;
 
 class ClearingImpl_Binder
@@ -19,3 +24,15 @@ public:
 private:
     static ClearingImpl_Binder instance;
 };
+
+using ClearingContainer = Container<QuestCore::Clearing, ClearingImpl>;
+
+template<>
+template<>
+void ContainerBinder<QuestCore::Clearing>::BindImpl(const std::string& implName, const std::shared_ptr<ClearingImpl>& impl);
+
+template<>
+const std::shared_ptr<ContainerBase<QuestCore::Clearing>>& GlobalContext::GetContainer<QuestCore::Clearing>();
+
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::Clearing>>> GetReader();

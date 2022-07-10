@@ -3,14 +3,14 @@
 #include "FormatedString.hpp"
 
 #include "Containers/FactoryImpl.hpp"
-#include "Containers/PropertyReader.hpp"
-#include "Containers/ReaderStrategy/FactoryReader.hpp"
 
 #include "Containers/Factory.hpp"
-#include "Containers/GlobalContext.hpp"
+#include "Containers/FactoryBinder.hpp"
+
+#include "Containers/Utils.hpp"
 
 using FormatedStringImpl = FactoryImpl<QuestCore::FormatedString,
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::FormBase>>, FactoryReader>
+    std::vector<std::shared_ptr<QuestCore::FormBase>>
 >;
 
 class FormatedStringImpl_Binder
@@ -25,4 +25,11 @@ private:
 using FormatedStringFactory = Factory<QuestCore::FormatedString, FormatedStringImpl>;
 
 template<>
+template<>
+void FactoryBinder<QuestCore::FormatedString>::BindImpl(const std::string& implName, const std::shared_ptr<FormatedStringImpl>& impl);
+
+template<>
 const std::shared_ptr<IFactory<QuestCore::FormatedString>>& GlobalContext::GetFactory<QuestCore::FormatedString>();
+
+template <>
+std::shared_ptr<IReaderStrategy<QuestCore::FormatedString>> GetReader();

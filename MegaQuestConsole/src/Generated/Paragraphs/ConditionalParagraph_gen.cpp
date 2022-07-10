@@ -1,33 +1,40 @@
 #include "Generated/Paragraphs/ConditionalParagraph_gen.hpp"
-#include "Generated/IParagraph_gen.hpp"
+#include "Containers/ReaderStrategy/ContainerReader.hpp"
 
 ConditionalParagraphImpl_Binder ConditionalParagraphImpl_Binder::instance;
 
 ConditionalParagraphImpl_Binder::ConditionalParagraphImpl_Binder()
 {
-    auto iParagraphContainer = GlobalContext::GetContainer<QuestCore::IParagraph>();
-    ContainerReader<std::shared_ptr<QuestCore::IParagraph>>
-        paragraphReader(iParagraphContainer);
+    auto impl = std::make_shared<ConditionalParagraphImpl>(
+        ConditionalParagraphInitializer(
+        )
+        , CreateProperty<std::shared_ptr<QuestCore::IParagraph>>("thenParagraph", nullptr)
+        , CreateProperty<std::shared_ptr<QuestCore::IParagraph>>("elseParagraph", nullptr)
+        , CreateProperty<std::vector<std::shared_ptr<QuestCore::ICondition>>>("conditions", std::vector<std::shared_ptr<QuestCore::ICondition>>())
+        );
 
-    auto iConditionFactory = GlobalContext::GetFactory<std::shared_ptr<QuestCore::ICondition>>();
-    FactoryReader<std::shared_ptr<QuestCore::ICondition>>
-        conditionReader(iConditionFactory);
+    ContainerBinder< QuestCore::ConditionalParagraph>().BindImpl("ConditionalParagraph", impl);
+    ContainerBinder< QuestCore::IParagraph>().BindImpl("ConditionalParagraph", impl);
+}
 
-    PropertyReader<std::shared_ptr<QuestCore::IParagraph>, ContainerReader>
-        thenParagraphReader("thenParagraph", paragraphReader, nullptr);
+template<>
+template<>
+void ContainerBinder<QuestCore::ConditionalParagraph>::BindImpl(const std::string& implName, const std::shared_ptr<ConditionalParagraphImpl>& impl)
+{
+    BindImplWithCast<ConditionalParagraphContainer, ConditionalParagraphImpl>(implName, impl);
+}
 
-    PropertyReader<std::shared_ptr<QuestCore::IParagraph>, ContainerReader>
-        elseParagraphReader("elseParagraph", paragraphReader, nullptr);
+template<>
+const std::shared_ptr<ContainerBase<QuestCore::ConditionalParagraph>>& GlobalContext::GetContainer<QuestCore::ConditionalParagraph>()
+{
+    static std::shared_ptr<ContainerBase<QuestCore::ConditionalParagraph>>
+        instancePtr = std::make_shared<ConditionalParagraphContainer>("paragraphs");
+    return instancePtr;
+}
 
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::ICondition>>, FactoryReader>
-        conditionsReader("conditions", conditionReader, std::vector<std::shared_ptr<QuestCore::ICondition>>());
-
-    auto conditionalParagraphImpl = std::make_shared<ConditionalParagraphImpl>(
-        ContainerInitializer<QuestCore::ConditionalParagraph>(),
-        thenParagraphReader, elseParagraphReader, conditionsReader);
-
-    if (auto paragraphContainer = std::dynamic_pointer_cast<IParagraphContainer>(GlobalContext::GetContainer<QuestCore::IParagraph>())) {
-        paragraphContainer->SetInheritor<ConditionalParagraphImpl>(
-            ReaderImplRecord<ConditionalParagraphImpl>{ "ConditionalParagraph", conditionalParagraphImpl });
-    }
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::ConditionalParagraph>>> GetReader()
+{
+    auto container = GlobalContext::GetContainer<QuestCore::ConditionalParagraph>();
+    return std::make_shared<ContainerReader<std::shared_ptr<QuestCore::ConditionalParagraph>>>(container);
 }

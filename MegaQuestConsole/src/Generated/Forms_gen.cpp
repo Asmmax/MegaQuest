@@ -1,5 +1,5 @@
 #include "Generated/Forms_gen.hpp"
-#include "Generated/FormBase_gen.hpp"
+#include "Containers/ReaderStrategy/FactoryReader.hpp"
 
 //SpecificForm
 
@@ -7,23 +7,35 @@ SpecificFormImpl_Binder SpecificFormImpl_Binder::instance;
 
 SpecificFormImpl_Binder::SpecificFormImpl_Binder()
 {
-    auto textFactory = GlobalContext::GetFactory<QuestCore::TextString>();
-	FactoryReader<QuestCore::TextString> textFactoryReader(textFactory);
+    auto impl = std::make_shared<SpecificFormImpl>(
+        CreateProperty<std::vector<int>>("counts", std::vector<int>())
+        , CreateProperty<QuestCore::TextString>("text", QuestCore::TextString())
+        );
 
-    PrimitiveReader<int> intReader;
+    FactoryBinder<std::shared_ptr<QuestCore::SpecificForm>>().BindImpl("SpecificForm", impl);
+    FactoryBinder<std::shared_ptr<QuestCore::FormBase>>().BindImpl("SpecificForm", impl);
+}
 
-    PropertyReader<QuestCore::TextString, FactoryReader>
-        textProperty("text", textFactoryReader, QuestCore::TextString());
+template<>
+template<>
+void FactoryBinder<std::shared_ptr<QuestCore::SpecificForm>>::BindImpl(const std::string& implName, const std::shared_ptr<SpecificFormImpl>& impl)
+{
+    BindImplWithCast<SpecificFormFactory, SpecificFormImpl>(implName, impl);
+}
 
-    PropertyReader<std::vector<int>, PrimitiveReader>
-        countsProperty("counts", intReader, std::vector<int>());
+template<>
+const std::shared_ptr<IFactory<std::shared_ptr<QuestCore::SpecificForm>>>& GlobalContext::GetFactory<std::shared_ptr<QuestCore::SpecificForm>>()
+{
+    static std::shared_ptr<IFactory<std::shared_ptr<QuestCore::SpecificForm>>>
+        instancePtr = std::make_shared<SpecificFormFactory>();
+    return instancePtr;
+}
 
-    auto specificFormImpl = std::make_shared<SpecificFormImpl>(countsProperty, textProperty);
-
-    if (auto formBaseFactory = std::dynamic_pointer_cast<FormBaseFactory>(GlobalContext::GetFactory<std::shared_ptr<QuestCore::FormBase>>())) {
-        formBaseFactory->SetInheritor<SpecificFormImpl>(
-            ReaderImplRecord<SpecificFormImpl>{ "SpecificForm", specificFormImpl });
-    }
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::SpecificForm>>> GetReader()
+{
+    auto factory = GlobalContext::GetFactory<std::shared_ptr<QuestCore::SpecificForm>>();
+    return std::make_shared<FactoryReader<std::shared_ptr<QuestCore::SpecificForm>>>(factory);
 }
 
 //TailForm
@@ -32,24 +44,34 @@ TailFormImpl_Binder TailFormImpl_Binder::instance;
 
 TailFormImpl_Binder::TailFormImpl_Binder()
 {
-    auto textFactory = GlobalContext::GetFactory<QuestCore::TextString>();
-    FactoryReader<QuestCore::TextString> textFactoryReader(textFactory);
+    auto impl = std::make_shared<TailFormImpl>(
+        CreateProperty<int>("notation", 0)
+        , CreateProperty<std::vector<int>>("digits", std::vector<int>())
+        , CreateProperty<QuestCore::TextString>("text", QuestCore::TextString())
+        );
 
-    PrimitiveReader<int> intReader;
+    FactoryBinder<std::shared_ptr<QuestCore::TailForm>>().BindImpl("TailForm", impl);
+    FactoryBinder<std::shared_ptr<QuestCore::FormBase>>().BindImpl("TailForm", impl);
+}
 
-    PropertyReader<QuestCore::TextString, FactoryReader>
-        textProperty("text", textFactoryReader, QuestCore::TextString());
+template<>
+template<>
+void FactoryBinder<std::shared_ptr<QuestCore::TailForm>>::BindImpl(const std::string& implName, const std::shared_ptr<TailFormImpl>& impl)
+{
+    BindImplWithCast<TailFormFactory, TailFormImpl>(implName, impl);
+}
 
-    PropertyReader<int, PrimitiveReader>
-        notationProperty("notation", intReader, 0);
+template<>
+const std::shared_ptr<IFactory<std::shared_ptr<QuestCore::TailForm>>>& GlobalContext::GetFactory<std::shared_ptr<QuestCore::TailForm>>()
+{
+    static std::shared_ptr<IFactory<std::shared_ptr<QuestCore::TailForm>>>
+        instancePtr = std::make_shared<TailFormFactory>();
+    return instancePtr;
+}
 
-    PropertyReader<std::vector<int>, PrimitiveReader>
-        digitsProperty("digits", intReader, std::vector<int>());
-
-    auto tailFormImpl = std::make_shared<TailFormImpl>(notationProperty, digitsProperty, textProperty);
-
-    if (auto formBaseFactory = std::dynamic_pointer_cast<FormBaseFactory>(GlobalContext::GetFactory<std::shared_ptr<QuestCore::FormBase>>())) {
-        formBaseFactory->SetInheritor<TailFormImpl>(
-            ReaderImplRecord<TailFormImpl>{ "TailForm", tailFormImpl });
-    }
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::TailForm>>> GetReader()
+{
+    auto factory = GlobalContext::GetFactory<std::shared_ptr<QuestCore::TailForm>>();
+    return std::make_shared<FactoryReader<std::shared_ptr<QuestCore::TailForm>>>(factory);
 }

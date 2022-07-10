@@ -2,14 +2,19 @@
 #include "Conditions/Comparison.hpp"
 
 #include "Containers/FactoryImpl.hpp"
-#include "Containers/PropertyReader.hpp"
-#include "Containers/ReaderStrategy/FactoryReader.hpp"
-#include "Containers/ReaderStrategy/EnumReader.hpp"
+
+#include "Containers/Factory.hpp"
+#include "Containers/FactoryBinder.hpp"
+
+#include "Containers/Utils.hpp"
+
+template <>
+std::shared_ptr<IReaderStrategy<QuestCore::Operation>> GetReader();
 
 using ComparisonImpl = FactoryImpl<std::shared_ptr<QuestCore::Comparison>,
-    PropertyReader<std::shared_ptr<QuestCore::Value>, FactoryReader>,
-    PropertyReader<std::shared_ptr<QuestCore::Value>, FactoryReader>,
-    PropertyReader<QuestCore::Operation, EnumReader>
+    std::shared_ptr<QuestCore::Value>,
+    std::shared_ptr<QuestCore::Value>,
+    QuestCore::Operation
 >;
 
 class ComparisonImpl_Binder
@@ -20,3 +25,15 @@ public:
 private:
     static ComparisonImpl_Binder instance;
 };
+
+using ComparisonFactory = Factory<std::shared_ptr<QuestCore::Comparison>, ComparisonImpl>;
+
+template<>
+template<>
+void FactoryBinder<std::shared_ptr<QuestCore::Comparison>>::BindImpl(const std::string& implName, const std::shared_ptr<ComparisonImpl>& impl);
+
+template<>
+const std::shared_ptr<IFactory<std::shared_ptr<QuestCore::Comparison>>>& GlobalContext::GetFactory<std::shared_ptr<QuestCore::Comparison>>();
+
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::Comparison>>> GetReader();

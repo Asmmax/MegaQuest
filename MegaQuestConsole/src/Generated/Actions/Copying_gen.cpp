@@ -1,26 +1,40 @@
 #include "Generated/Actions/Copying_gen.hpp"
-#include "Generated/IAction_gen.hpp"
+#include "Containers/ReaderStrategy/ContainerReader.hpp"
 
 CopyingImpl_Binder CopyingImpl_Binder::instance;
 
 CopyingImpl_Binder::CopyingImpl_Binder()
 {
-    auto inventoryContainer = GlobalContext::GetContainer<QuestCore::Inventory>();
+    auto impl = std::make_shared<CopyingImpl>(
+        CopyingInitializer(
+        )
+        , CreateProperty<std::shared_ptr<QuestCore::Inventory>>("source", nullptr)
+        , CreateProperty<std::shared_ptr<QuestCore::Inventory>>("target", nullptr)
+        );
 
-    ContainerReader<std::shared_ptr<QuestCore::Inventory>>
-        inventoryReader(inventoryContainer);
+    ContainerBinder<QuestCore::Copying>().BindImpl("Copying", impl);
+    ContainerBinder<QuestCore::IAction>().BindImpl("Copying", impl);
+}
 
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>
-        inventorySourceProperty("source", inventoryReader, nullptr);
+template<>
+template<>
+void ContainerBinder<QuestCore::Copying>::BindImpl(const std::string& implName, const std::shared_ptr<CopyingImpl>& impl)
+{
+    BindImplWithCast<CopyingContainer, CopyingImpl>(implName, impl);
+}
 
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>
-        inventoryTargetProperty("target", inventoryReader, nullptr);
 
-    auto copyingImpl = std::make_shared<CopyingImpl>(ContainerInitializer<QuestCore::Copying>(),
-        inventorySourceProperty, inventoryTargetProperty);
+template<>
+const std::shared_ptr<ContainerBase<QuestCore::Copying>>& GlobalContext::GetContainer<QuestCore::Copying>()
+{
+    static std::shared_ptr<ContainerBase<QuestCore::Copying>>
+        instancePtr = std::make_shared<CopyingContainer>("actions");
+    return instancePtr;
+}
 
-    if (auto actionContainer = std::dynamic_pointer_cast<IActionContainer>(GlobalContext::GetContainer<QuestCore::IAction>())) {
-        actionContainer->SetInheritor<CopyingImpl>(
-            ReaderImplRecord<CopyingImpl>{ "Copying", copyingImpl });
-    }
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::Copying>>> GetReader()
+{
+    auto container = GlobalContext::GetContainer<QuestCore::Copying>();
+    return std::make_shared<ContainerReader<std::shared_ptr<QuestCore::Copying>>>(container);
 }

@@ -1,14 +1,11 @@
 #include "Generated/Conditions/Comparison_gen.hpp"
-#include "Generated/ICondition_gen.hpp"
+#include "Containers/ReaderStrategy/EnumReader.hpp"
+#include "Containers/ReaderStrategy/FactoryReader.hpp"
 
-ComparisonImpl_Binder ComparisonImpl_Binder::instance;
-
-ComparisonImpl_Binder::ComparisonImpl_Binder()
+template <>
+std::shared_ptr<IReaderStrategy<QuestCore::Operation>> GetReader()
 {
-    auto valueFactory = GlobalContext::GetFactory<std::shared_ptr<QuestCore::Value>>();
-    FactoryReader<std::shared_ptr<QuestCore::Value>> valueReader(valueFactory);
-
-    EnumReader<QuestCore::Operation> operationEnumReader(std::map<std::string, QuestCore::Operation>{
+    return std::make_shared<EnumReader<QuestCore::Operation>>(std::map<std::string, QuestCore::Operation>{
         { "None", QuestCore::Operation::None },
         { "Less", QuestCore::Operation::Less },
         { "Greater", QuestCore::Operation::Greater },
@@ -17,20 +14,40 @@ ComparisonImpl_Binder::ComparisonImpl_Binder()
         { "NotGreater", QuestCore::Operation::NotGreater },
         { "NotEqual", QuestCore::Operation::NotEqual }
     });
+}
 
-    PropertyReader<std::shared_ptr<QuestCore::Value>, FactoryReader>
-        leftProperty("left", valueReader, nullptr);
+ComparisonImpl_Binder ComparisonImpl_Binder::instance;
 
-    PropertyReader<std::shared_ptr<QuestCore::Value>, FactoryReader>
-        rightProperty("right", valueReader, nullptr);
+ComparisonImpl_Binder::ComparisonImpl_Binder()
+{
+    auto impl = std::make_shared<ComparisonImpl>(
+        CreateProperty<std::shared_ptr<QuestCore::Value>>("left", nullptr)
+        , CreateProperty<std::shared_ptr<QuestCore::Value>>("right", nullptr)
+        , CreateProperty<QuestCore::Operation>("op", QuestCore::Operation::None)
+        );
 
-    PropertyReader<QuestCore::Operation, EnumReader>
-        operationReader("op", operationEnumReader, QuestCore::Operation::None);
+    FactoryBinder<std::shared_ptr<QuestCore::Comparison>>().BindImpl("Comparison", impl);
+    FactoryBinder<std::shared_ptr<QuestCore::ICondition>>().BindImpl("Comparison", impl);
+}
 
-    auto comparisonImpl = std::make_shared<ComparisonImpl>(leftProperty, rightProperty, operationReader);
+template<>
+template<>
+void FactoryBinder<std::shared_ptr<QuestCore::Comparison>>::BindImpl(const std::string& implName, const std::shared_ptr<ComparisonImpl>& impl)
+{
+    BindImplWithCast<ComparisonFactory, ComparisonImpl>(implName, impl);
+}
 
-    if (auto conditionContainer = std::dynamic_pointer_cast<IConditionFactory>(GlobalContext::GetFactory<std::shared_ptr<QuestCore::ICondition>>())) {
-        conditionContainer->SetInheritor<ComparisonImpl>(
-            ReaderImplRecord<ComparisonImpl>{ "Comparison", comparisonImpl });
-    }
+template<>
+const std::shared_ptr<IFactory<std::shared_ptr<QuestCore::Comparison>>>& GlobalContext::GetFactory<std::shared_ptr<QuestCore::Comparison>>()
+{
+    static std::shared_ptr<IFactory<std::shared_ptr<QuestCore::Comparison>>>
+        instancePtr = std::make_shared<ComparisonFactory>();
+    return instancePtr;
+}
+
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::Comparison>>> GetReader()
+{
+    auto factory = GlobalContext::GetFactory<std::shared_ptr<QuestCore::Comparison>>();
+    return std::make_shared<FactoryReader<std::shared_ptr<QuestCore::Comparison>>>(factory);
 }

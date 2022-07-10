@@ -1,32 +1,40 @@
 #include "Generated/Actions/Transfer_gen.hpp"
-#include "Generated/IAction_gen.hpp"
+#include "Containers/ReaderStrategy/ContainerReader.hpp"
 
 TransferImpl_Binder TransferImpl_Binder::instance;
 
 TransferImpl_Binder::TransferImpl_Binder()
 {
-    auto itemRecordFactory = GlobalContext::GetFactory<QuestCore::ItemRecord>();
-    FactoryReader<QuestCore::ItemRecord>
-        itemRecordReader(itemRecordFactory);
+    auto impl = std::make_shared<TransferImpl>(
+        TransferInitializer(
+        )
+        , CreateProperty<std::shared_ptr<QuestCore::Inventory>>("source", nullptr)
+        , CreateProperty<std::shared_ptr<QuestCore::Inventory>>("target", nullptr)
+        , CreateProperty<std::vector<QuestCore::ItemRecord>>("items", std::vector<QuestCore::ItemRecord>())
+        );
 
-    auto inventoryContainer = GlobalContext::GetContainer<QuestCore::Inventory>();
-    ContainerReader<std::shared_ptr<QuestCore::Inventory>>
-        inventoryReader(inventoryContainer);
+    ContainerBinder<QuestCore::Transfer>().BindImpl("Transfer", impl);
+    ContainerBinder<QuestCore::IAction>().BindImpl("Transfer", impl);
+}
 
-    PropertyReader<std::vector<QuestCore::ItemRecord>, FactoryReader>
-        itemsProperty("items", itemRecordReader, std::vector<QuestCore::ItemRecord>());
+template<>
+template<>
+void ContainerBinder<QuestCore::Transfer>::BindImpl(const std::string& implName, const std::shared_ptr<TransferImpl>& impl)
+{
+    BindImplWithCast<TransferContainer, TransferImpl>(implName, impl);
+}
 
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>
-        inventorySourceProperty("source", inventoryReader, nullptr);
+template<>
+const std::shared_ptr<ContainerBase<QuestCore::Transfer>>& GlobalContext::GetContainer<QuestCore::Transfer>()
+{
+    static std::shared_ptr<ContainerBase<QuestCore::Transfer>>
+        instancePtr = std::make_shared<TransferContainer>("actions");
+    return instancePtr;
+}
 
-    PropertyReader<std::shared_ptr<QuestCore::Inventory>, ContainerReader>
-        inventoryTargetProperty("target", inventoryReader, nullptr);
-
-    auto transferImpl = std::make_shared<TransferImpl>(ContainerInitializer<QuestCore::Transfer>(),
-        inventorySourceProperty, inventoryTargetProperty, itemsProperty);
-
-    if (auto actionContainer = std::dynamic_pointer_cast<IActionContainer>(GlobalContext::GetContainer<QuestCore::IAction>())) {
-        actionContainer->SetInheritor<TransferImpl>(
-            ReaderImplRecord<TransferImpl>{ "Transfer", transferImpl });
-    }
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::Transfer>>> GetReader()
+{
+    auto container = GlobalContext::GetContainer<QuestCore::Transfer>();
+    return std::make_shared<ContainerReader<std::shared_ptr<QuestCore::Transfer>>>(container);
 }

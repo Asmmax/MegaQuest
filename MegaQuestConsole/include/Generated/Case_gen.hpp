@@ -3,16 +3,15 @@
 #include "Case.hpp"
 
 #include "Containers/FactoryImpl.hpp"
-#include "Containers/PropertyReader.hpp"
-#include "Containers/ReaderStrategy/ContainerReader.hpp"
-#include "Containers/ReaderStrategy/FactoryReader.hpp"
 
 #include "Containers/Factory.hpp"
-#include "Containers/GlobalContext.hpp"
+#include "Containers/FactoryBinder.hpp"
+
+#include "Containers/Utils.hpp"
 
 using CaseImpl = FactoryImpl<QuestCore::Case,
-    PropertyReader<QuestCore::TextString, FactoryReader>,
-    PropertyReader<std::vector<std::shared_ptr<QuestCore::IAction>>, ContainerReader>
+    QuestCore::TextString,
+    std::vector<std::shared_ptr<QuestCore::IAction>>
 >;
 
 class CaseImpl_Binder
@@ -27,4 +26,11 @@ private:
 using CaseFactory = Factory<QuestCore::Case, CaseImpl>;
 
 template<>
+template<>
+void FactoryBinder<QuestCore::Case>::BindImpl(const std::string& implName, const std::shared_ptr<CaseImpl>& impl);
+
+template<>
 const std::shared_ptr<IFactory<QuestCore::Case>>& GlobalContext::GetFactory<QuestCore::Case>();
+
+template <>
+std::shared_ptr<IReaderStrategy<QuestCore::Case>> GetReader();

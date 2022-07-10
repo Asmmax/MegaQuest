@@ -2,15 +2,15 @@
 #include "CaseContainers/CaseContainerStateMachine.hpp"
 
 #include "Containers/ContainerInitializer.hpp"
-#include "Containers/MethodInitializer.hpp"
-#include "Containers/ReaderStrategy/ContainerReader.hpp"
 #include "Containers/ContainerImpl.hpp"
 
 #include "Containers/Container.hpp"
-#include "Containers/GlobalContext.hpp"
+#include "Containers/ContainerBinder.hpp"
+
+#include "Containers/Utils.hpp"
 
 using CaseContainerStateMachineInitializer = ContainerInitializer<QuestCore::CaseContainerStateMachine,
-    MethodInitializer<QuestCore::CaseContainerStateMachine, std::shared_ptr<QuestCore::ICaseContainer>, ContainerReader>
+    std::shared_ptr<QuestCore::ICaseContainer>
 >;
 
 using CaseContainerStateMachineImpl = ContainerImpl<QuestCore::CaseContainerStateMachine,
@@ -29,4 +29,11 @@ private:
 using CaseContainerStateMachineContainer = Container<QuestCore::CaseContainerStateMachine, CaseContainerStateMachineImpl>;
 
 template<>
+template<>
+void ContainerBinder<QuestCore::CaseContainerStateMachine>::BindImpl(const std::string& implName, const std::shared_ptr<CaseContainerStateMachineImpl>& impl);
+
+template<>
 const std::shared_ptr<ContainerBase<QuestCore::CaseContainerStateMachine>>& GlobalContext::GetContainer<QuestCore::CaseContainerStateMachine>();
+
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::CaseContainerStateMachine>>> GetReader();

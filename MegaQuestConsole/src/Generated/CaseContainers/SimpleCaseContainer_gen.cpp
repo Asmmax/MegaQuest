@@ -1,23 +1,38 @@
 #include "Generated/CaseContainers/SimpleCaseContainer_gen.hpp"
-#include "Generated/ICaseContainer_gen.hpp"
+#include "Containers/ReaderStrategy/ContainerReader.hpp"
 
 SimpleCaseContainerImpl_Binder SimpleCaseContainerImpl_Binder::instance;
 
 SimpleCaseContainerImpl_Binder::SimpleCaseContainerImpl_Binder()
 {
-    auto caseFactory = GlobalContext::GetFactory<QuestCore::Case>();
-    FactoryReader<QuestCore::Case>
-        caseReader(caseFactory);
+    auto impl = std::make_shared<SimpleCaseContainerImpl>(
+        SimpleCaseContainerInitializer(
+        )
+        , CreateProperty<std::vector<QuestCore::Case>>("cases", std::vector<QuestCore::Case>())
+        );
 
-    PropertyReader<std::vector<QuestCore::Case>, FactoryReader>
-        casesReader("cases", caseReader, std::vector<QuestCore::Case>());
+    ContainerBinder<QuestCore::SimpleCaseContainer>().BindImpl("SimpleCaseContainer", impl);
+    ContainerBinder<QuestCore::ICaseContainer>().BindImpl("SimpleCaseContainer", impl);
+}
 
-    auto simpleCaseContainerImpl = std::make_shared<SimpleCaseContainerImpl>(
-        ContainerInitializer<QuestCore::SimpleCaseContainer>(),
-        casesReader);
+template<>
+template<>
+void ContainerBinder<QuestCore::SimpleCaseContainer>::BindImpl(const std::string& implName, const std::shared_ptr<SimpleCaseContainerImpl>& impl)
+{
+    BindImplWithCast< SimpleCaseContainerContainer, SimpleCaseContainerImpl>(implName, impl);
+}
 
-    if (auto containerContainer = std::dynamic_pointer_cast<ICaseContainerContainer>(GlobalContext::GetContainer<QuestCore::ICaseContainer>())) {
-        containerContainer->SetInheritor<SimpleCaseContainerImpl>(
-            ReaderImplRecord<SimpleCaseContainerImpl>{ "SimpleCaseContainer", simpleCaseContainerImpl });
-    }
+template<>
+const std::shared_ptr<ContainerBase<QuestCore::SimpleCaseContainer>>& GlobalContext::GetContainer<QuestCore::SimpleCaseContainer>()
+{
+    static std::shared_ptr<ContainerBase<QuestCore::SimpleCaseContainer>>
+        instancePtr = std::make_shared<SimpleCaseContainerContainer>("containers");
+    return instancePtr;
+}
+
+template <>
+std::shared_ptr<IReaderStrategy<std::shared_ptr<QuestCore::SimpleCaseContainer>>> GetReader()
+{
+    auto container = GlobalContext::GetContainer<QuestCore::SimpleCaseContainer>();
+    return std::make_shared<ContainerReader<std::shared_ptr<QuestCore::SimpleCaseContainer>>>(container);
 }
