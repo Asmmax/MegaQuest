@@ -4,6 +4,7 @@
 
 namespace QuestCore
 {
+	/// @serializable
 	class CaseContainerGroup : public ICaseContainer
 	{
 	public:

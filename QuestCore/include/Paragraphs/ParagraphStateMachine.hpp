@@ -5,6 +5,7 @@ namespace QuestCore
 {
 	class TextString;
 
+	/// @serializable
 	class ParagraphStateMachine : public IParagraph
 	{
 	public:

@@ -6,7 +6,7 @@ namespace QuestCore
 	class Item;
 	class Inventory;
 
-	/// @serializable @unique @abstract
+	/// @serializable @polymorphic @abstract
 	class Value 
 	{
 	public:
@@ -14,6 +14,7 @@ namespace QuestCore
 		virtual int Get() const = 0;
 	};
 
+	/// @serializable
 	class SimpleValue : public Value
 	{
 	public:
@@ -23,6 +24,7 @@ namespace QuestCore
 		int _value;
 	};
 
+	/// @serializable
 	class InventoryValue : public Value
 	{
 	public:

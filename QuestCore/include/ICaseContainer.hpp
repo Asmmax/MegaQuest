@@ -8,7 +8,7 @@ namespace QuestCore
 {
 	class IButtonGroup;
 
-	/// @serializable @shared(containers) @abstract
+	/// @serializable @shared containers @abstract
 	class ICaseContainer
 	{
 	public:

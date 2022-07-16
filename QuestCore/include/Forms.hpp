@@ -4,6 +4,7 @@
 
 namespace QuestCore
 {
+	/// @serializable
 	class SpecificForm : public FormBase
 	{
 	public:
@@ -13,6 +14,7 @@ namespace QuestCore
 		std::vector<int> _counts;
 	};
 
+	/// @serializable
 	class TailForm : public FormBase
 	{
 	public:

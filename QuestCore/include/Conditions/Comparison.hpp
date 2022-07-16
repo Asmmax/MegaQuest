@@ -9,6 +9,7 @@ namespace QuestCore
 	/// @serializable
 	enum class Operation {None, Less, Greater, Equal, NotLess, NotGreater, NotEqual};
 
+	/// @serializable
 	class Comparison : public ICondition
 	{
 	public:

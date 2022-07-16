@@ -3,7 +3,9 @@
 #include "TextString.hpp"
 #include <vector>
 
-namespace QuestCore {
+namespace QuestCore 
+{
+	/// @serializable
 	class ParagraphGroup : public IParagraph
 	{
 	public:

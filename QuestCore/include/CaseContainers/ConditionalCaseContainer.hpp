@@ -6,6 +6,7 @@ namespace QuestCore
 {
 	class ICondition;
 
+	/// @serializable
 	class ConditionalCaseContainer : public ICaseContainer
 	{
 		using ConditionPtr = std::shared_ptr<ICondition>;

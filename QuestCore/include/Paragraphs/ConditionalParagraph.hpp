@@ -7,6 +7,7 @@ namespace QuestCore
 {
 	class ICondition;
 
+	/// @serializable
 	class ConditionalParagraph : public IParagraph
 	{
 		using ConditionPtr = std::shared_ptr<ICondition>;

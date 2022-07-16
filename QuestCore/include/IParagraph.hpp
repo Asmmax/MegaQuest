@@ -6,7 +6,7 @@ namespace QuestCore
 	class ITextView;
 	class TextString;
 
-	/// @serializable @shared(paragraphs) @abstract
+	/// @serializable @shared paragraphs @abstract
 	class IParagraph
 	{
 	public:

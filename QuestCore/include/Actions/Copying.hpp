@@ -6,6 +6,7 @@ namespace QuestCore
 {
 	class Inventory;
 
+	/// @serializable
 	class Copying : public IAction
 	{
 	public:

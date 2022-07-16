@@ -6,6 +6,7 @@ namespace QuestCore
 {
 	class Inventory;
 
+	/// @serializable
 	class Clearing : public IAction
 	{
 	public:

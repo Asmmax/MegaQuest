@@ -14,7 +14,7 @@ namespace QuestCore
 		int count;
 	};
 
-	/// @serializable @shared(inventories)
+	/// @serializable @shared inventories
 	class Inventory
 	{
 		using ItemPtr = std::shared_ptr<Item>;
