@@ -6,5 +6,4 @@ if not exist .venv (
 call .venv/Scripts/activate
 echo Generator launch
 cd %~dp0/../../utils/generator
-python generate.py "C:\Projects\MegaQuest\QuestCore\include" "C:\Projects\MegaQuest\MegaQuestConsole\include" "C:\Projects\MegaQuest\MegaQuestConsole\src" --out_include_dir ".generated" --out_source_dir ".generated"
-PAUSE
+python generate.py %1 %2 %3 --in_dir=%in_dir%  --out_include_dir=%out_include_dir% --out_source_dir=%out_source_dir%
