@@ -5,12 +5,9 @@
 
 namespace Game
 {
-	class IOutput;
-
+	/// @serializable @abstract
 	class ButtonListBase : public IButtonList
 	{
-		using OutputPtr = std::shared_ptr<IOutput>;
-
 	public:
 		struct Button
 		{
@@ -20,11 +17,10 @@ namespace Game
 
 		using Ptr = std::shared_ptr<ButtonListBase>;
 
-		ButtonListBase(const OutputPtr& output,
-			const QuestCore::TextString& error,
+		ButtonListBase(const QuestCore::TextString& error,
 			bool show = true);
 
-		virtual void Draw() override;
+		virtual void Draw(IOutput& output) override;
 
 		void AddButton(const Button& button);
 		void Clear();
@@ -39,7 +35,6 @@ namespace Game
 
 	private:
 		std::vector<Button> _buttons;
-		OutputPtr _output;
 		QuestCore::TextString _error;
 		bool _show;
 	};

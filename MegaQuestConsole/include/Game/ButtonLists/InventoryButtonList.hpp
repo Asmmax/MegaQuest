@@ -9,16 +9,15 @@ namespace QuestCore
 
 namespace Game
 {
+	/// @serializable
 	class InventoryButtonList : public ButtonListBase
 	{
 		using InventoryPtr = std::shared_ptr<QuestCore::Inventory>;
-		using OutputPtr = std::shared_ptr<IOutput>;
 		using ItemPtr = std::shared_ptr<QuestCore::Item>;
 	public:
 		using Ptr = std::shared_ptr<InventoryButtonList>;
 
-		InventoryButtonList(const OutputPtr& output,
-			const QuestCore::TextString& error, 
+		InventoryButtonList(const QuestCore::TextString& error, 
 			const InventoryPtr& inventory,
 			const std::vector<int>& counts,
 			const QuestCore::TextString& putMessage,

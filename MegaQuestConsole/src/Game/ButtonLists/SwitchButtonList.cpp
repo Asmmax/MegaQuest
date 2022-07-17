@@ -2,7 +2,14 @@
 
 using namespace Game;
 
-void SwitchButtonList::Draw()
+SwitchButtonList::SwitchButtonList(const std::vector<IButtonList::Ptr>& targets)
+{
+	for (auto& target : targets) {
+		AddButtonList(target);
+	}
+}
+
+void SwitchButtonList::Draw(IOutput& /*output*/)
 {
 }
 

@@ -10,6 +10,7 @@ namespace Game
 {
 	class IOutput;
 
+	/// @serializable
 	class InventoryDialog : public DialogBase
 	{
 		using InventoryPtr = std::shared_ptr<QuestCore::Inventory>;

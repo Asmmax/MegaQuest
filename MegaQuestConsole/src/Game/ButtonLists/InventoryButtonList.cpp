@@ -5,14 +5,13 @@
 
 using namespace Game;
 
-InventoryButtonList::InventoryButtonList(const OutputPtr& output,
-	const QuestCore::TextString& error,
+InventoryButtonList::InventoryButtonList(const QuestCore::TextString& error,
 	const InventoryPtr& inventory,
 	const std::vector<int>& counts,
 	const QuestCore::TextString& putMessage,
 	const QuestCore::TextString& throwMessage) :
 
-	ButtonListBase(output, error),
+	ButtonListBase(error),
 	_inventory(inventory),
 	_counts(counts),
 	_putMessage(putMessage),

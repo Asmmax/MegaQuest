@@ -11,6 +11,7 @@ namespace QuestCore
 
 namespace Game
 {
+	/// @serializable
 	class SimpleButtonList : public ButtonListBase, public QuestCore::IButtonGroup
 	{
 		using OutputPtr = std::shared_ptr<IOutput>;
@@ -19,8 +20,7 @@ namespace Game
 	public:
 		using Ptr = std::shared_ptr<SimpleButtonList>;
 
-		SimpleButtonList(const OutputPtr& output,
-			const QuestCore::TextString& error,
+		SimpleButtonList(const QuestCore::TextString& error,
 			bool show,
 			const CaseContainerPtr& container);
 

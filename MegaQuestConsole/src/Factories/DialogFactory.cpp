@@ -223,7 +223,7 @@ Game::IButtonList::Ptr DialogFactory::CreateButtonList(const nlohmann::json& but
         bool show = Utils::Read<bool>(buttonListNode, "show", false);
 
         auto error = Utils::Read(buttonListNode, "error", QuestCore::TextString());
-        return std::make_shared<Game::SimpleButtonList>(_output, error, show, container);
+        return std::make_shared<Game::SimpleButtonList>(error, show, container);
     }
     else if (typeId == "Inventory") {
 
@@ -244,7 +244,7 @@ Game::IButtonList::Ptr DialogFactory::CreateButtonList(const nlohmann::json& but
         auto putMessage = Utils::Read(buttonListNode, "put", QuestCore::TextString());
         auto throwMessage = Utils::Read(buttonListNode, "throw", QuestCore::TextString());
 
-        return std::make_shared<Game::InventoryButtonList>(_output, error, inventory, counts, putMessage, throwMessage);
+        return std::make_shared<Game::InventoryButtonList>(error, inventory, counts, putMessage, throwMessage);
     }
     else if (typeId == "Switch") {
         return std::make_shared<Game::SwitchButtonList>();

@@ -6,6 +6,7 @@ namespace Game
 {
 	class IButtonList;
 
+	/// @serializable @shared dialogs @abstract
 	class IDialog
 	{
 		using ButtonListPtr = std::shared_ptr<IButtonList>;

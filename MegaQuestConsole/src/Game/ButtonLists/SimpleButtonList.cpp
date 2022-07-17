@@ -4,12 +4,11 @@
 
 using namespace Game;
 
-SimpleButtonList::SimpleButtonList(const OutputPtr& output,
-	const QuestCore::TextString& error,
+SimpleButtonList::SimpleButtonList(const QuestCore::TextString& error,
 	bool show,
 	const CaseContainerPtr& container):
 
-	ButtonListBase(output, error, show),
+	ButtonListBase(error, show),
 	_container(container)
 {
 }

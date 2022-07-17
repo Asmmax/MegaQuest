@@ -7,6 +7,7 @@ namespace Game
 {
 	class IOutput;
 
+	/// @serializable @abstract
 	class DialogBase : public IDialog
 	{
 		using OutputPtr = std::shared_ptr<IOutput>;

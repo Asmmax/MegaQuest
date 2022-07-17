@@ -27,7 +27,7 @@ void DialogBase::Update()
 void DialogBase::Draw()
 {
 	for (auto& buttonGroup : _buttonGroups) {
-		buttonGroup->Draw();
+		buttonGroup->Draw(*_output);
 	}
 }
 

@@ -7,7 +7,7 @@ if (WIN32)
 	message (STATUS "Generating containers for QuestCore")
 	get_target_property(in_paths QuestCore INCLUDE_DIRECTORIES)
 	list(GET in_paths 0 in_path)
-	set(gen_dir ".generated")
+	set(gen_dir ".generated/QuestCore")
 	set(out_include_path "${CMAKE_CURRENT_SOURCE_DIR}/${console_include_dir}")
 	set(out_source_path "${CMAKE_CURRENT_SOURCE_DIR}/${console_src_dir}")
 	execute_process(

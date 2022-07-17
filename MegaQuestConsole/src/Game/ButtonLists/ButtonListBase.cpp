@@ -4,11 +4,9 @@
 
 using namespace Game;
 
-ButtonListBase::ButtonListBase(const IOutput::Ptr& output,
-	const QuestCore::TextString& error,
+ButtonListBase::ButtonListBase(const QuestCore::TextString& error,
 	bool show) :
 
-	_output(output),
 	_error(error),
 	_show(show)
 {
@@ -19,7 +17,7 @@ void ButtonListBase::AddButton(const Button& button)
 	_buttons.push_back(button);
 }
 
-void ButtonListBase::Draw() 
+void ButtonListBase::Draw(IOutput& output)
 {
 	if (!_show) {
 		return;
@@ -28,7 +26,7 @@ void ButtonListBase::Draw()
 	auto names = GetNames();
 	int num = 1;
 	for (auto& name : names) {
-		_output->WriteLn(QuestCore::TextString(num++) + QuestCore::TextString::FromUtf8(u8". ") + name);
+		output.WriteLn(QuestCore::TextString(num++) + QuestCore::TextString::FromUtf8(u8". ") + name);
 	}
 }
 

@@ -4,6 +4,9 @@
 
 namespace Game
 {
+	class IOutput;
+
+	/// @serializable @shared buttonLists @abstract
 	class IButtonList
 	{
 	public:
@@ -12,7 +15,7 @@ namespace Game
 
 		void Update();
 		void Do(int answer = 0);
-		virtual void Draw() = 0;
+		virtual void Draw(IOutput& output) = 0;
 
 		void AddPreUpdateCallback(const Callback& callback);
 		void AddDoneCallback(const Callback& callback);

@@ -11,6 +11,7 @@ namespace Game
 {
 	class IOutput;
 
+	/// @serializable
 	class SimpleDialog : public DialogBase, public QuestCore::ITextView
 	{
 		using OutputPtr = std::shared_ptr<IOutput>;
