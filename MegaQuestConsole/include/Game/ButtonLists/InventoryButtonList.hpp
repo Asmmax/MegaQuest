@@ -16,7 +16,6 @@ namespace Game
 		using ItemPtr = std::shared_ptr<QuestCore::Item>;
 	public:
 		using Ptr = std::shared_ptr<InventoryButtonList>;
-		using SwitchButtonListPtr = std::shared_ptr<SwitchButtonList>;
 
 		InventoryButtonList(const OutputPtr& output,
 			const QuestCore::TextString& error, 
@@ -25,7 +24,8 @@ namespace Game
 			const QuestCore::TextString& putMessage,
 			const QuestCore::TextString& throwMessage);
 
-		virtual void Update() override;
+	protected:
+		virtual void UpdateImpl() override;
 
 	private:
 		void AddPutButton(const ItemPtr& item, int count);

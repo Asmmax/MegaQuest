@@ -274,43 +274,10 @@ void DialogFactory::InitButtonList(const Game::IButtonList::Ptr& buttonList, con
     if (typeId == "Simple") {
         auto simpleButtonList = std::dynamic_pointer_cast<Game::SimpleButtonList>(buttonList);
 
-        auto switchId = Utils::Read(buttonListNode, "switch", std::string());
-        auto foundIt = _buttonLists.find(switchId);
-        assert(foundIt != _buttonLists.end());
-        if (foundIt != _buttonLists.end()) {
-            if (auto swicthButtonList = std::dynamic_pointer_cast<Game::SwitchButtonList>(foundIt->second)) {
-                simpleButtonList->SetSwitchButtonList(swicthButtonList);
-            }
-            
-        }
-
-        auto dialogId = Utils::Read(buttonListNode, "updateAfterDone", std::string());
-        auto dialogIt = _dialogs.find(dialogId);
-        assert(dialogIt != _dialogs.end());
-        if (dialogIt != _dialogs.end()) {
-            simpleButtonList->SetParentDialog(dialogIt->second);
-        }
-
     }
     else if (typeId == "Inventory") {
 
         auto inventoryButtonList = std::dynamic_pointer_cast<Game::InventoryButtonList>(buttonList);
-
-        auto switchId = Utils::Read(buttonListNode, "switch", std::string());
-        auto foundIt = _buttonLists.find(switchId);
-        assert(foundIt != _buttonLists.end());
-        if (foundIt != _buttonLists.end()) {
-            if (auto swicthButtonList = std::dynamic_pointer_cast<Game::SwitchButtonList>(foundIt->second)) {
-                inventoryButtonList->SetSwitchButtonList(swicthButtonList);
-            }
-        }
-
-        auto dialogId = Utils::Read(buttonListNode, "updateAfterDone", std::string());
-        auto dialogIt = _dialogs.find(dialogId);
-        assert(dialogIt != _dialogs.end());
-        if (dialogIt != _dialogs.end()) {
-            inventoryButtonList->SetParentDialog(dialogIt->second);
-        }
     }
     else if (typeId == "Switch") {
         auto swicthButtonList = std::dynamic_pointer_cast<Game::SwitchButtonList>(buttonList);

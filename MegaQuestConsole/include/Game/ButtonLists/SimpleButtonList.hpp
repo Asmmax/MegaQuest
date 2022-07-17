@@ -15,7 +15,6 @@ namespace Game
 	{
 		using OutputPtr = std::shared_ptr<IOutput>;
 		using CaseContainerPtr = std::shared_ptr<QuestCore::ICaseContainer>;
-		using SwitchButtonListPtr = std::shared_ptr<SwitchButtonList>;
 
 	public:
 		using Ptr = std::shared_ptr<SimpleButtonList>;
@@ -25,8 +24,10 @@ namespace Game
 			bool show,
 			const CaseContainerPtr& container);
 
-		virtual void Update() override;
 		virtual void AddButton(const QuestCore::TextString& text, const QuestCore::IButtonGroup::Callback& callback) override;
+
+	protected:
+		virtual void UpdateImpl() override;
 
 	private:
 		CaseContainerPtr _container;

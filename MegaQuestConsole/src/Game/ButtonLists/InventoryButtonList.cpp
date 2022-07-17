@@ -20,9 +20,8 @@ InventoryButtonList::InventoryButtonList(const OutputPtr& output,
 {
 }
 
-void InventoryButtonList::Update()
+void InventoryButtonList::UpdateImpl()
 {
-	ButtonListBase::Update();
 	Clear();
 
 	auto& items = GetOrderedItems();

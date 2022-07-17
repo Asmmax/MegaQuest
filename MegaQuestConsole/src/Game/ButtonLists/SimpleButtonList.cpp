@@ -14,9 +14,8 @@ SimpleButtonList::SimpleButtonList(const OutputPtr& output,
 {
 }
 
-void SimpleButtonList::Update()
+void SimpleButtonList::UpdateImpl()
 {
-	ButtonListBase::Update();
 	Clear();
 	_container->Print(*this);
 }

@@ -33,6 +33,12 @@ void DialogBase::Draw()
 
 void DialogBase::AddButtonList(const IButtonList::Ptr& buttonList)
 {
+	if (buttonList->IsUpdateAfterDone()) {
+		buttonList->AddDoneCallback([this]() {
+			Update();
+			Draw();
+			});
+	}
 	_buttonGroups.push_back(buttonList);
 }
 

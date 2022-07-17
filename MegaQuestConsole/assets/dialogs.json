@@ -6,16 +6,12 @@
 		"type":"Simple",
 		"container":"root",
 		"show":true,
-		"error":"Вводить можно только цифру из предложенных!",
-		"switch":"default",
-		"updateAfterDone":"main"
+		"error":"Вводить можно только цифру из предложенных!"
 	},
 	{
 		"id":"to_inventory_button",
 		"type":"Simple",
-		"container":"to_inventory",
-		"switch":"inventory",
-		"updateAfterDone":"main"
+		"container":"to_inventory"
 	},
 	{
 		"id":"inventory_buttons",
@@ -24,9 +20,7 @@
 		"counts":[1,10],
 		"put":"Добавить ",
 		"throw":"Выкинуть ",
-		"error":"Вводить можно только цифру из предложенных!",
-		"switch":"default",
-		"updateAfterDone":"inventory"
+		"error":"Вводить можно только цифру из предложенных!"
 	},
 	{
 		"id":"default",
