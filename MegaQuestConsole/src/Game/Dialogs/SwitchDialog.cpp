@@ -2,12 +2,16 @@
 #include "Game/IDialog.hpp"
 #include "Game/IButtonList.hpp"
 #include "Game/IOutput.hpp"
+#include "Game/Model.hpp"
 #include <assert.h>
 
 using namespace Game;
 
-SwitchDialog::SwitchDialog(const OutputPtr& output, const QuestCore::TextString& intro):
-	DialogBase(output, intro)
+SwitchDialog::SwitchDialog(const QuestCore::TextString& intro, 
+	const std::vector<ButtonListPtr> buttonGroups):
+
+	DialogBase(intro, buttonGroups),
+	_isIntroShowed(false)
 {
 }
 
@@ -20,10 +24,13 @@ void SwitchDialog::AddDialog(const DialogPtr& dialog)
 	_dialogs.push_back(dialog);
 }
 
-void SwitchDialog::Init()
+void SwitchDialog::Init(IOutput& output)
 {
-	DialogBase::Init();
-	_currentDialog->Init();
+	if (!_isIntroShowed) {
+		DialogBase::Init(output);
+		_isIntroShowed = true;
+	}
+	_currentDialog->Init(output);
 }
 
 void SwitchDialog::Update()
@@ -32,10 +39,10 @@ void SwitchDialog::Update()
 	_currentDialog->Update();
 }
 
-void SwitchDialog::Draw()
+void SwitchDialog::Draw(IOutput& output)
 {
-	_currentDialog->Draw();
-	DialogBase::Draw();
+	_currentDialog->Draw(output);
+	DialogBase::Draw(output);
 }
 
 void SwitchDialog::Next()
@@ -56,7 +63,9 @@ void SwitchDialog::Next()
 	size_t nextId = (currId + 1) % count;
 
 	_currentDialog = _dialogs[nextId];
-	_currentDialog->Init();
-	Update();
-	Draw();
+	
+	if (auto&& model = GetModel()) {
+		model->Init();
+		model->Update();
+	}
 }

@@ -9,23 +9,20 @@ namespace QuestCore
 
 namespace Game
 {
-	class IOutput;
-
 	/// @serializable
 	class SimpleDialog : public DialogBase, public QuestCore::ITextView
 	{
-		using OutputPtr = std::shared_ptr<IOutput>;
 		using ParagraphPtr = std::shared_ptr<QuestCore::IParagraph>;
 
 	public:
 		using Ptr = std::shared_ptr<SimpleDialog>;
 
-		SimpleDialog(const OutputPtr& output,
-			const QuestCore::TextString& intro,
-			const ParagraphPtr& paragraph);
+		SimpleDialog(const QuestCore::TextString& intro,
+			const ParagraphPtr& paragraph,
+			const std::vector<ButtonListPtr> buttonGroups = std::vector<ButtonListPtr>());
 
 		virtual void AppendText(const QuestCore::TextString& text) override;
-		virtual void Draw() override;
+		virtual void Draw(IOutput& output) override;
 
 	private:
 		ParagraphPtr _paragraph;

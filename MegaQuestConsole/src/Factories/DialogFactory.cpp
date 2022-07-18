@@ -6,6 +6,7 @@
 #include "Game/Dialogs/InventoryDialog.hpp"
 #include "Game/ButtonLists/InventoryButtonList.hpp"
 #include "Game/ButtonLists/SwitchButtonList.hpp"
+#include "Game/Model.hpp"
 
 #include "Utils/Reader.hpp"
 
@@ -13,10 +14,9 @@
 #include <iostream>
 #include <assert.h>
 
-DialogFactory::DialogFactory(const std::string& filename, const OutputPtr& output, const RootFactoryPtr& rootFactory):
+DialogFactory::DialogFactory(const std::string& filename, const RootFactoryPtr& rootFactory):
     _isRed(false),
     _filename(filename),
-    _output(output),
     _rootFactory(rootFactory)
 {
 }
@@ -27,7 +27,7 @@ void DialogFactory::Read()
         return;
     }
 
-    _rootDialog = nullptr;
+    _model = nullptr;
 
     std::fstream file;
     file.open(_filename, std::ios::in);
@@ -59,6 +59,11 @@ void DialogFactory::Read()
         CreateDialogs(*foundIt);
     }
 
+    foundIt = root.find("rootDialog");
+    if (foundIt != root.end()) {
+        ReadRootDialog(*foundIt);
+    }
+
     foundIt = root.find("buttonLists");
     if (foundIt != root.end()) {
         CreateButtonLists(*foundIt);
@@ -72,11 +77,6 @@ void DialogFactory::Read()
     foundIt = root.find("buttonLists");
     if (foundIt != root.end()) {
         ReadButtonLists(*foundIt);
-    }
-
-    foundIt = root.find("rootDialog");
-    if (foundIt != root.end()) {
-        ReadRootDialog(*foundIt);
     }
 
     _isRed = true;
@@ -104,18 +104,18 @@ Game::IDialog::Ptr DialogFactory::CreateDialog(const nlohmann::json& dialogNode)
         auto paragraph = _rootFactory->GetParagraph(paragraphId);
 
         auto intro = Utils::Read(dialogNode, "intro", QuestCore::TextString());
-        return std::make_shared<Game::SimpleDialog>(_output, intro, paragraph);
+        return std::make_shared<Game::SimpleDialog>(intro, paragraph);
     }
     else if (typeId == "Switch") {
         auto intro = Utils::Read(dialogNode, "intro", QuestCore::TextString());
-        return std::make_shared<Game::SwitchDialog>(_output, intro);
+        return std::make_shared<Game::SwitchDialog>(intro);
     }
     else if (typeId == "Inventory") {
         auto inventoryId = Utils::Read(dialogNode, "inventory", std::string());
         auto inventory = _rootFactory->GetInventory(inventoryId);
 
         auto intro = Utils::Read(dialogNode, "intro", QuestCore::TextString());
-        return std::make_shared<Game::InventoryDialog>(_output, intro, inventory);
+        return std::make_shared<Game::InventoryDialog>(intro, inventory);
     }
 
     return nullptr;
@@ -148,6 +148,7 @@ void DialogFactory::InitDialog(const Game::IDialog::Ptr& dialog, const nlohmann:
                 simpleDialog->AddButtonList(buttonGroup);
             }
         }
+        simpleDialog->SetModel(_model);
     }
     else if (typeId == "Switch") {
         auto switchDialog = std::dynamic_pointer_cast<Game::SwitchDialog>(dialog);
@@ -175,6 +176,8 @@ void DialogFactory::InitDialog(const Game::IDialog::Ptr& dialog, const nlohmann:
                 switchDialog->AddDialog(foundSubDialog->second);
             }
         }
+
+        switchDialog->SetModel(_model);
     }
     else if (typeId == "Inventory") {
         auto inventoryDialog = std::dynamic_pointer_cast<Game::InventoryDialog>(dialog);
@@ -185,6 +188,7 @@ void DialogFactory::InitDialog(const Game::IDialog::Ptr& dialog, const nlohmann:
                 inventoryDialog->AddButtonList(buttonGroup);
             }
         }
+        inventoryDialog->SetModel(_model);
     }
 }
 
@@ -195,7 +199,7 @@ void DialogFactory::ReadRootDialog(const nlohmann::json& rootNode)
     auto foundIt = _dialogs.find(dialogId);
     assert(foundIt != _dialogs.end());
     if (foundIt != _dialogs.end()) {
-        _rootDialog = foundIt->second;
+        _model = std::make_shared<Game::Model>(foundIt->second);
     }
 }
 
@@ -323,10 +327,10 @@ std::vector<Game::IButtonList::Ptr> DialogFactory::ReadButtonGroups(const nlohma
     return result;
 }
 
-Game::IDialog::Ptr DialogFactory::GetRootDialog()
+Game::Model::Ptr DialogFactory::GetModel()
 {
     Read();
-    return _rootDialog;
+    return _model;
 }
 
 Game::IDialog::Ptr DialogFactory::GetDialog(const std::string& id)

@@ -8,7 +8,6 @@ namespace QuestCore
 
 namespace Game
 {
-	/// @serializable @shared outputs @abstract
 	class IOutput
 	{
 	public:

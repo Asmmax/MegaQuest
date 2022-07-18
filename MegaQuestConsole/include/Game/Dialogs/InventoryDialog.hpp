@@ -8,17 +8,15 @@ namespace QuestCore
 
 namespace Game
 {
-	class IOutput;
-
 	/// @serializable
 	class InventoryDialog : public DialogBase
 	{
 		using InventoryPtr = std::shared_ptr<QuestCore::Inventory>;
-		using OutputPtr = std::shared_ptr<IOutput>;
 
 	public:
-		InventoryDialog(const OutputPtr& output, const QuestCore::TextString& intro, const InventoryPtr& inventory);
-		virtual void Draw() override;
+		InventoryDialog(const QuestCore::TextString& intro, const InventoryPtr& inventory, 
+			const std::vector<ButtonListPtr> buttonGroups = std::vector<ButtonListPtr>());
+		virtual void Draw(IOutput& output) override;
 		
 	private:
 		InventoryPtr _inventory;

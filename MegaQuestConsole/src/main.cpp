@@ -8,6 +8,7 @@
 #include "IO/Logger.hpp"
 #include "Game/IDialog.hpp"
 #include "Factories/CommandsFactory.hpp"
+#include "Game/Model.hpp"
 
 #include <iostream>
 
@@ -18,12 +19,12 @@ int main()
 
     auto output = std::make_shared<IO::ConsoleOutput>();
     IO::Logger::Instance().Init(output);
-    auto dialogFactory = std::make_shared<DialogFactory>(settings.GetDialogsPath(), output, rootFactory);
-    auto model = dialogFactory->GetRootDialog();
+    auto dialogFactory = std::make_shared<DialogFactory>(settings.GetDialogsPath(), rootFactory);
+    auto model = dialogFactory->GetModel();
+    model->SetOutput(output);
     if (model) {
         model->Init();
         model->Update();
-        model->Draw();
     }
 
     auto commandsFactory = std::make_shared<CommandsFactory>(settings.GetCommandsPath(), dialogFactory);

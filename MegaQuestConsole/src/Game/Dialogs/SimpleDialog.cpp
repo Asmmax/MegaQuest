@@ -6,11 +6,11 @@
 using namespace Game;
 
 
-SimpleDialog::SimpleDialog(const OutputPtr& output,
-	const QuestCore::TextString& intro,
-	const ParagraphPtr& paragraph) :
+SimpleDialog::SimpleDialog(const QuestCore::TextString& intro,
+	const ParagraphPtr& paragraph,
+	const std::vector<ButtonListPtr> buttonGroups) :
 
-	DialogBase(output, intro),
+	DialogBase(intro, buttonGroups),
 	_paragraph(paragraph)
 {
 }
@@ -20,13 +20,11 @@ void SimpleDialog::AppendText(const QuestCore::TextString& text)
 	_text += text;
 }
 
-void SimpleDialog::Draw()
+void SimpleDialog::Draw(IOutput& output)
 {
-	auto&& output = GetOutput();
-
 	_text = QuestCore::TextString();
 	_paragraph->Print(*this);
-	output->WriteLn(_text);
+	output.WriteLn(_text);
 
-	DialogBase::Draw();
+	DialogBase::Draw(output);
 }

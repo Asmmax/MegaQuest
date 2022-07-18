@@ -8,21 +8,21 @@ class IRootFactory;
 
 namespace Game 
 {
-	class IOutput;
 	class IDialog;
 	class IButtonList;
+	class Model;
 }
 
 class DialogFactory
 {
-	using OutputPtr = std::shared_ptr<Game::IOutput>;
 	using DialogPtr = std::shared_ptr<Game::IDialog>;
 	using ButtonListPtr = std::shared_ptr<Game::IButtonList>;
 	using RootFactoryPtr = std::shared_ptr<IRootFactory>;
+	using ModelPtr = std::shared_ptr<Game::Model>;
 
 public:
-	DialogFactory(const std::string& filename, const OutputPtr& output, const RootFactoryPtr& rootFactory);
-	DialogPtr GetRootDialog();
+	DialogFactory(const std::string& filename, const RootFactoryPtr& rootFactory);
+	ModelPtr GetModel();
 	DialogPtr GetDialog(const std::string& id);
 	ButtonListPtr GetButtonList(const std::string& id);
 
@@ -43,9 +43,8 @@ private:
 private:
 	bool _isRed;
 	std::string _filename;
-	OutputPtr _output;
 	RootFactoryPtr _rootFactory;
 	std::map<std::string, DialogPtr> _dialogs;
 	std::map<std::string, ButtonListPtr> _buttonLists;
-	DialogPtr _rootDialog;
+	ModelPtr _model;
 };
