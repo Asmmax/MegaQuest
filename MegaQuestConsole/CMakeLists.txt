@@ -14,6 +14,18 @@ if (WIN32)
 		COMMAND cmd /C set out_include_dir=${gen_dir} && set out_source_dir=${gen_dir} && call scripts/win/generate_containers.bat ${in_path} ${out_include_path} ${out_source_path}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		)
+
+	message (STATUS "Generating containers for Current")
+	get_target_property(add_includes QuestCore INCLUDE_DIRECTORIES)
+	list(GET add_includes 0 add_include)
+	set(in_path "${CMAKE_CURRENT_SOURCE_DIR}/${console_include_dir}")
+	set(gen_dir ".generated/Current")
+	set(out_include_path "${CMAKE_CURRENT_SOURCE_DIR}/${console_include_dir}")
+	set(out_source_path "${CMAKE_CURRENT_SOURCE_DIR}/${console_src_dir}")
+	execute_process(
+		COMMAND cmd /C set out_include_dir=${gen_dir} && set out_source_dir=${gen_dir} && set add_includes=${add_include} && call scripts/win/generate_containers.bat ${in_path} ${out_include_path} ${out_source_path}
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		)
 endif()
 
 file(GLOB_RECURSE console_include CONFIGURE_DEPENDS "${console_include_dir}/*.hpp")

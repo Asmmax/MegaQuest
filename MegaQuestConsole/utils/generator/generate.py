@@ -16,6 +16,7 @@ parser.add_argument("out_source_path", help="Output source working environment")
 parser.add_argument("--in_dir", help="Input directory")
 parser.add_argument("--out_include_dir", help="Output include directory")
 parser.add_argument("--out_source_dir", help="Output source directory")
+parser.add_argument("--add_includes", help="Additional include paths")
 args = parser.parse_args()
 
 working_env_in_path = args.in_path
@@ -33,6 +34,10 @@ if args.out_include_dir:
 out_source_dir = ''
 if args.out_source_dir:
     out_source_dir = args.out_source_dir
+
+add_includes = []
+if args.add_includes:
+    add_includes = args.add_includes.split(';')
 
 in_path = PurePath(working_env_in_path).joinpath(in_dir)
 out_include_path = PurePath(working_env_out_include_path).joinpath(out_include_dir)
@@ -177,12 +182,18 @@ def get_inherited_tags(node):
     return []
 
 
-def find_bases(node):
+def find_bases_as_nodes(node):
     bases = []
     for child in node.get_children():
         if child.kind != clang.cindex.CursorKind.CXX_BASE_SPECIFIER:
             continue
+        bases.append(child)
+    return bases
 
+
+def find_bases(node):
+    bases = []
+    for child in find_bases_as_nodes(node):
         base = child.type.get_declaration()
         new_base = Base()
         new_base.full_type_name = base.type.spelling
@@ -244,14 +255,21 @@ def find_properties(node):
 def get_methods(node):
     methods = []
     for child in node.get_children():
-        if child.kind == clang.cindex.CursorKind.CXX_METHOD:
-            if has_tag(child, 'inject'):
-                methods.append(child)
+        if child.kind != clang.cindex.CursorKind.CXX_METHOD:
+            continue
+        if child.access_specifier in [clang.cindex.AccessSpecifier.PRIVATE, clang.cindex.AccessSpecifier.PROTECTED]:
+            continue
+        if not has_tag(child, 'inject'):
+            continue
+        methods.append(child)
     return methods
 
 
 def find_methods(node):
     methods = []
+    for base_as_node in find_bases_as_nodes(node):
+        for base_method in find_methods(base_as_node.type.get_declaration()):
+            methods.append(base_method)
     for method in get_methods(node):
         new_method = Method()
         new_method.name = method.spelling
@@ -320,17 +338,41 @@ def get_gen_path_for(path):
     return raw_path.with_name(filename + '_gen')
 
 
+def get_class(full_type_name):
+    for _class in classes:
+        if _class.full_type_name == full_type_name:
+            return _class
+    return None
+
+
+def get_all_serializable_bases(_class):
+    all_bases = []
+    for base in _class.bases:
+        base_class = get_class(base.full_type_name)
+        if base_class:
+            all_bases.append(base)
+            base_bases = get_all_serializable_bases(base_class)
+            for base_base in base_bases:
+                base_base_class = get_class(base_base.full_type_name)
+                if base_base_class and all_bases.count(base_base) == 0:
+                    all_bases.append(base_base)
+    return all_bases
+
+
 def compute_children():
     for _class in classes:
         _class.children = []
         for child_class in classes:
-            for base_class in child_class.bases:
-                if base_class.full_type_name == _class.full_type_name:
-                    new_child = Child()
-                    new_child.filename = child_class.filename
-                    new_child.type_name = child_class.type_name
-                    new_child.full_type_name = child_class.full_type_name
-                    _class.children.append(new_child)
+            for base_class in get_all_serializable_bases(child_class):
+                if base_class.full_type_name != _class.full_type_name:
+                    continue
+                if consist_tag(child_class.tags, 'abstract'):
+                    continue
+                new_child = Child()
+                new_child.filename = child_class.filename
+                new_child.type_name = child_class.type_name
+                new_child.full_type_name = child_class.full_type_name
+                _class.children.append(new_child)
 
 
 def open_or_create(filename):
@@ -446,7 +488,7 @@ def fill_shared_impl_source(_class, stream):
     properties = '\n'.join(property_list)
 
     base_list = []
-    for base in _class.bases:
+    for base in get_all_serializable_bases(_class):
         full_base_type_name = base.full_type_name
         container_binder_impl = containerBinderImpl_cpp_tpl.substitute(locals())
         base_list.append(container_binder_impl)
@@ -550,7 +592,7 @@ def fill_polymorphic_impl_source(_class, stream):
     properties = ',\n'.join(property_list)
 
     base_list = []
-    for base in _class.bases:
+    for base in get_all_serializable_bases(_class):
         full_base_type_name = base.full_type_name
         factory_binder_impl = factoryBinderImpl_cpp_tpl.substitute(locals())
         base_list.append(factory_binder_impl)
@@ -696,7 +738,11 @@ def gen_clases(generate_units):
 def analyze_sources(files):
     for path in files:
         index = clang.cindex.Index.create()
-        translation_unit = index.parse(str(path), args=['-std=c++17', '-I' + str(working_env_in_path)])
+        argList = ['-std=c++17', '-I' + str(working_env_in_path)]
+        for add_include in add_includes:
+            add_include_path = PurePath(add_include)
+            argList.append('-I' + str(add_include_path))
+        translation_unit = index.parse(str(path), args=argList)
         analyze_unit(translation_unit.cursor)
     compute_children()
 
