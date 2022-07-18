@@ -13,7 +13,8 @@ namespace Game
 		using Ptr = std::shared_ptr<SwitchDialog>;
 
 		SwitchDialog(const QuestCore::TextString& intro, 
-			const std::vector<ButtonListPtr> buttonGroups = std::vector<ButtonListPtr>());
+			const std::vector<ButtonListPtr> buttonGroups = std::vector<ButtonListPtr>(),
+			const std::vector<DialogPtr>& dialogs = std::vector<DialogPtr>());
 		void AddDialog(const DialogPtr& dialog);
 		virtual void Init(IOutput& output) override;
 		virtual void Update() override;

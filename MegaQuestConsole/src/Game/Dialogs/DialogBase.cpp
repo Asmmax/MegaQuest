@@ -14,7 +14,7 @@ DialogBase::DialogBase(const QuestCore::TextString& intro, const std::vector<But
 	}
 }
 
-void DialogBase::SetModel(const ModelPtr& model)
+void DialogBase::SetModel(const ModelWeakPtr& model)
 {
 	_model = model;
 }
@@ -42,15 +42,15 @@ void DialogBase::AddButtonList(const IButtonList::Ptr& buttonList)
 {
 	if (buttonList->IsUpdateAfterDone()) {
 		buttonList->AddDoneCallback([this]() {
-			if (_model) {
-				_model->Update();
+			if (auto modelPtr = _model.lock()) {
+				modelPtr->Update();
 			}
 			});
 	}
 	_buttonGroups.push_back(buttonList);
 }
 
-const Model::Ptr& DialogBase::GetModel()
+const Model::WeakPtr& DialogBase::GetModel()
 {
 	return _model;
 }

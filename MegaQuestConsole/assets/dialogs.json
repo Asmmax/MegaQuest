@@ -1,59 +1,96 @@
 {
-	"rootDialog":"root",
+	"models":[
+	{
+		"id":"root_model",
+		"type":"Model",
+		"rootDialog":"root"
+	}
+	],
 	"buttonLists":[
 	{
 		"id":"root_buttons",
-		"type":"Simple",
+		"type":"SimpleButtonList",
 		"container":"root",
 		"show":true,
-		"error":"Вводить можно только цифру из предложенных!"
+		"error":
+		{
+			"type":"TextString",
+			"u8":"Вводить можно только цифру из предложенных!"
+		}
 	},
 	{
 		"id":"to_inventory_button",
-		"type":"Simple",
+		"type":"SimpleButtonList",
 		"container":"to_inventory"
 	},
 	{
 		"id":"inventory_buttons",
-		"type":"Inventory",
+		"type":"InventoryButtonList",
 		"inventory":"player",
 		"counts":[1,10],
-		"put":"Добавить ",
-		"throw":"Выкинуть ",
-		"error":"Вводить можно только цифру из предложенных!"
+		"putMessage":
+		{
+			"type":"TextString",
+			"u8":"Добавить "
+		},
+		"throwMessage":
+		{
+			"type":"TextString",
+			"u8":"Выкинуть "
+		},
+		"error":
+		{
+			"type":"TextString",
+			"u8":"Вводить можно только цифру из предложенных!"
+		}
 	},
 	{
 		"id":"default",
-		"type":"Switch",
+		"type":"SwitchButtonList",
 		"targets":["root_buttons", "inventory_buttons"]
 	},
 	{
 		"id":"inventory",
-		"type":"Switch",
+		"type":"SwitchButtonList",
 		"targets":["to_inventory_button"]
 	}
 	],
 	"dialogs":[
 	{
 		"id":"main",
-		"type":"Simple",
+		"type":"SimpleDialog",
 		"paragraph":"root",
-		"intro":"Вы можете ввести Quit, Inventory или цифры.",
-		"buttonGroups":["root_buttons","to_inventory_button"]
+		"intro":
+		{
+			"type":"TextString",
+			"u8":"Вы можете ввести Quit, Inventory или цифры."
+		},
+		"buttonGroups":["root_buttons","to_inventory_button"],
+		"model":"root_model"
 	},
 	{
 		"id":"inventory",
-		"type":"Inventory",
+		"type":"InventoryDialog",
 		"inventory":"player",
-		"intro":"Инвентарь игрока. Вы можете ввести Quit или цифры.",
-		"buttonGroups":["inventory_buttons"]
+		"intro":
+		{
+			"type":"TextString",
+			"u8":"Инвентарь игрока. Вы можете ввести Quit или цифры."
+		},
+		"buttonGroups":["inventory_buttons"],
+		"model":"root_model"
 	},
 	{
 		"id":"root",
-		"type":"Switch",
-		"intro":"Добро пожаловать в квест!",
+		"type":"SwitchDialog",
+		"intro":
+		{
+			"type":"TextString",
+			"u8":"Добро пожаловать в квест!"
+		},
 		"dialogs":["main", "inventory"],
-		"buttonGroups":["default","inventory"]
+		"buttonGroups":["default","inventory"],
+		"model":"root_model"
 	}
 	]
 }

@@ -10,7 +10,6 @@ public:
 	virtual CaseContainerPtr GetCaseContainer(const std::string& rootKey) override;
 	virtual InventoryPtr GetInventory(const std::string& inventoryKey) override;
 
-private:
 	bool Read();
 
 private:

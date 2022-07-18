@@ -12,14 +12,14 @@ namespace Game
 	{
 	protected:
 		using ButtonListPtr = std::shared_ptr<IButtonList>;
-		using ModelPtr = std::shared_ptr<Model>;
+		using ModelWeakPtr = std::weak_ptr<Model>;
 	public:
 		using Ptr = std::shared_ptr<DialogBase>;
 
 		DialogBase(const QuestCore::TextString& intro, const std::vector<ButtonListPtr> buttonGroups);
 
 		/// @inject
-		void SetModel(const ModelPtr& model);
+		void SetModel(const ModelWeakPtr& model);
 
 		virtual void Init(IOutput& output) override;
 		virtual void Update() override;
@@ -27,10 +27,10 @@ namespace Game
 		void AddButtonList(const ButtonListPtr& buttonList);
 
 	protected:
-		const ModelPtr& GetModel();
+		const ModelWeakPtr& GetModel();
 
 	private:
-		ModelPtr _model;
+		ModelWeakPtr _model;
 		QuestCore::TextString _intro;
 		std::vector<ButtonListPtr> _buttonGroups;
 	};

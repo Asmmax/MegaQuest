@@ -16,10 +16,11 @@ int main()
 {
     auto& settings = Config::Settings::Instance();
     auto rootFactory = std::make_shared<JsonQuestFactory>(settings.GetQuestPath());
+    rootFactory->Read();
 
     auto output = std::make_shared<IO::ConsoleOutput>();
     IO::Logger::Instance().Init(output);
-    auto dialogFactory = std::make_shared<DialogFactory>(settings.GetDialogsPath(), rootFactory);
+    auto dialogFactory = std::make_shared<DialogFactory>(settings.GetDialogsPath());
     auto model = dialogFactory->GetModel();
     model->SetOutput(output);
     if (model) {

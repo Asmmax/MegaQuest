@@ -13,6 +13,7 @@ namespace Game
 		using OutputPtr = std::shared_ptr<IOutput>;
 	public:
 		using Ptr = std::shared_ptr<Model>;
+		using WeakPtr = std::weak_ptr<Model>;
 
 		Model(const DialogPtr& rootDialog);
 
