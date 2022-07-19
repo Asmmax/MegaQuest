@@ -5,6 +5,7 @@
 
 namespace Game
 {
+	/// @serializable @polymorphic @abstract
 	class ICommand
 	{
 	public:

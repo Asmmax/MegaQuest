@@ -3,6 +3,7 @@
 
 namespace Game
 {
+	/// @serializable
 	class QuitCommand : public VoidCommand
 	{
 	public:

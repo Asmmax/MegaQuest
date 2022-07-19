@@ -17,10 +17,13 @@ int main()
     auto& settings = Config::Settings::Instance();
     auto rootFactory = std::make_shared<JsonQuestFactory>(settings.GetQuestPath());
     rootFactory->Read();
+    auto dialogFactory = std::make_shared<DialogFactory>(settings.GetDialogsPath());
+    dialogFactory->Read();
+    auto commandsFactory = std::make_shared<CommandsFactory>(settings.GetCommandsPath());
+    commandsFactory->Read();
 
     auto output = std::make_shared<IO::ConsoleOutput>();
     IO::Logger::Instance().Init(output);
-    auto dialogFactory = std::make_shared<DialogFactory>(settings.GetDialogsPath());
     auto model = dialogFactory->GetModel();
     model->SetOutput(output);
     if (model) {
@@ -28,7 +31,6 @@ int main()
         model->Update();
     }
 
-    auto commandsFactory = std::make_shared<CommandsFactory>(settings.GetCommandsPath(), dialogFactory);
     auto commandManager = commandsFactory->GetCommandManager();
 
     auto input = std::make_shared<IO::ConsoleInput>();

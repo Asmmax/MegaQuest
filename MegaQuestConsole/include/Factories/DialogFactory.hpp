@@ -21,7 +21,6 @@ public:
 	DialogPtr GetDialog(const std::string& id);
 	ButtonListPtr GetButtonList(const std::string& id);
 
-private:
 	bool Read();
 
 private:
