@@ -14,6 +14,8 @@ public:
 
 	void AddRoot(const nlohmann::json& root);
 
+	void Read();
+
 	template <typename Type>
 	void AddContainer()
 	{

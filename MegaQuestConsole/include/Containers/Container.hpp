@@ -47,6 +47,11 @@ public:
 		return GetImpl(id, _inheritors, std::index_sequence_for<Impls...>());
 	}
 
+	TypePtr Get() override
+	{
+		return GetImpl(_inheritors, std::index_sequence_for<Impls...>());
+	}
+
 private:
 
 	template<typename T, std::size_t... Is>
@@ -146,6 +151,30 @@ private:
 	}
 
 	TypePtr GetImpl(const std::string& id)
+	{
+		return nullptr;
+	}
+
+
+
+
+	template<std::size_t... Is>
+	TypePtr GetImpl(Inheritors& inheritors, std::index_sequence<Is...>)
+	{
+		return GetImpl(std::get<Is>(inheritors)...);
+	}
+
+	template<typename Current, typename... Other>
+	TypePtr GetImpl(Current& inheritor, Other&... inheritors)
+	{
+		if (!inheritor.impl->Empty()) {
+			return inheritor.impl->Get();
+		}
+
+		return GetImpl(inheritors...);
+	}
+
+	TypePtr GetImpl()
 	{
 		return nullptr;
 	}

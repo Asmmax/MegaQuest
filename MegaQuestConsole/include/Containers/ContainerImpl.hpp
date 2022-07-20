@@ -3,6 +3,7 @@
 #include "Utils/Reader.hpp"
 #include <tuple>
 #include <utility>
+#include <assert.h>
 
 template<typename Type, typename Initializer, typename... Dependencies>
 class ContainerImpl
@@ -45,9 +46,21 @@ public:
 		return _elements[id];
 	}
 
+	TypePtr Get()
+	{
+		auto beg_iter = _elements.begin();
+		assert(beg_iter != _elements.end());
+		return beg_iter->second;
+	}
+
 	bool Contains(const std::string& id)
 	{
 		return _elements.find(id) != _elements.end();
+	}
+
+	bool Empty()
+	{
+		return _elements.empty();
 	}
 
 private:

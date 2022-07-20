@@ -69,6 +69,7 @@ public:
 	virtual void Create(const nlohmann::json& node) = 0;
 	virtual void Init(const nlohmann::json& node) = 0;
 	virtual TypePtr Get(const std::string& id) = 0;
+	virtual TypePtr Get() = 0;
 
 private:
 	std::string _groupName;

@@ -12,7 +12,10 @@ void GlobalRootReader::AddRoot(const nlohmann::json& root)
 	{
 		addRootCallback(root);
 	}
+}
 
+void GlobalRootReader::Read()
+{
 	for (auto& createAllCallback : _createAllCallbacks)
 	{
 		createAllCallback();
