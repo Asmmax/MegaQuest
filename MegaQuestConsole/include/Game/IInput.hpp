@@ -4,6 +4,7 @@
 
 namespace Game 
 {
+	/// @serializable @shared inputs @abstract
 	class IInput
 	{
 	public:

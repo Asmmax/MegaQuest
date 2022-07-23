@@ -17,6 +17,7 @@ namespace Game
 
 		Model(const DialogPtr& rootDialog);
 
+		/// @inject
 		void SetOutput(const OutputPtr& output);
 		void Init();
 		void Update();

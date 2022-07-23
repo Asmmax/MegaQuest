@@ -2,17 +2,25 @@
 #include "Game/IInput.hpp"
 #include "Game/IOutput.hpp"
 #include "Game/CommandManager.hpp"
+#include "Game/Model.hpp"
 
 #include <iostream>
 
 using namespace Game;
 using namespace IO;
 
-InputHandler::InputHandler(const IInput::Ptr& input, const IOutput::Ptr& output, const CommandManagerPtr& commandManager):
+InputHandler::InputHandler(const IInput::Ptr& input, const IOutput::Ptr& output, const CommandManagerPtr& commandManager, const ModelPtr& model):
 	_input(input),
 	_output(output),
-	_commandManager(commandManager)
+	_commandManager(commandManager),
+	_model(model)
 {
+}
+
+void InputHandler::Init()
+{
+	_model->Init();
+	_model->Update();
 }
 
 void InputHandler::Handle()

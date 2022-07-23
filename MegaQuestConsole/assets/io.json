@@ -1,0 +1,31 @@
+{
+	"inputs":[
+	{
+		"id":"main",
+		"type":"ConsoleInput"
+	}
+	],
+	"outputs":[
+	{
+		"id":"main",
+		"type":"ConsoleOutput"
+	}
+	],
+	"logger":[
+	{
+		"id":"main",
+		"type":"Logger",
+		"output":"main"
+	}
+	],
+	"inputHandler":[
+	{
+		"id":"main",
+		"type":"InputHandler",
+		"input":"main",
+		"output":"main",
+		"commandManager":"main_commands",
+		"model":"root_model"
+	}
+	]
+}

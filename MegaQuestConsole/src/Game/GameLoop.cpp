@@ -15,9 +15,15 @@ void GameLoop::Update()
 	_inputHandler->Handle();
 }
 
+void GameLoop::Init()
+{
+    _inputHandler->Init();
+}
+
 int GameLoop::Run()
 {
     _isStoped = false;
+    Init();
     while (!_isStoped)
     {
         Update();

@@ -3,6 +3,7 @@
 
 namespace IO
 {
+	/// @serializable
 	class ConsoleInput : public Game::IInput
 	{
 	public:

@@ -3,7 +3,8 @@
 	{
 		"id":"root_model",
 		"type":"Model",
-		"rootDialog":"root"
+		"rootDialog":"root",
+		"output":"main"
 	}
 	],
 	"buttonLists":[

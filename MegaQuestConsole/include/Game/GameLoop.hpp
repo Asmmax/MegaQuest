@@ -15,6 +15,7 @@ namespace Game
     public:
         GameLoop(const InputHandlerPtr& inputHandler);
         void Update();
+        void Init();
         int Run();
         void Quit();
 
