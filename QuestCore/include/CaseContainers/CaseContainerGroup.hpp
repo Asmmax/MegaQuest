@@ -4,11 +4,11 @@
 
 namespace QuestCore
 {
+	/// @serializable
 	class CaseContainerGroup : public ICaseContainer
 	{
 	public:
-		/// @inject
-		void SetChildren(const std::vector<std::shared_ptr<ICaseContainer>>& children);
+		CaseContainerGroup(const std::vector<std::shared_ptr<ICaseContainer>>& children);
 
 		void Clear();
 		void AddCaseContainer(const ICaseContainer::Ptr& container);

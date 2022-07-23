@@ -4,7 +4,13 @@
 
 using namespace QuestCore;
 
-ConditionalParagraph::ConditionalParagraph(const std::vector<std::shared_ptr<ICondition>>& conditions):
+ConditionalParagraph::ConditionalParagraph(
+	const std::shared_ptr<IParagraph>& thenParagraph,
+	const std::shared_ptr<IParagraph>& elseParagraph, 
+	const std::vector<std::shared_ptr<ICondition>>& conditions):
+
+	_thenParagraph(thenParagraph),
+	_elseParagraph(elseParagraph),
 	_conditions(conditions)
 {
 }
@@ -22,16 +28,6 @@ void ConditionalParagraph::Print(ITextView& view)
 			_elseParagraph->Print(view);
 		}
 	}
-}
-
-void ConditionalParagraph::SetThenParagraph(const IParagraph::Ptr& thenParagraph)
-{
-	_thenParagraph = thenParagraph;
-}
-
-void ConditionalParagraph::SetElseParagraph(const IParagraph::Ptr& elseParagraph)
-{
-	_elseParagraph = elseParagraph;
 }
 
 void ConditionalParagraph::ClearConditions()

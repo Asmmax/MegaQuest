@@ -1,9 +1,8 @@
 #pragma once
-#include "TextString.hpp"
 
 namespace QuestCore
 {
-	/// @serializable @abstract
+	/// @serializable @shared actions @abstract
 	class IAction
 	{
 	public:

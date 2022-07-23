@@ -7,6 +7,7 @@ namespace QuestCore
 	class ParagraphStateMachine;
 	class IParagraph;
 
+	/// @serializable
 	class ParagraphSwitching : public IAction
 	{
 	public:

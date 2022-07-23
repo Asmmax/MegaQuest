@@ -9,6 +9,14 @@ CommandManager::CommandManager(const QuestCore::TextString& error):
 {
 }
 
+void CommandManager::RegisterCommands(const std::vector<CommandRecord>& commands)
+{
+	for (auto& commandRecord : commands)
+	{
+		Register(commandRecord.name, commandRecord.command);
+	}
+}
+
 void CommandManager::Register(const std::string& text, const ICommand::Ptr& command)
 {
 	_commands.emplace(text, command);

@@ -3,9 +3,11 @@
 
 using namespace Game;
 
-AliasCommand::AliasCommand(const CommandManagerWeakPtr& parent, const std::string& orig):
-	_parent(parent),
-	_orig(orig)
+AliasCommand::AliasCommand(const std::string& alias,
+	const CommandManagerWeakPtr& commandManager):
+
+	_orig(alias),
+	_parent(commandManager)
 {
 }
 

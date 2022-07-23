@@ -4,6 +4,7 @@
 
 namespace QuestCore
 {
+	/// @serializable
 	class TextParagraph : public IParagraph
 	{
 	public:

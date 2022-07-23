@@ -6,6 +6,7 @@
 
 namespace QuestCore
 {
+	/// @serializable
 	class Transfer: public IAction
 	{
 		using ItemPtr = std::shared_ptr<Item>;

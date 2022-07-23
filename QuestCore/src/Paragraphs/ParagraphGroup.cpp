@@ -3,14 +3,13 @@
 
 using namespace QuestCore;
 
-ParagraphGroup::ParagraphGroup(const TextString& gap):
+ParagraphGroup::ParagraphGroup(
+	const std::vector<std::shared_ptr<IParagraph>>& children,
+	const TextString& gap):
+
+	_paragraphs(children),
 	_gap(gap)
 {
-}
-
-void ParagraphGroup::SetChildren(const std::vector<IParagraph::Ptr>& children)
-{
-	_paragraphs = children;
 }
 
 void ParagraphGroup::Clear()

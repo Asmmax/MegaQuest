@@ -5,29 +5,32 @@
 
 namespace Game
 {
-	class IOutput;
+	class Model;
 
+	/// @serializable @abstract
 	class DialogBase : public IDialog
 	{
-		using OutputPtr = std::shared_ptr<IOutput>;
+	protected:
 		using ButtonListPtr = std::shared_ptr<IButtonList>;
-
+		using ModelWeakPtr = std::weak_ptr<Model>;
 	public:
 		using Ptr = std::shared_ptr<DialogBase>;
 
-		DialogBase(const OutputPtr& output,
-			const QuestCore::TextString& intro);
+		DialogBase(const QuestCore::TextString& intro, const std::vector<ButtonListPtr> buttonGroups);
 
-		virtual void Init() override;
+		/// @inject
+		void SetModel(const ModelWeakPtr& model);
+
+		virtual void Init(IOutput& output) override;
 		virtual void Update() override;
-		virtual void Draw() override;
+		virtual void Draw(IOutput& output) override;
 		void AddButtonList(const ButtonListPtr& buttonList);
 
 	protected:
-		OutputPtr GetOutput();
+		const ModelWeakPtr& GetModel();
 
 	private:
-		OutputPtr _output;
+		ModelWeakPtr _model;
 		QuestCore::TextString _intro;
 		std::vector<ButtonListPtr> _buttonGroups;
 	};

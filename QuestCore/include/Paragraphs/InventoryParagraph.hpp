@@ -16,6 +16,7 @@ namespace QuestCore
 		int order;
 	};
 
+	/// @serializable
 	class InventoryParagraph: public IParagraph
 	{
 		using FormPtr = std::shared_ptr<FormBase>;

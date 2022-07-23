@@ -6,24 +6,23 @@
 
 using namespace Game;
 
-InventoryDialog::InventoryDialog(const OutputPtr& output, 
-	const QuestCore::TextString& intro,
-	const InventoryPtr& inventory):
+InventoryDialog::InventoryDialog(const QuestCore::TextString& intro,
+	const InventoryPtr& inventory,
+	const std::vector<ButtonListPtr> buttonGroups):
 
-	DialogBase(output, intro),
+	DialogBase(intro, buttonGroups),
 	_inventory(inventory)
 {
 }
 
-void InventoryDialog::Draw()
+void InventoryDialog::Draw(IOutput& output)
 {
-	auto&& output = GetOutput();
 	auto& items = _inventory->GetItems();
 
 	for (auto& item : items) {
-		output->WriteLn(item.first->GetContains(item.second));
+		output.WriteLn(item.first->GetContains(item.second));
 	}
 
-	DialogBase::Draw();
+	DialogBase::Draw(output);
 }
 

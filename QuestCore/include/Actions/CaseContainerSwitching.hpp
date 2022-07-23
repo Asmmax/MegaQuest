@@ -7,6 +7,7 @@ namespace QuestCore
 	class CaseContainerStateMachine;
 	class ICaseContainer;
 
+	/// @serializable
 	class CaseContainerSwitching : public IAction
 	{
 	public:

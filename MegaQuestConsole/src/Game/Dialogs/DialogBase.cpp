@@ -1,20 +1,27 @@
 #include "Game/Dialogs/DialogBase.hpp"
 #include "Game/IOutput.hpp"
 #include "Game/IButtonList.hpp"
+#include "Game/Model.hpp"
 
 using namespace Game;
 
-DialogBase::DialogBase(const OutputPtr& output,
-	const QuestCore::TextString& intro) :
+DialogBase::DialogBase(const QuestCore::TextString& intro, const std::vector<ButtonListPtr> buttonGroups) :
 
-	_output(output),
 	_intro(intro)
 {
+	for (auto& buttonGroup : buttonGroups) {
+		AddButtonList(buttonGroup);
+	}
 }
 
-void DialogBase::Init()
+void DialogBase::SetModel(const ModelWeakPtr& model)
 {
-	_output->WriteLn(_intro);
+	_model = model;
+}
+
+void DialogBase::Init(IOutput& output)
+{
+	output.WriteLn(_intro);
 }
 
 void DialogBase::Update()
@@ -24,19 +31,26 @@ void DialogBase::Update()
 	}
 }
 
-void DialogBase::Draw()
+void DialogBase::Draw(IOutput& output)
 {
 	for (auto& buttonGroup : _buttonGroups) {
-		buttonGroup->Draw();
+		buttonGroup->Draw(output);
 	}
 }
 
 void DialogBase::AddButtonList(const IButtonList::Ptr& buttonList)
 {
+	if (buttonList->IsUpdateAfterDone()) {
+		buttonList->AddDoneCallback([this]() {
+			if (auto modelPtr = _model.lock()) {
+				modelPtr->Update();
+			}
+			});
+	}
 	_buttonGroups.push_back(buttonList);
 }
 
-IOutput::Ptr DialogBase::GetOutput()
+const Model::WeakPtr& DialogBase::GetModel()
 {
-	return _output;
+	return _model;
 }

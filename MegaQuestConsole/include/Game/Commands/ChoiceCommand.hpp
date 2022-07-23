@@ -5,11 +5,12 @@ namespace Game
 {
 	class IButtonList;
 
+	/// @serializable
 	class ChoiceCommand : public IntCommand
 	{
 		using ButtonListPtr = std::shared_ptr<IButtonList>;
 	public:
-		ChoiceCommand(const ButtonListPtr& buttonList,
+		ChoiceCommand(const ButtonListPtr& buttonGroup,
 			const QuestCore::TextString& error);
 		
 		virtual void Run(int arg) override;
