@@ -3,10 +3,11 @@
 
 using namespace QuestCore;
 
-Inventory::Inventory(const std::vector<ItemRecord>& items)
+Inventory::Inventory(const QuestHeaderPtr& quest, const std::vector<ItemRecord>& items):
+    QuestInitable(quest)
 {
     for (auto& item : items) {
-        _items.emplace(item.item, item.count);
+        _initItems.emplace(item.item, item.count);
     }
 }
 
@@ -26,4 +27,12 @@ void Inventory::ThrowItem(const ItemPtr& item, int count)
     }
 
     foundItemIt->second = std::max(foundItemIt->second - count, 0);
+}
+
+void Inventory::Init()
+{
+    _items.clear();
+    for (auto& item : _initItems) {
+        _items.emplace(item.first, item.second);
+    }
 }

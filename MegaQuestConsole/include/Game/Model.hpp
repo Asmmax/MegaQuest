@@ -25,6 +25,7 @@ namespace Game
 
 		/// @inject
 		void SetOutput(const OutputPtr& output);
+		void Reset();
 		void Init();
 		void Update();
 	

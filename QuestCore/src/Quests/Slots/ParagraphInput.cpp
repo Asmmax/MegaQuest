@@ -3,13 +3,17 @@
 
 using namespace QuestCore;
 
-ParagraphInput::ParagraphInput(const ParagraphPtr& paragraph, const ParagraphSlotPtr& slot):
+ParagraphInput::ParagraphInput(const ParagraphPtr& paragraph, 
+	const ParagraphSlotPtr& slot,
+	const QuestHeaderPtr& quest):
+	
+	QuestInitable(quest),
 	_paragraph(paragraph),
 	_slot(slot)
 {
 }
 
-void ParagraphInput::Update()
+void ParagraphInput::Init()
 {
 	_slot->SetInput(this);
 }

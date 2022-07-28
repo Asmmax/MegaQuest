@@ -1,6 +1,5 @@
 #pragma once
 #include "Quests/QuestHeader.hpp"
-#include <vector>
 
 namespace QuestCore
 {
@@ -8,7 +7,6 @@ namespace QuestCore
 	class QuestTarget : public QuestHeader
 	{
 	public:
-		QuestTarget(const std::vector<SlotPtr>& slots);
 		/// @inject
 		void SetCurrent(const IQuest::Ptr& current);
 

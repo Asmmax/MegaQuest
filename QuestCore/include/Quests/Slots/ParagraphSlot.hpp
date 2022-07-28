@@ -1,5 +1,5 @@
 #pragma once
-#include "Quests/ISlot.hpp"
+#include "Quests/QuestInitable.hpp"
 #include <memory>
 
 namespace QuestCore
@@ -7,12 +7,13 @@ namespace QuestCore
 	class ParagraphInput;
 	class IParagraph;
 
-	/// @serializable
-	class ParagraphSlot : public ISlot
+	/// @serializable @shared slots
+	class ParagraphSlot : public QuestInitable
 	{
 		using ParagraphPtr = std::shared_ptr<IParagraph>;
 	public:
-		virtual void Update() override;
+		ParagraphSlot(const QuestHeaderPtr& quest);
+		virtual void Init() override;
 		void SetInput(ParagraphInput* input);
 		ParagraphPtr GetParagraph() const;
 

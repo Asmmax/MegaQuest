@@ -3,9 +3,19 @@
 
 using namespace QuestCore;
 
-void CaseContainerStateMachine::SetState(const ICaseContainer::WeakPtr& newState)
+CaseContainerStateMachine::CaseContainerStateMachine(const QuestHeaderPtr& quest):
+	QuestInitable(quest)
 {
-	_state = newState;
+}
+
+void CaseContainerStateMachine::InitState(const ICaseContainer::WeakPtr& state)
+{
+	_initState = state;
+}
+
+void CaseContainerStateMachine::SetState(const ICaseContainer::WeakPtr& state)
+{
+	_state = state;
 }
 
 void CaseContainerStateMachine::Print(IButtonGroup& buttons)
@@ -15,4 +25,9 @@ void CaseContainerStateMachine::Print(IButtonGroup& buttons)
 	if (statePtr) {
 		statePtr->Print(buttons);
 	}
+}
+
+void CaseContainerStateMachine::Init()
+{
+	SetState(_initState);
 }

@@ -2,34 +2,37 @@
 	"quests":[
 	{
 		"id":"testquest",
-		"type":"QuestHeader",
-		"slots":["testquest_paragraph_main","testquest_container_main","testquest_container_inventory","testquest_inventory_player"]
+		"type":"QuestHeader"
 	}
 	],
-	"slots":[
+	"inputs":[
 	{
 		"id":"testquest_paragraph_main",
 		"type":"ParagraphInput",
 		"slot":"paragraph_main",
-		"paragraph":"root"
+		"paragraph":"root",
+		"quest":"testquest"
 	},
 	{
 		"id":"testquest_container_main",
 		"type":"CaseContainerInput",
 		"slot":"container_main",
-		"container":"root"
+		"container":"root",
+		"quest":"testquest"
 	},
 	{
 		"id":"testquest_container_inventory",
 		"type":"CaseContainerInput",
 		"slot":"container_inventory",
-		"container":"to_inventory"
+		"container":"to_inventory",
+		"quest":"testquest"
 	},
 	{
 		"id":"testquest_inventory_player",
 		"type":"InventoryInput",
 		"slot":"inventory_player",
-		"inventory":"player"
+		"inventory":"player",
+		"quest":"testquest"
 	}
 	],
 	"items": [
@@ -150,14 +153,16 @@
 			"item":"medalion",
 			"count":0
 		}
-		]
+		],
+		"quest":"testquest"
 	}
 	],
 	"paragraphs":[
 	{
 		"type":"ParagraphStateMachine",
 		"id":"root",
-		"state":"world"
+		"state":"world",
+		"quest":"testquest"
 	},
 	{
 		"type":"ParagraphGroup",
@@ -176,7 +181,8 @@
 	{
 		"type":"ParagraphStateMachine",
 		"id":"world_root",
-		"state":"road"
+		"state":"road",
+		"quest":"testquest"
 	},
 	{
 		"type":"ConditionalParagraph",
@@ -238,7 +244,8 @@
 	{
 		"type":"ParagraphStateMachine",
 		"id":"trump",
-		"state":"talked_trump"
+		"state":"talked_trump",
+		"quest":"testquest"
 	},
 	{
 		"type":"TextParagraph",
@@ -454,7 +461,8 @@
 	{
 		"type":"CaseContainerStateMachine",
 		"id":"root",
-		"state":"world"
+		"state":"world",
+		"quest":"testquest"
 	},
 	{
 		"type":"CaseContainerGroup",
@@ -464,7 +472,8 @@
 	{
 		"type":"CaseContainerStateMachine",
 		"id":"world_root",
-		"state":"road"
+		"state":"road",
+		"quest":"testquest"
 	},
 	{
 		"type":"ConditionalCaseContainer",
@@ -548,7 +557,8 @@
 	{
 		"type":"CaseContainerStateMachine",
 		"id":"trump",
-		"state":"talked_trump"
+		"state":"talked_trump",
+		"quest":"testquest"
 	},
 	{
 		"type":"SimpleCaseContainer",
@@ -603,7 +613,8 @@
 	{
 		"type":"CaseContainerStateMachine",
 		"id":"to_inventory",
-		"state":"to_inventory_root"
+		"state":"to_inventory_root",
+		"quest":"testquest"
 	},
 	{
 		"type":"SimpleCaseContainer",

@@ -3,7 +3,12 @@
 
 using namespace QuestCore;
 
-void ParagraphSlot::Update()
+ParagraphSlot::ParagraphSlot(const QuestHeaderPtr& quest):
+	QuestInitable(quest)
+{
+}
+
+void ParagraphSlot::Init()
 {
 	_input = nullptr;
 }

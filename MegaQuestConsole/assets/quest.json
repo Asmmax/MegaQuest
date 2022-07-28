@@ -3,26 +3,29 @@
 	{
 		"id":"main",
 		"type":"QuestTarget",
-		"current":"testquest",
-		"slots":["paragraph_main","container_main","container_inventory","inventory_player"]
+		"current":"testquest"
 	}
 	],
 	"slots":[
 	{
 		"id":"paragraph_main",
-		"type":"ParagraphSlot"
+		"type":"ParagraphSlot",
+		"quest":"main"
 	},
 	{
 		"id":"container_main",
-		"type":"CaseContainerSlot"
+		"type":"CaseContainerSlot",
+		"quest":"main"
 	},
 	{
 		"id":"container_inventory",
-		"type":"CaseContainerSlot"
+		"type":"CaseContainerSlot",
+		"quest":"main"
 	},
 	{
 		"id":"inventory_player",
-		"type":"InventorySlot"
+		"type":"InventorySlot",
+		"quest":"main"
 	}
 	]
 }

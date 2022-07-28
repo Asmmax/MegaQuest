@@ -3,7 +3,12 @@
 
 using namespace QuestCore;
 
-void CaseContainerSlot::Update()
+CaseContainerSlot::CaseContainerSlot(const QuestHeaderPtr& quest):
+	QuestInitable(quest)
+{
+}
+
+void CaseContainerSlot::Init()
 {
 	_input = nullptr;
 }

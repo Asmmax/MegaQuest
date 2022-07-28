@@ -375,6 +375,15 @@ def get_class(full_type_name):
     return None
 
 
+def get_only_serializable_bases(_class):
+    bases = []
+    for base in _class.bases:
+        base_class = get_class(base.full_type_name)
+        if base_class:
+            bases.append(base)
+    return bases
+
+
 def get_all_serializable_bases(_class):
     all_bases = []
     for base in _class.bases:
@@ -768,6 +777,7 @@ def gen_clases(generate_units):
 
 def analyze_sources(files):
     for path in files:
+        print('Analysis file ' + str(path))
         index = clang.cindex.Index.create()
         argList = ['-std=c++17', '-I' + str(working_env_in_path)]
         for add_include in add_includes:
@@ -790,7 +800,7 @@ def get_sorted_classes():
     result = []
 
     for _class in classes:
-        if not _class.bases:
+        if not get_only_serializable_bases(_class):
             result.append(_class)
 
     while len(result) != len(classes):
@@ -799,7 +809,7 @@ def get_sorted_classes():
             if result.count(_class) > 0:
                 continue
 
-            if consist_base_classes(result, _class.bases):
+            if consist_base_classes(result, get_only_serializable_bases(_class)):
                 temp_classes.append(_class)
 
         for temp_class in temp_classes:
@@ -811,8 +821,10 @@ def get_sorted_classes():
 
 def get_generate_info(files):
     generate_units = []
+    print('Sorting classes...')
     sorted_classs = get_sorted_classes()
     for filename in files:
+        print('Gathering generation info for ' + str(filename))
         new_unit = GenerateUnit()
         new_unit.origin_path = PurePath(filename)
         new_unit.include_path = PurePath(out_include_path).joinpath(get_gen_path_for(filename)).with_suffix('.hpp')
@@ -840,17 +852,32 @@ def prepare_files(generate_units):
 
 
 def generate(files):
+    print('Gathering generation info...')
     generate_units = get_generate_info(files)
 
+    print('Preparing files...')
     rm_tree(out_include_path)
     rm_tree(out_source_path)
     prepare_files(generate_units)
 
+    print('Filling enums...')
     gen_enums(generate_units)
+    print('Filling classes...')
     gen_clases(generate_units)
 
 
-pathList = sorted(Path(in_path).rglob('*.hpp'))
+def suit_file(path):
+    for parent in path.parents:
+        if parent.name == ".generated":
+            return False
+    return True
+
+
+rawPathList = sorted(Path(in_path).rglob('*.hpp'))
+pathList = []
+for rawPath in rawPathList:
+    if suit_file(rawPath):
+        pathList.append(rawPath)
 print('Analysis of input files...')
 analyze_sources(pathList)
 print('Generate files...')

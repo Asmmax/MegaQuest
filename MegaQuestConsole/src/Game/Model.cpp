@@ -15,9 +15,15 @@ void Model::SetOutput(const OutputPtr& output)
 	_output = output;
 }
 
-void Model::Init()
+void Model::Reset()
 {
 	_quest->Init();
+	Init();
+	Update();
+}
+
+void Model::Init()
+{
 	_rootDialog->Init(*_output);
 }
 

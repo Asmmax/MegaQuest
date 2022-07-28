@@ -3,7 +3,12 @@
 
 using namespace QuestCore;
 
-void InventorySlot::Update()
+InventorySlot::InventorySlot(const QuestHeaderPtr& quest):
+	QuestInitable(quest)
+{
+}
+
+void InventorySlot::Init()
 {
 	_input = nullptr;
 }

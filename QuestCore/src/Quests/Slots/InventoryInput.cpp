@@ -3,13 +3,17 @@
 
 using namespace QuestCore;
 
-InventoryInput::InventoryInput(const InventoryPtr& inventory, const InventorySlotPtr& slot) :
+InventoryInput::InventoryInput(const InventoryPtr& inventory, 
+	const InventorySlotPtr& slot,
+	const QuestHeaderPtr& quest) :
+
+	QuestInitable(quest),
 	_inventory(inventory),
 	_slot(slot)
 {
 }
 
-void InventoryInput::Update()
+void InventoryInput::Init()
 {
 	_slot->SetInput(this);
 }

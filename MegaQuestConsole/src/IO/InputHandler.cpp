@@ -19,8 +19,7 @@ InputHandler::InputHandler(const IInput::Ptr& input, const IOutput::Ptr& output,
 
 void InputHandler::Init()
 {
-	_model->Init();
-	_model->Update();
+	_model->Reset();
 }
 
 void InputHandler::Handle()

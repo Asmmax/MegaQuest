@@ -1,24 +1,21 @@
 #pragma once
 #include "IQuest.hpp"
 #include <vector>
+#include <functional>
 
 namespace QuestCore
 {
-	class ISlot;
-
 	/// @serializable
 	class QuestHeader : public IQuest
 	{
 	protected:
-		using SlotPtr = std::shared_ptr<ISlot>;
+		using Callback = std::function<void()>;
 
 	public:
-		QuestHeader(const std::vector<SlotPtr>& slots);
+		void AddInitCallback(const Callback& callback);
 		virtual void Init() override;
-		void UpdateSlots();
-		void Reset();
 
 	private:
-		std::vector<SlotPtr> _slots;
+		std::vector<Callback> _initCallbacks;
 	};
 }
