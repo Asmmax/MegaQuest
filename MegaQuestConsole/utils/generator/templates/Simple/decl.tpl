@@ -23,7 +23,7 @@ using ${type_name}Factory = Factory<${full_type_name}
 
 template<>
 template<>
-void FactoryBinder<${full_type_name}>::BindImpl(const std::string& implName, const std::shared_ptr<${type_name}Impl>& impl);
+void FactoryBinder<${full_type_name}>::BindImpl(const std::shared_ptr<${type_name}Impl>& impl);
 
 template<>
 const std::shared_ptr<IFactory<${full_type_name}>>& GlobalContext::GetFactory<${full_type_name}>();

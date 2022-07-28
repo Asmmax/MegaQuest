@@ -1,20 +1,73 @@
 #pragma once
+#include "Containers/IContainerReader.hpp"
 #include "Containers/PropertyReader.hpp"
 #include "Utils/Reader.hpp"
+
 #include <tuple>
 #include <utility>
 #include <assert.h>
 
 template<typename Type, typename Initializer, typename... Dependencies>
-class ContainerImpl
+class ContainerImpl : public IContainerReader
 {
 	using TypePtr = std::shared_ptr<Type>;
 public:
 
-	ContainerImpl(const Initializer& initializer, const PropertyReader<Dependencies>&... properties):
+	ContainerImpl(const std::string& groupName, const std::string& typeName, const Initializer& initializer, const PropertyReader<Dependencies>&... properties):
+		_groupName(groupName),
+		_typeName(typeName),
 		_initializer(initializer),
 		_properties(properties...)
 	{
+	}
+
+	void AddRoot(const nlohmann::json& root) override
+	{
+		auto foundIt = root.find(_groupName);
+		if (foundIt == root.end()) {
+			return;
+		}
+
+		for (auto& node : *foundIt) {
+			auto typeId = Utils::Read<std::string>(node, "type", std::string());
+			if (typeId == _typeName) {
+				_nodes.push_back(node);
+			}
+		}
+	}
+
+	void CreateAll() override
+	{
+		for (auto& node : _nodes) {
+			Create(node);
+		}
+	}
+
+	void InitAll() override
+	{
+		for (auto& node : _nodes) {
+			Init(node);
+		}
+	}
+
+	void CreateById(const std::string& id)
+	{
+		for (auto& child : _nodes) {
+			auto childId = Utils::Read(child, "id", std::string());
+			if (!childId.empty() && childId == id) {
+				Create(child);
+			}
+		}
+	}
+
+	void InitById(const std::string& id)
+	{
+		for (auto& child : _nodes) {
+			auto childId = Utils::Read(child, "id", std::string());
+			if (!childId.empty() && childId == id) {
+				Init(child);
+			}
+		}
 	}
 
 	void Create(const nlohmann::json& node)
@@ -91,8 +144,11 @@ private:
 	}
 
 private:
+	std::string _groupName;
+	std::string _typeName;
 	std::map<std::string, TypePtr> _elements;
 	std::vector<std::string> _isInited; //оптимизация, исключаем повторное создание структур и unique сущностей
 	Initializer _initializer;
 	std::tuple<PropertyReader<Dependencies>...> _properties;
+	std::vector<nlohmann::json> _nodes;
 };

@@ -1,45 +1,34 @@
 #pragma once
-#include "ContainerBase.hpp"
-#include "ReaderImplRecord.hpp"
-#include "GlobalRootReader.hpp"
+#include "IContainer.hpp"
 #include <tuple>
 #include <utility>
 
 template<typename Type, typename... Impls>
-class Container : public ContainerBase<Type>
+class Container : public IContainer<Type>
 {
 	using TypePtr = std::shared_ptr<Type>;
-	using Inheritors = std::tuple<ReaderImplRecord<Impls>...>;
+	using Inheritors = std::tuple<std::shared_ptr<Impls>...>;
 
 public:
-	Container(const std::string& groupName) :
-		ContainerBase<Type>(groupName)
-	{
-		GlobalRootReader::Instance().AddContainer<Type>();
-	}
-
-	void SetInheritors(const ReaderImplRecord<Impls>&... inheritors)
+	void SetInheritors(const std::shared_ptr<Impls>&... inheritors)
 	{
 		_inheritors = std::make_tuple(inheritors...);
 	}
 
 	template<typename T>
-	void SetInheritor(const ReaderImplRecord<T>& inheritor)
+	void SetInheritor(const std::shared_ptr<T>& inheritor)
 	{
 		SetInheritorImpl(inheritor, _inheritors, std::index_sequence_for<Impls...>());
 	}
 
-	void Create(const nlohmann::json& node) override
+	void CreateById(const std::string& id) override
 	{
-		auto id = Utils::Read<std::string>(node, "id", std::string());
-		auto typeId = Utils::Read<std::string>(node, "type", std::string());
-		CreateImpl(typeId, node, _inheritors, std::index_sequence_for<Impls...>());
+		CreateByIdImpl(id, _inheritors, std::index_sequence_for<Impls...>());
 	}
 
-	void Init(const nlohmann::json& node) override
+	void InitById(const std::string& id) override
 	{
-		auto typeId = Utils::Read<std::string>(node, "type", std::string());
-		InitImpl(typeId, node, _inheritors, std::index_sequence_for<Impls...>());
+		InitByIdImpl(id, _inheritors, std::index_sequence_for<Impls...>());
 	}
 
 	TypePtr Get(const std::string& id) override
@@ -55,25 +44,25 @@ public:
 private:
 
 	template<typename T, std::size_t... Is>
-	void SetInheritorImpl(const ReaderImplRecord<T>& inheritor,	Inheritors& inheritors, std::index_sequence<Is...>)
+	void SetInheritorImpl(const std::shared_ptr<T>& inheritor,	Inheritors& inheritors, std::index_sequence<Is...>)
 	{
 		SetInheritorImpl(inheritor, std::get<Is>(inheritors)...);
 	}
 
 	template<typename T, typename Current, typename... Other>
-	void SetInheritorImpl(const ReaderImplRecord<T>& inheritor, ReaderImplRecord<Current>& currentInheritor, ReaderImplRecord<Other>&... inheritors)
+	void SetInheritorImpl(const std::shared_ptr<T>& inheritor, std::shared_ptr<Current>& currentInheritor, std::shared_ptr<Other>&... inheritors)
 	{
 		SetInheritorImpl(inheritor, inheritors...);
 	}
 
 	template<typename T, typename... Other>
-	void SetInheritorImpl(const ReaderImplRecord<T>& inheritor, ReaderImplRecord<T>& currentInheritor, ReaderImplRecord<Other>&... inheritors)
+	void SetInheritorImpl(const std::shared_ptr<T>& inheritor, std::shared_ptr<T>& currentInheritor, std::shared_ptr<Other>&... inheritors)
 	{
 		currentInheritor = inheritor;
 	}
 
 	template<typename T>
-	void SetInheritorImpl(const ReaderImplRecord<T>& inheritor)
+	void SetInheritorImpl(const std::shared_ptr<T>& inheritor)
 	{
 		static_assert(false);
 	}
@@ -82,51 +71,43 @@ private:
 
 
 
-
 	template<std::size_t... Is>
-	void CreateImpl(const std::string& typeId, const nlohmann::json& node, 
+	void CreateByIdImpl(const std::string& id,
 		Inheritors& inheritors, std::index_sequence<Is...>)
 	{
-		CreateImpl(typeId, node, std::get<Is>(inheritors)...);
+		CreateByIdImpl(id, std::get<Is>(inheritors)...);
 	}
 
 	template<typename Current, typename... Other>
-	void CreateImpl(const std::string& typeId, const nlohmann::json& node, Current& inheritor, Other&... inheritors)
+	void CreateByIdImpl(const std::string& id, Current& inheritor, Other&... inheritors)
 	{
-		if (inheritor.type == typeId) {
-			inheritor.impl->Create(node);
-			return;
-		}
-
-		CreateImpl(typeId, node, inheritors...);
+		inheritor->CreateById(id);
+		CreateByIdImpl(id, inheritors...);
 	}
 
-	void CreateImpl(const std::string& typeId, const nlohmann::json& node)
+	void CreateByIdImpl(const std::string& id)
 	{
 	}
+
 
 
 
 
 	template<std::size_t... Is>
-	void InitImpl(const std::string& typeId, const nlohmann::json& node,
+	void InitByIdImpl(const std::string& id,
 		Inheritors& inheritors, std::index_sequence<Is...>)
 	{
-		InitImpl(typeId, node, std::get<Is>(inheritors)...);
+		InitByIdImpl(id, std::get<Is>(inheritors)...);
 	}
 
 	template<typename Current, typename... Other>
-	void InitImpl(const std::string& typeId, const nlohmann::json& node, Current& inheritor, Other&... inheritors)
+	void InitByIdImpl(const std::string& id, Current& inheritor, Other&... inheritors)
 	{
-		if (inheritor.type == typeId) {
-			inheritor.impl->Init(node);
-			return;
-		}
-
-		InitImpl(typeId, node, inheritors...);
+		inheritor->InitById(id);
+		InitByIdImpl(id, inheritors...);
 	}
 
-	void InitImpl(const std::string& typeId, const nlohmann::json& node)
+	void InitByIdImpl(const std::string& id)
 	{
 	}
 
@@ -143,8 +124,8 @@ private:
 	template<typename Current, typename... Other>
 	TypePtr GetImpl(const std::string& id, Current& inheritor, Other&... inheritors)
 	{
-		if (inheritor.impl->Contains(id)) {
-			return inheritor.impl->Get(id);
+		if (inheritor->Contains(id)) {
+			return inheritor->Get(id);
 		}
 
 		return GetImpl(id, inheritors...);
@@ -167,8 +148,8 @@ private:
 	template<typename Current, typename... Other>
 	TypePtr GetImpl(Current& inheritor, Other&... inheritors)
 	{
-		if (!inheritor.impl->Empty()) {
-			return inheritor.impl->Get();
+		if (!inheritor->Empty()) {
+			return inheritor->Get();
 		}
 
 		return GetImpl(inheritors...);

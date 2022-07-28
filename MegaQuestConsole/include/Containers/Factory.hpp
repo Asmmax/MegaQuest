@@ -1,23 +1,22 @@
 #pragma once
 #include "IFactory.hpp"
 #include "Utils/Reader.hpp"
-#include "ReaderImplRecord.hpp"
 #include <tuple>
 #include <utility>
 
 template<typename Type, typename... Impls>
 class Factory : public IFactory<Type>
 {
-	using Inheritors = std::tuple<ReaderImplRecord<Impls>...>;
+	using Inheritors = std::tuple<std::shared_ptr<Impls>...>;
 
 public:
-	void SetInheritors(const ReaderImplRecord<Impls>&... inheritors)
+	void SetInheritors(const std::shared_ptr<Impls>&... inheritors)
 	{
 		_inheritors = std::make_tuple(inheritors...);
 	}
 
 	template<typename T>
-	void SetInheritor(const ReaderImplRecord<T>& inheritor)
+	void SetInheritor(const std::shared_ptr<T>& inheritor)
 	{
 		SetInheritorImpl(inheritor, _inheritors, std::index_sequence_for<Impls...>());
 	}
@@ -36,25 +35,25 @@ public:
 
 private:
 	template<typename T, std::size_t... Is>
-	void SetInheritorImpl(const ReaderImplRecord<T>& inheritor, Inheritors& inheritors, std::index_sequence<Is...>)
+	void SetInheritorImpl(const std::shared_ptr<T>& inheritor, Inheritors& inheritors, std::index_sequence<Is...>)
 	{
 		SetInheritorImpl(inheritor, std::get<Is>(inheritors)...);
 	}
 
 	template<typename T, typename Current, typename... Other>
-	void SetInheritorImpl(const ReaderImplRecord<T>& inheritor, ReaderImplRecord<Current>& currentInheritor, ReaderImplRecord<Other>&... inheritors)
+	void SetInheritorImpl(const std::shared_ptr<T>& inheritor, std::shared_ptr<Current>& currentInheritor, std::shared_ptr<Other>&... inheritors)
 	{
 		SetInheritorImpl(inheritor, inheritors...);
 	}
 
 	template<typename T, typename... Other>
-	void SetInheritorImpl(const ReaderImplRecord<T>& inheritor, ReaderImplRecord<T>& currentInheritor, ReaderImplRecord<Other>&... inheritors)
+	void SetInheritorImpl(const std::shared_ptr<T>& inheritor, std::shared_ptr<T>& currentInheritor, std::shared_ptr<Other>&... inheritors)
 	{
 		currentInheritor = inheritor;
 	}
 
 	template<typename T>
-	void SetInheritorImpl(const ReaderImplRecord<T>& inheritor)
+	void SetInheritorImpl(const std::shared_ptr<T>& inheritor)
 	{
 		static_assert(false);
 	}
@@ -70,8 +69,8 @@ private:
 	template<typename Current, typename... Other>
 	Type GetImpl(const std::string& typeId, const nlohmann::json& node, Current& inheritor, Other&... inheritors)
 	{
-		if (inheritor.type == typeId) {
-			return inheritor.impl->Get(node);
+		if (inheritor->IsSuitType(typeId)) {
+			return inheritor->Get(node);
 		}
 
 		return GetImpl(typeId, node, inheritors...);
@@ -94,8 +93,8 @@ private:
 	template<typename Current, typename... Other>
 	void InitDependenciesImpl(const std::string& typeId, const nlohmann::json& node, Current& inheritor, Other&... inheritors)
 	{
-		if (inheritor.type == typeId) {
-			return inheritor.impl->InitDependencies(node);
+		if (inheritor->IsSuitType(typeId)) {
+			return inheritor->InitDependencies(node);
 		}
 
 		return InitDependenciesImpl(typeId, node, inheritors...);

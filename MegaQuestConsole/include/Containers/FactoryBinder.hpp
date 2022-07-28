@@ -11,14 +11,14 @@ public:
 	}
 
 	template<typename TypeImpl>
-	void BindImpl(const std::string& implName, const std::shared_ptr<TypeImpl>& impl);
+	void BindImpl(const std::shared_ptr<TypeImpl>& impl);
 
 private:
 	template<typename FactoryType, typename TypeImpl>
-	void BindImplWithCast(const std::string& implName, const std::shared_ptr<TypeImpl>& impl)
+	void BindImplWithCast(const std::shared_ptr<TypeImpl>& impl)
 	{
 		if (auto factory = std::dynamic_pointer_cast<FactoryType>(_factory)) {
-			factory->SetInheritor(ReaderImplRecord<TypeImpl>{ implName, impl });
+			factory->SetInheritor(impl);
 		}
 	}
 private:

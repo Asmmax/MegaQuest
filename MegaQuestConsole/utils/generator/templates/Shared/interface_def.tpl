@@ -3,10 +3,10 @@
 ${bind_impls}
 
 template<>
-const std::shared_ptr<ContainerBase<${full_type_name}>>& GlobalContext::GetContainer<${full_type_name}>()
+const std::shared_ptr<IContainer<${full_type_name}>>& GlobalContext::GetContainer<${full_type_name}>()
 {
-	static std::shared_ptr<ContainerBase<${full_type_name}>> 
-		instancePtr = std::make_shared<${type_name}Container>("${shared_name}");
+	static std::shared_ptr<IContainer<${full_type_name}>> 
+		instancePtr = std::make_shared<${type_name}Container>();
 	return instancePtr;
 }
 

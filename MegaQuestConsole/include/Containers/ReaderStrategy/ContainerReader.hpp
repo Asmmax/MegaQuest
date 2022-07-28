@@ -1,6 +1,6 @@
 #pragma once
 #include "Containers/IReaderStrategy.hpp"
-#include "Containers/ContainerBase.hpp"
+#include "Containers/IContainer.hpp"
 #include <memory>
 #include <assert.h>
 
@@ -11,7 +11,7 @@ template<typename Type>
 class ContainerReader<std::shared_ptr<Type>> : public IReaderStrategy<std::shared_ptr<Type>>
 {
 	using TypePtr = std::shared_ptr<Type>;
-	using ContainerPtr = std::weak_ptr<ContainerBase<Type>>;
+	using ContainerPtr = std::weak_ptr<IContainer<Type>>;
 
 public:
 	ContainerReader(const ContainerPtr& container) :

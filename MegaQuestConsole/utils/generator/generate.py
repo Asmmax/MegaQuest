@@ -484,7 +484,7 @@ def fill_shared_impl_source(_class, stream):
         full_arg_type_name = property.full_type_name
         arg_name = property.arg_name
         simple_property = property_cpp_tpl.substitute(locals())
-        property_list.append(', ' + simple_property)
+        property_list.append(simple_property)
     properties = '\n'.join(property_list)
 
     base_list = []
@@ -493,6 +493,11 @@ def fill_shared_impl_source(_class, stream):
         container_binder_impl = containerBinderImpl_cpp_tpl.substitute(locals())
         base_list.append(container_binder_impl)
     container_binder_impls = '\n'.join(base_list)
+    
+    shared_name = ''
+    for tag in _class.tags:
+        if tag.name == 'shared':
+            shared_name = tag.args[0]
 
     stream.write(shared_impl_cpp_tpl.substitute(locals()))
 
@@ -553,11 +558,6 @@ def fill_shared_interface_source(_class, stream):
         bind_impl_list.append(bindImpl_shared_cpp_tpl.substitute(locals()))
     bind_impls = '\n'.join(bind_impl_list)
 
-    shared_name = ''
-    for tag in _class.tags:
-        if tag.name == 'shared':
-            shared_name = tag.args[0]
-
     stream.write(shared_interface_cpp_tpl.substitute(locals()))
 
 
@@ -589,7 +589,7 @@ def fill_polymorphic_impl_source(_class, stream):
         arg_name = property.arg_name
         simple_property = property_cpp_tpl.substitute(locals())
         property_list.append(simple_property)
-    properties = ',\n'.join(property_list)
+    properties = '\n'.join(property_list)
 
     base_list = []
     for base in get_all_serializable_bases(_class):
@@ -686,7 +686,7 @@ def fill_simple_source(_class, stream):
         arg_name = property.arg_name
         simple_property = property_cpp_tpl.substitute(locals())
         property_list.append(simple_property)
-    properties = ',\n'.join(property_list)
+    properties = '\n'.join(property_list)
 
     stream.write(simple_cpp_tpl.substitute(locals()))
 

@@ -1,4 +1,5 @@
 #include "Containers/GlobalRootReader.hpp"
+#include "Containers/IContainerReader.hpp"
 
 GlobalRootReader& GlobalRootReader::Instance() 
 {
@@ -6,23 +7,25 @@ GlobalRootReader& GlobalRootReader::Instance()
 	return instance;
 }
 
+void GlobalRootReader::AddContainer(const ContainerReaderPtr& container)
+{
+	_containers.push_back(container);
+}
+
 void GlobalRootReader::AddRoot(const nlohmann::json& root)
 {
-	for (auto& addRootCallback : _addRootCallbacks)
-	{
-		addRootCallback(root);
+	for (auto& container : _containers) {
+		container->AddRoot(root);
 	}
 }
 
 void GlobalRootReader::Read()
 {
-	for (auto& createAllCallback : _createAllCallbacks)
-	{
-		createAllCallback();
+	for (auto& container : _containers) {
+		container->CreateAll();
 	}
 
-	for (auto& initAllCallback : _initAllCallbacks)
-	{
-		initAllCallback();
+	for (auto& container : _containers) {
+		container->InitAll();
 	}
 }

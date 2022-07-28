@@ -2,20 +2,20 @@ ${type_name}Impl_Binder ${type_name}Impl_Binder::instance;
 
 ${type_name}Impl_Binder::${type_name}Impl_Binder()
 {
-    auto impl = std::make_shared<${type_name}Impl>(
+    auto impl = std::make_shared<${type_name}Impl>("${type_name}"
 ${properties}
         );
 
-    FactoryBinder<${full_type_name}>().BindImpl("${type_name}", impl);
+    FactoryBinder<${full_type_name}>().BindImpl(impl);
 }
 
 #include "Containers/ReaderStrategy/FactoryReader.hpp"
 
 template<>
 template<>
-void FactoryBinder<${full_type_name}>::BindImpl(const std::string& implName, const std::shared_ptr<${type_name}Impl>& impl)
+void FactoryBinder<${full_type_name}>::BindImpl(const std::shared_ptr<${type_name}Impl>& impl)
 {
-    BindImplWithCast<${type_name}Factory, ${type_name}Impl>(implName, impl);
+    BindImplWithCast<${type_name}Factory, ${type_name}Impl>(impl);
 }
 
 template<>

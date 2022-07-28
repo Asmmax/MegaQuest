@@ -9,7 +9,8 @@ class FactoryImplBase
 {
 public:
 
-	FactoryImplBase(const PropertyReader<Dependencies>&... properties) :
+	FactoryImplBase(const std::string& typeName, const PropertyReader<Dependencies>&... properties) :
+		_typeName(typeName),
 		_properties(properties...)
 	{
 	}
@@ -17,6 +18,11 @@ public:
 	void InitDependencies(const nlohmann::json& node)
 	{
 		InitDependencies(node, _properties, std::index_sequence_for<Dependencies...>());
+	}
+
+	bool IsSuitType(const std::string& typeName)
+	{
+		return _typeName == typeName;
 	}
 
 private:
@@ -38,6 +44,7 @@ private:
 	}
 
 protected:
+	std::string _typeName;
 	std::tuple<PropertyReader<Dependencies>...> _properties;
 };
 
@@ -47,8 +54,8 @@ class FactoryImpl : public FactoryImplBase<Dependencies...>
 {
 public:
 
-	FactoryImpl(const PropertyReader<Dependencies>&... properties) :
-		FactoryImplBase<Dependencies...>(properties...)
+	FactoryImpl(const std::string& typeName, const PropertyReader<Dependencies>&... properties) :
+		FactoryImplBase<Dependencies...>(typeName, properties...)
 	{
 	}
 
@@ -72,8 +79,8 @@ class FactoryImpl<std::shared_ptr<Type>, Dependencies...> : public FactoryImplBa
 	using TypePtr = std::shared_ptr<Type>;
 public:
 
-	FactoryImpl(const PropertyReader<Dependencies>&... properties) :
-		FactoryImplBase<Dependencies...>(properties...)
+	FactoryImpl(const std::string& typeName, const PropertyReader<Dependencies>&... properties) :
+		FactoryImplBase<Dependencies...>(typeName, properties...)
 	{
 	}
 

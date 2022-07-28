@@ -11,16 +11,16 @@ public:
 	}
 
 	template<typename TypeImpl>
-	void BindImpl(const std::string& implName, const std::shared_ptr<TypeImpl>& impl);
+	void BindImpl(const std::shared_ptr<TypeImpl>& impl);
 
 private:
 	template<typename ContainerType, typename TypeImpl>
-	void BindImplWithCast(const std::string& implName, const std::shared_ptr<TypeImpl>& impl)
+	void BindImplWithCast(const std::shared_ptr<TypeImpl>& impl)
 	{
 		if (auto container = std::dynamic_pointer_cast<ContainerType>(_container)) {
-			container->SetInheritor(ReaderImplRecord<TypeImpl>{ implName, impl });
+			container->SetInheritor(impl);
 		}
 	}
 private:
-	std::shared_ptr<ContainerBase<Type>> _container;
+	std::shared_ptr<IContainer<Type>> _container;
 };

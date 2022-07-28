@@ -1,1 +1,1 @@
-ContainerBinder<${full_base_type_name}>().BindImpl("${type_name}", impl);
+ContainerBinder<${full_base_type_name}>().BindImpl(impl);
