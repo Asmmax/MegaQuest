@@ -1,18 +1,19 @@
 #include "Game/ButtonLists/InventoryButtonList.hpp"
 #include "Inventory.hpp"
 #include "Item.hpp"
+#include "Quests/InventorySlot.hpp"
 #include <algorithm>
 
 using namespace Game;
 
 InventoryButtonList::InventoryButtonList(const QuestCore::TextString& error,
-	const InventoryPtr& inventory,
+	const InventorySlotPtr& inventorySlot,
 	const std::vector<int>& counts,
 	const QuestCore::TextString& putMessage,
 	const QuestCore::TextString& throwMessage) :
 
 	ButtonListBase(error),
-	_inventory(inventory),
+	_inventorySlot(inventorySlot),
 	_counts(counts),
 	_putMessage(putMessage),
 	_throwMessage(throwMessage)
@@ -43,8 +44,10 @@ void InventoryButtonList::AddPutButton(const ItemPtr& item, int count)
 
 	Button button;
 	button.name = _putMessage + item->GetContains(count);
-	button.callback = [inventory = _inventory, item, count]() {
-		inventory->PutItem(item, count);
+	button.callback = [inventorySlot = _inventorySlot, item, count]() {
+		if (auto inventory = inventorySlot->GetInventory()) {
+			inventory->PutItem(item, count);
+		}
 	};
 
 	AddButton(button);
@@ -58,8 +61,10 @@ void InventoryButtonList::AddThrowButton(const ItemPtr& item, int count)
 
 	Button button;
 	button.name = _throwMessage + item->GetContains(count);
-	button.callback = [inventory = _inventory, item, count]() {
-		inventory->ThrowItem(item, count);
+	button.callback = [inventorySlot = _inventorySlot, item, count]() {
+		if (auto inventory = inventorySlot->GetInventory()) {
+			inventory->ThrowItem(item, count);
+		}
 	};
 
 	AddButton(button);
@@ -69,7 +74,12 @@ std::vector<std::pair<QuestCore::Item::Ptr, int>> InventoryButtonList::GetOrdere
 {
 	std::vector<std::pair<QuestCore::Item::Ptr, int>> result;
 
-	auto& items = _inventory->GetItems();
+	auto inventory = _inventorySlot->GetInventory();
+	if (!inventory) {
+		return result;
+	}
+
+	auto& items = inventory->GetItems();
 
 	for (auto& item : items) {
 		result.emplace_back(item.first, item.second);

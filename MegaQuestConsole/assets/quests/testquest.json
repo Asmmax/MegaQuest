@@ -1,4 +1,37 @@
 {
+	"quests":[
+	{
+		"id":"testquest",
+		"type":"QuestHeader",
+		"slots":["testquest_paragraph_main","testquest_container_main","testquest_container_inventory","testquest_inventory_player"]
+	}
+	],
+	"slots":[
+	{
+		"id":"testquest_paragraph_main",
+		"type":"ParagraphInput",
+		"slot":"paragraph_main",
+		"paragraph":"root"
+	},
+	{
+		"id":"testquest_container_main",
+		"type":"CaseContainerInput",
+		"slot":"container_main",
+		"container":"root"
+	},
+	{
+		"id":"testquest_container_inventory",
+		"type":"CaseContainerInput",
+		"slot":"container_inventory",
+		"container":"to_inventory"
+	},
+	{
+		"id":"testquest_inventory_player",
+		"type":"InventoryInput",
+		"slot":"inventory_player",
+		"inventory":"player"
+	}
+	],
 	"items": [
 	{
 		"id":"coin",

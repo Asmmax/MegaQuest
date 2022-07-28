@@ -1,0 +1,28 @@
+{
+	"quests":[
+	{
+		"id":"main",
+		"type":"QuestTarget",
+		"current":"testquest",
+		"slots":["paragraph_main","container_main","container_inventory","inventory_player"]
+	}
+	],
+	"slots":[
+	{
+		"id":"paragraph_main",
+		"type":"ParagraphSlot"
+	},
+	{
+		"id":"container_main",
+		"type":"CaseContainerSlot"
+	},
+	{
+		"id":"container_inventory",
+		"type":"CaseContainerSlot"
+	},
+	{
+		"id":"inventory_player",
+		"type":"InventorySlot"
+	}
+	]
+}

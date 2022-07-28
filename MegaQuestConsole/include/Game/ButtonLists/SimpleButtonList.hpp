@@ -6,6 +6,7 @@
 
 namespace QuestCore
 {
+	class CaseContainerSlot;
 	class ICaseContainer;
 }
 
@@ -14,7 +15,7 @@ namespace Game
 	/// @serializable
 	class SimpleButtonList : public ButtonListBase, public QuestCore::IButtonGroup
 	{
-		using OutputPtr = std::shared_ptr<IOutput>;
+		using ContainerSlotPtr = std::shared_ptr<QuestCore::CaseContainerSlot>;
 		using CaseContainerPtr = std::shared_ptr<QuestCore::ICaseContainer>;
 
 	public:
@@ -22,7 +23,8 @@ namespace Game
 
 		SimpleButtonList(const QuestCore::TextString& error,
 			bool show,
-			const CaseContainerPtr& container);
+			const ContainerSlotPtr& containerSlot,
+			const std::string& containerName);
 
 		virtual void AddButton(const QuestCore::TextString& text, const QuestCore::IButtonGroup::Callback& callback) override;
 
@@ -30,6 +32,6 @@ namespace Game
 		virtual void UpdateImpl() override;
 
 	private:
-		CaseContainerPtr _container;
+		ContainerSlotPtr _containerSlot;
 	};
 }
