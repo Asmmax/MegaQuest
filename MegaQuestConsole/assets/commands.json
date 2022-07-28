@@ -88,6 +88,16 @@
 				"type":"ResetCommand",
 				"model":"root_model"
 			}
+		},
+		{
+			"type":"CommandRecord",
+			"name":"levelup",
+			"command":
+			{
+				"type":"LevelUpCommand",
+				"model":"root_model",
+				"questList":"main"
+			}
 		}
 		]
 	}

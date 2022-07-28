@@ -14,6 +14,12 @@ std::shared_ptr<IReaderStrategy<int>> GetReader()
 }
 
 template<>
+std::shared_ptr<IReaderStrategy<size_t>> GetReader()
+{
+	return std::make_shared<PrimitiveReader<size_t>>();
+}
+
+template<>
 std::shared_ptr<IReaderStrategy<std::string>> GetReader()
 {
 	return std::make_shared<PrimitiveReader<std::string>>();

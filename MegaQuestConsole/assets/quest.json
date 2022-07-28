@@ -2,8 +2,9 @@
 	"quests":[
 	{
 		"id":"main",
-		"type":"QuestTarget",
-		"current":"testquest"
+		"type":"QuestList",
+		"quests":["testquest"],
+		"currentId":0
 	}
 	],
 	"slots":[

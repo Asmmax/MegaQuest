@@ -35,4 +35,7 @@ template<>
 std::shared_ptr<IReaderStrategy<int>> GetReader();
 
 template<>
+std::shared_ptr<IReaderStrategy<size_t>> GetReader();
+
+template<>
 std::shared_ptr<IReaderStrategy<std::string>> GetReader();
