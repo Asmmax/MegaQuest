@@ -10,8 +10,9 @@ namespace QuestCore
 	public:
 		QuestTarget(const std::vector<SlotPtr>& slots);
 		/// @inject
-		void Reset(const IQuest::Ptr& current);
-		virtual void UpdateSlots() override;
+		void SetCurrent(const IQuest::Ptr& current);
+
+		virtual void Init() override;
 
 	private:
 		IQuest::Ptr _current;

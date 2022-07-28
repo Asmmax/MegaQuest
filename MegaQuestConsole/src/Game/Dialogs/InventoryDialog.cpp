@@ -3,7 +3,7 @@
 #include "Game/IButtonList.hpp"
 #include "Inventory.hpp"
 #include "Item.hpp"
-#include "Quests/InventorySlot.hpp"
+#include "Quests/Slots/InventorySlot.hpp"
 
 using namespace Game;
 

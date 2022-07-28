@@ -4,7 +4,8 @@
 		"id":"root_model",
 		"type":"Model",
 		"rootDialog":"root",
-		"output":"main"
+		"output":"main",
+		"quest":"main"
 	}
 	],
 	"buttonLists":[

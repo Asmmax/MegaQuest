@@ -14,7 +14,9 @@ namespace QuestCore
 
 	public:
 		QuestHeader(const std::vector<SlotPtr>& slots);
-		virtual void UpdateSlots() override;
+		virtual void Init() override;
+		void UpdateSlots();
+		void Reset();
 
 	private:
 		std::vector<SlotPtr> _slots;

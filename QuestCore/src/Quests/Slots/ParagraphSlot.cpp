@@ -1,5 +1,5 @@
-#include "Quests/ParagraphSlot.hpp"
-#include "Quests/ParagraphInput.hpp"
+#include "Quests/Slots/ParagraphSlot.hpp"
+#include "Quests/Slots/ParagraphInput.hpp"
 
 using namespace QuestCore;
 

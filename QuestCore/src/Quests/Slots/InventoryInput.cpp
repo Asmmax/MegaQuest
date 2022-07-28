@@ -1,5 +1,5 @@
-#include "Quests/InventoryInput.hpp"
-#include "Quests/InventorySlot.hpp"
+#include "Quests/Slots/InventoryInput.hpp"
+#include "Quests/Slots/InventorySlot.hpp"
 
 using namespace QuestCore;
 

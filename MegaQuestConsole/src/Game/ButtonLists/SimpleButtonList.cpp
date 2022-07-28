@@ -1,7 +1,7 @@
 #include "Game/ButtonLists/SimpleButtonList.hpp"
 #include "Game/IOutput.hpp"
 #include "ICaseContainer.hpp"
-#include "Quests/CaseContainerSlot.hpp"
+#include "Quests/Slots/CaseContainerSlot.hpp"
 
 using namespace Game;
 

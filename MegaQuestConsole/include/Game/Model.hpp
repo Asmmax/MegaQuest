@@ -1,6 +1,11 @@
 #pragma once
 #include <memory>
 
+namespace QuestCore 
+{
+	class IQuest;
+}
+
 namespace Game
 {
 	class IDialog;
@@ -11,11 +16,12 @@ namespace Game
 	{
 		using DialogPtr = std::shared_ptr<IDialog>;
 		using OutputPtr = std::shared_ptr<IOutput>;
+		using QuestPtr = std::shared_ptr<QuestCore::IQuest>;
 	public:
 		using Ptr = std::shared_ptr<Model>;
 		using WeakPtr = std::weak_ptr<Model>;
 
-		Model(const DialogPtr& rootDialog);
+		Model(const DialogPtr& rootDialog, const QuestPtr& quest);
 
 		/// @inject
 		void SetOutput(const OutputPtr& output);
@@ -24,6 +30,7 @@ namespace Game
 	
 	private:
 		DialogPtr _rootDialog;
+		QuestPtr _quest;
 		OutputPtr _output;
 	};
 }

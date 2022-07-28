@@ -1,5 +1,5 @@
-#include "Quests/CaseContainerSlot.hpp"
-#include "Quests/CaseContainerInput.hpp"
+#include "Quests/Slots/CaseContainerSlot.hpp"
+#include "Quests/Slots/CaseContainerInput.hpp"
 
 using namespace QuestCore;
 

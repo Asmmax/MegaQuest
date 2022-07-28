@@ -2,7 +2,7 @@
 #include "Game/IButtonList.hpp"
 #include "Game/IOutput.hpp"
 #include "IParagraph.hpp"
-#include "Quests/ParagraphSlot.hpp"
+#include "Quests/Slots/ParagraphSlot.hpp"
 
 using namespace Game;
 

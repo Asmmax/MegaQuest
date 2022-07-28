@@ -10,6 +10,6 @@ namespace QuestCore
 		using Ptr = std::shared_ptr<IQuest>;
 		virtual ~IQuest() = default;
 
-		virtual void UpdateSlots() = 0;
+		virtual void Init() = 0;
 	};
 }

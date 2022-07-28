@@ -1,7 +1,7 @@
 #include "Game/ButtonLists/InventoryButtonList.hpp"
 #include "Inventory.hpp"
 #include "Item.hpp"
-#include "Quests/InventorySlot.hpp"
+#include "Quests/Slots/InventorySlot.hpp"
 #include <algorithm>
 
 using namespace Game;

@@ -7,14 +7,13 @@ QuestTarget::QuestTarget(const std::vector<SlotPtr>& slots) :
 {
 }
 
-void QuestTarget::Reset(const IQuest::Ptr& current)
+void QuestTarget::SetCurrent(const IQuest::Ptr& current)
 {
 	_current = current;
-	UpdateSlots();
 }
 
-void QuestTarget::UpdateSlots()
+void QuestTarget::Init()
 {
-	QuestHeader::UpdateSlots();
-	_current->UpdateSlots();
+	QuestHeader::Init();
+	_current->Init();
 }
