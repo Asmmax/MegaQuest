@@ -138,6 +138,13 @@ def consist_tag(tags, tag_name):
     return False
 
 
+def get_tag(tags, tag_name):
+    for tag in tags:
+        if tag.name == tag_name:
+            return tag
+    return None
+
+
 def remove_tag(tags, tag_name):
     remove_list = []
     for tag in tags:
@@ -166,19 +173,41 @@ def parse_tags(comment):
     return tags
 
 
+def replace_tag(source_tag, dest_tag):
+    if source_tag.args == dest_tag.args:
+        return
+    if not dest_tag.args:
+        return
+    
+    assert not source_tag.args
+    source_tag.args = dest_tag.args
+
+
+def merge_tags(result_tags, input_tags):
+    for result_tag in result_tags:
+        some_tag = get_tag(input_tags, result_tag.name)
+        if some_tag:
+            replace_tag(result_tag, some_tag)
+            remove_tag(input_tags, some_tag.name)
+    for input_tag in input_tags:
+        result_tags.append(input_tag)
+
+
 def get_inherited_tags(node):
+    tags = []
     for child in node.get_children():
         if child.kind != clang.cindex.CursorKind.CXX_BASE_SPECIFIER:
             continue
 
         base = child.type.get_declaration().get_definition()
-        tags = get_inherited_tags(base)
+        temp_tags = get_inherited_tags(base)
         base_tags = parse_tags(base.raw_comment)
         for base_tag in base_tags:
             if base_tag.name in inherited_tags:
-                if not consist_tag(tags, base_tag.name):
-                    tags.append(base_tag)
-        return tags
+                remove_tag(temp_tags, base_tag.name)
+                temp_tags.append(base_tag)
+        merge_tags(tags, temp_tags)
+    return tags
     return []
 
 
@@ -302,8 +331,9 @@ def add_class(node: clang.cindex.Cursor):
 
     new_class.tags = parse_tags(node.raw_comment)
     base_tags = get_inherited_tags(node)
+    for class_tag in new_class.tags:
+        remove_tag(base_tags, class_tag.name)
     for base_tag in base_tags:
-        remove_tag(new_class.tags, base_tag.name)
         new_class.tags.append(base_tag)
 
     new_class.bases = find_bases(node)
@@ -497,6 +527,7 @@ def fill_shared_impl_source(_class, stream):
     shared_name = ''
     for tag in _class.tags:
         if tag.name == 'shared':
+            assert tag.args
             shared_name = tag.args[0]
 
     stream.write(shared_impl_cpp_tpl.substitute(locals()))
