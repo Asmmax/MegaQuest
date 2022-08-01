@@ -1,6 +1,5 @@
 #pragma once
-#include "Quests/QuestInitable.hpp"
-#include <memory>
+#include "Quests/Input.hpp"
 
 namespace QuestCore
 {
@@ -8,20 +7,14 @@ namespace QuestCore
 	class Inventory;
 
 	/// @serializable @shared inputs
-	class InventoryInput : public QuestInitable
+	class InventoryInput : public Input<Inventory>
 	{
+		using Base = Input<Inventory>;
 		using InventorySlotPtr = std::shared_ptr<InventorySlot>;
 		using InventoryPtr = std::shared_ptr<Inventory>;
-
 	public:
 		InventoryInput(const InventoryPtr& inventory, 
 			const InventorySlotPtr& slot,
 			const QuestHeaderPtr& quest);
-		virtual void Init() override;
-		InventoryPtr GetInventory() const;
-
-	private:
-		InventorySlotPtr _slot;
-		InventoryPtr _inventory;
 	};
 }

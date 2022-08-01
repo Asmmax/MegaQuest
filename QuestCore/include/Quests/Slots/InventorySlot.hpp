@@ -1,23 +1,17 @@
 #pragma once
-#include "Quests/QuestInitable.hpp"
-#include <memory>
+#include "Quests/Slot.hpp"
 
 namespace QuestCore
 {
-	class InventoryInput;
 	class Inventory;
 
 	/// @serializable @shared slots
-	class InventorySlot : public QuestInitable
+	class InventorySlot : public Slot<Inventory>
 	{
+		using Base = Slot<Inventory>;
 		using InventoryPtr = std::shared_ptr<Inventory>;
 	public:
 		InventorySlot(const QuestHeaderPtr& quest);
-		virtual void Init() override;
-		void SetInput(InventoryInput* input);
 		InventoryPtr GetInventory() const;
-
-	private:
-		InventoryInput* _input;
 	};
 }

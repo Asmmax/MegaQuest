@@ -1,6 +1,5 @@
 #pragma once
-#include "Quests/QuestInitable.hpp"
-#include <memory>
+#include "Quests/Input.hpp"
 
 namespace QuestCore
 {
@@ -8,20 +7,14 @@ namespace QuestCore
 	class ICaseContainer;
 
 	/// @serializable @shared inputs
-	class CaseContainerInput : public QuestInitable
+	class CaseContainerInput : public Input<ICaseContainer>
 	{
+		using Base = Input<ICaseContainer>;
 		using CaseContainerSlotPtr = std::shared_ptr<CaseContainerSlot>;
 		using CaseContainerPtr = std::shared_ptr<ICaseContainer>;
 	public:
-		CaseContainerInput(const CaseContainerPtr& container, 
+		CaseContainerInput(const CaseContainerPtr& container,
 			const CaseContainerSlotPtr& slot,
 			const QuestHeaderPtr& quest);
-
-		virtual void Init() override;
-		CaseContainerPtr GetCaseContainer() const;
-
-	private:
-		CaseContainerSlotPtr _slot;
-		CaseContainerPtr _container;
 	};
 }
