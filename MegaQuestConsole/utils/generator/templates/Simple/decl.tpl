@@ -1,6 +1,12 @@
 #include "Containers/FactoryImpl.hpp"
+#include "Containers/FactoryImplBase.hpp"
+
+using ${type_name}ImplBases = FactoryImplBases<${full_type_name}
+${all_bases}
+>;
 
 using ${type_name}Impl = FactoryImpl<${full_type_name}
+, ${type_name}ImplBases
 ${property_types}
 >;
 
@@ -17,13 +23,10 @@ private:
 #include "Containers/FactoryBinder.hpp"
 #include "Containers/Utils.hpp"
 
-using ${type_name}Factory = Factory<${full_type_name}
-, ${type_name}Impl
->;
+using ${type_name}Factory = Factory<${full_type_name}>;
 
 template<>
-template<>
-void FactoryBinder<${full_type_name}>::BindImpl(const std::shared_ptr<${type_name}Impl>& impl);
+void FactoryBinder<${full_type_name}>::BindImpl(const FactoryBinder::FactoryImplPtr& impl);
 
 template<>
 const std::shared_ptr<IFactory<${full_type_name}>>& GlobalContext::GetFactory<${full_type_name}>();

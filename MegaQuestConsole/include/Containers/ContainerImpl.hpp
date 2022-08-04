@@ -1,5 +1,4 @@
 #pragma once
-#include "Containers/IContainerImpl.hpp"
 #include "Containers/IContainerReader.hpp"
 #include "Containers/PropertyReader.hpp"
 #include "Utils/Reader.hpp"

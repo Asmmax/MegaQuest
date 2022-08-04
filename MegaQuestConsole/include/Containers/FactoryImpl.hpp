@@ -4,23 +4,23 @@
 #include <tuple>
 #include <utility>
 
-template<typename... Dependencies>
-class FactoryImplBase
+template<typename Base, typename... Dependencies>
+class BaseFactoryImpl : public Base
 {
 public:
 
-	FactoryImplBase(const std::string& typeName, const PropertyReader<Dependencies>&... properties) :
+	BaseFactoryImpl(const std::string& typeName, const PropertyReader<Dependencies>&... properties) :
 		_typeName(typeName),
 		_properties(properties...)
 	{
 	}
 
-	void InitDependencies(const nlohmann::json& node)
+	void InitDependencies(const nlohmann::json& node) override
 	{
 		InitDependencies(node, _properties, std::index_sequence_for<Dependencies...>());
 	}
 
-	bool IsSuitType(const std::string& typeName)
+	bool IsSuitType(const std::string& typeName) override
 	{
 		return _typeName == typeName;
 	}
@@ -49,17 +49,17 @@ protected:
 };
 
 
-template<typename Type, typename... Dependencies>
-class FactoryImpl : public FactoryImplBase<Dependencies...>
+template<typename Type, typename Base, typename... Dependencies>
+class FactoryImpl : public BaseFactoryImpl<Base, Dependencies...>
 {
 public:
 
 	FactoryImpl(const std::string& typeName, const PropertyReader<Dependencies>&... properties) :
-		FactoryImplBase<Dependencies...>(typeName, properties...)
+		BaseFactoryImpl<Base, Dependencies...>(typeName, properties...)
 	{
 	}
 
-	Type Get(const nlohmann::json& node)
+	Type Get(const nlohmann::json& node) override
 	{
 		return CreateElement(node, _properties, std::index_sequence_for<Dependencies...>());
 	}
@@ -73,18 +73,18 @@ private:
 };
 
 
-template<typename Type, typename... Dependencies>
-class FactoryImpl<std::shared_ptr<Type>, Dependencies...> : public FactoryImplBase<Dependencies...>
+template<typename Type, typename Base, typename... Dependencies>
+class FactoryImpl<std::shared_ptr<Type>, Base, Dependencies...> : public BaseFactoryImpl<Base, Dependencies...>
 {
 	using TypePtr = std::shared_ptr<Type>;
 public:
 
 	FactoryImpl(const std::string& typeName, const PropertyReader<Dependencies>&... properties) :
-		FactoryImplBase<Dependencies...>(typeName, properties...)
+		BaseFactoryImpl<Base, Dependencies...>(typeName, properties...)
 	{
 	}
 
-	TypePtr Get(const nlohmann::json& node)
+	TypePtr Get(const nlohmann::json& node) override
 	{
 		return CreateElement(node, _properties, std::index_sequence_for<Dependencies...>());
 	}

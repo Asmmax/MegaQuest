@@ -12,10 +12,9 @@ ${properties}
 #include "Containers/ReaderStrategy/FactoryReader.hpp"
 
 template<>
-template<>
-void FactoryBinder<${full_type_name}>::BindImpl(const std::shared_ptr<${type_name}Impl>& impl)
+void FactoryBinder<${full_type_name}>::BindImpl(const FactoryBinder::FactoryImplPtr& impl)
 {
-    BindImplWithCast<${type_name}Factory, ${type_name}Impl>(impl);
+    BindImplWithCast<${type_name}Factory>(impl);
 }
 
 template<>

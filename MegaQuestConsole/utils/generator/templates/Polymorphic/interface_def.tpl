@@ -1,6 +1,10 @@
 #include "Containers/ReaderStrategy/FactoryReader.hpp"
 
-${bind_impls}
+template<>
+void FactoryBinder<std::shared_ptr<${full_type_name}>>::BindImpl(const FactoryBinder::FactoryImplPtr& impl)
+{
+    BindImplWithCast<${type_name}Factory>(impl);
+}
 
 template<>
 const std::shared_ptr<IFactory<std::shared_ptr<${full_type_name}>>>& GlobalContext::GetFactory<std::shared_ptr<${full_type_name}>>()

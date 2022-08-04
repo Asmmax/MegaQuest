@@ -2,23 +2,26 @@
 #include "GlobalContext.hpp"
 
 template<typename Type>
+class IFactoryImpl;
+
+template<typename Type>
 class FactoryBinder
 {
+	using FactoryImplPtr = std::shared_ptr<IFactoryImpl<Type>>;
 public:
 	FactoryBinder()
 		: _factory(GlobalContext::GetFactory<Type>())
 	{
 	}
 
-	template<typename TypeImpl>
-	void BindImpl(const std::shared_ptr<TypeImpl>& impl);
+	void BindImpl(const FactoryImplPtr& impl);
 
 private:
-	template<typename FactoryType, typename TypeImpl>
-	void BindImplWithCast(const std::shared_ptr<TypeImpl>& impl)
+	template<typename FactoryType>
+	void BindImplWithCast(const FactoryImplPtr& impl)
 	{
 		if (auto factory = std::dynamic_pointer_cast<FactoryType>(_factory)) {
-			factory->SetInheritor(impl);
+			factory->AddInheritor(impl);
 		}
 	}
 private:

@@ -57,8 +57,6 @@ polymorphic_impl_decl_tpl_path = 'templates/Polymorphic/impl_decl.tpl'
 polymorphic_interface_decl_tpl_path = 'templates/Polymorphic/interface_decl.tpl'
 polymorphic_impl_def_tpl_path = 'templates/Polymorphic/impl_def.tpl'
 polymorphic_interface_def_tpl_path = 'templates/Polymorphic/interface_def.tpl'
-polymorphic_bind_decl_tpl_path = 'templates/Polymorphic/bind_decl.tpl'
-polymorphic_bind_def_tpl_path = 'templates/Polymorphic/bind_def.tpl'
 polymorphic_bind_using_tpl_path = 'templates/Polymorphic/bind_using.tpl'
 
 shared_interface_decl_tpl_path = 'templates/Shared/interface_decl.tpl'
@@ -472,8 +470,6 @@ def fill_enum_source(enum, stream):
 
 
 property_cpp_tpl = Template(Path(property_tpl_path).read_text())
-bindImpl_hpp_tpl = Template(Path(polymorphic_bind_decl_tpl_path).read_text())
-bindImpl_cpp_tpl = Template(Path(polymorphic_bind_def_tpl_path).read_text())
 impl_hpp_tpl = Template(Path(impl_tpl_path).read_text())
 factoryBinderImpl_cpp_tpl = Template(Path(polymorphic_bind_using_tpl_path).read_text())
 
@@ -570,6 +566,11 @@ def fill_polymorphic_impl_header(_class, stream):
     type_name = _class.type_name
     full_type_name = _class.full_type_name
 
+    all_bases_list = []
+    for base in get_all_serializable_bases(_class):
+        all_bases_list.append(', ' + 'std::shared_ptr<' + base.full_type_name + '>')
+    all_bases = '\n'.join(all_bases_list)
+
     property_types_list = []
     for property in _class.properties:
         property_types_list.append(', ' + property.full_type_name)
@@ -609,35 +610,6 @@ polymorphic_interface_hpp_tpl = Template(Path(polymorphic_interface_decl_tpl_pat
 def fill_polymorphic_interface_header(_class, stream):
     type_name = _class.type_name
     full_type_name = _class.full_type_name
-
-    child_include_list = []
-    for child in _class.children:
-        if PurePath(child.filename) == PurePath(_class.filename):
-            continue
-        gen_path = PurePath(out_include_dir).joinpath(get_gen_path_for(child.filename)).with_suffix('.hpp')
-        child_include = '#include ' + '"' + str(gen_path).replace('\\', '/') + '"'
-        if child_include_list.count(child_include) == 0:
-            child_include_list.append(child_include)
-    children_include = '\n'.join(child_include_list)
-
-    impl_name_list = []
-    if not consist_tag(_class.tags, 'abstract'):
-        impl_type_name = _class.type_name
-        impl_name_list.append(', ' + impl_hpp_tpl.substitute(locals()))
-    for child in _class.children:
-        impl_type_name = child.type_name
-        impl_name_list.append(', ' + impl_hpp_tpl.substitute(locals()))
-    impl_names = '\n'.join(impl_name_list)
-
-    bind_impl_list = []
-    if not consist_tag(_class.tags, 'abstract'):
-        impl_type_name = _class.type_name
-        bind_impl_list.append(bindImpl_hpp_tpl.substitute(locals()))
-    for child in _class.children:
-        impl_type_name = child.type_name
-        bind_impl_list.append(bindImpl_hpp_tpl.substitute(locals()))
-    bind_impls = '\n'.join(bind_impl_list)
-
     stream.write(polymorphic_interface_hpp_tpl.substitute(locals()))
 
 
@@ -647,16 +619,6 @@ polymorphic_interface_cpp_tpl = Template(Path(polymorphic_interface_def_tpl_path
 def fill_polymorphic_interface_source(_class, stream):
     type_name = _class.type_name
     full_type_name = _class.full_type_name
-
-    bind_impl_list = []
-    if not consist_tag(_class.tags, 'abstract'):
-        impl_type_name = _class.type_name
-        bind_impl_list.append(bindImpl_cpp_tpl.substitute(locals()))
-    for child in _class.children:
-        impl_type_name = child.type_name
-        bind_impl_list.append(bindImpl_cpp_tpl.substitute(locals()))
-    bind_impls = '\n'.join(bind_impl_list)
-
     stream.write(polymorphic_interface_cpp_tpl.substitute(locals()))
 
 
@@ -666,6 +628,11 @@ simple_hpp_tpl = Template(Path(simple_decl_tpl_path).read_text())
 def fill_simple_header(_class, stream):
     type_name = _class.type_name
     full_type_name = _class.full_type_name
+
+    all_bases_list = []
+    for base in get_all_serializable_bases(_class):
+        all_bases_list.append(', ' + base.full_type_name)
+    all_bases = '\n'.join(all_bases_list)
 
     property_types_list = []
     for property in _class.properties:
