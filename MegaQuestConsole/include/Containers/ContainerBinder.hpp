@@ -2,23 +2,26 @@
 #include "GlobalContext.hpp"
 
 template<typename Type>
+class IContainerImpl;
+
+template<typename Type>
 class ContainerBinder
 {
+	using ContainerImplPtr = std::shared_ptr<IContainerImpl<Type>>;
 public:
 	ContainerBinder()
 		: _container(GlobalContext::GetContainer<Type>())
 	{
 	}
 
-	template<typename TypeImpl>
-	void BindImpl(const std::shared_ptr<TypeImpl>& impl);
+	void BindImpl(const ContainerImplPtr& impl);
 
 private:
-	template<typename ContainerType, typename TypeImpl>
-	void BindImplWithCast(const std::shared_ptr<TypeImpl>& impl)
+	template<typename ContainerType>
+	void BindImplWithCast(const ContainerImplPtr& impl)
 	{
 		if (auto container = std::dynamic_pointer_cast<ContainerType>(_container)) {
-			container->SetInheritor(impl);
+			container->AddInheritor(impl);
 		}
 	}
 private:

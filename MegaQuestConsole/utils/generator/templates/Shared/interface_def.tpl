@@ -1,6 +1,10 @@
 #include "Containers/ReaderStrategy/ContainerReader.hpp"
 
-${bind_impls}
+template<>
+void ContainerBinder<${full_type_name}>::BindImpl(const ContainerBinder::ContainerImplPtr& impl)
+{
+	BindImplWithCast<${type_name}Container>(impl);
+}
 
 template<>
 const std::shared_ptr<IContainer<${full_type_name}>>& GlobalContext::GetContainer<${full_type_name}>()

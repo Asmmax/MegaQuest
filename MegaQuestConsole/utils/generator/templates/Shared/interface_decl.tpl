@@ -1,14 +1,11 @@
-${children_include}
-
 #include "Containers/Container.hpp"
 #include "Containers/ContainerBinder.hpp"
 #include "Containers/Utils.hpp"
 
-using ${type_name}Container = Container<${full_type_name}
-${impl_names}
->;
+using ${type_name}Container = Container<${full_type_name}>;
 
-${bind_impls}
+template<>
+void ContainerBinder<${full_type_name}>::BindImpl(const ContainerBinder::ContainerImplPtr& impl);
 
 template<>
 const std::shared_ptr<IContainer<${full_type_name}>>& GlobalContext::GetContainer<${full_type_name}>();

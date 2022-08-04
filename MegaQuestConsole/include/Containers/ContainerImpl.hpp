@@ -1,4 +1,5 @@
 #pragma once
+#include "Containers/IContainerImpl.hpp"
 #include "Containers/IContainerReader.hpp"
 #include "Containers/PropertyReader.hpp"
 #include "Utils/Reader.hpp"
@@ -7,8 +8,8 @@
 #include <utility>
 #include <assert.h>
 
-template<typename Type, typename Initializer, typename... Dependencies>
-class ContainerImpl : public IContainerReader
+template<typename Type, typename Base, typename Initializer, typename... Dependencies>
+class ContainerImpl : public IContainerReader, public Base
 {
 	using TypePtr = std::shared_ptr<Type>;
 public:
@@ -50,7 +51,7 @@ public:
 		}
 	}
 
-	void CreateById(const std::string& id)
+	void CreateById(const std::string& id) override
 	{
 		for (auto& child : _nodes) {
 			auto childId = Utils::Read(child, "id", std::string());
@@ -60,7 +61,7 @@ public:
 		}
 	}
 
-	void InitById(const std::string& id)
+	void InitById(const std::string& id) override
 	{
 		for (auto& child : _nodes) {
 			auto childId = Utils::Read(child, "id", std::string());
@@ -69,6 +70,30 @@ public:
 			}
 		}
 	}
+
+	TypePtr Get(const std::string& id) override
+	{
+		return _elements[id];
+	}
+
+	TypePtr Get() override
+	{
+		auto beg_iter = _elements.begin();
+		assert(beg_iter != _elements.end());
+		return beg_iter->second;
+	}
+
+	bool Contains(const std::string& id) override
+	{
+		return _elements.find(id) != _elements.end();
+	}
+
+	bool Empty() override
+	{
+		return _elements.empty();
+	}
+
+private:
 
 	void Create(const nlohmann::json& node)
 	{
@@ -94,29 +119,6 @@ public:
 		_initializer(element, node);
 	}
 
-	TypePtr Get(const std::string& id)
-	{
-		return _elements[id];
-	}
-
-	TypePtr Get()
-	{
-		auto beg_iter = _elements.begin();
-		assert(beg_iter != _elements.end());
-		return beg_iter->second;
-	}
-
-	bool Contains(const std::string& id)
-	{
-		return _elements.find(id) != _elements.end();
-	}
-
-	bool Empty()
-	{
-		return _elements.empty();
-	}
-
-private:
 	void Register(const std::string& id, const TypePtr& element) 
 	{
 		_elements.emplace(id, element);

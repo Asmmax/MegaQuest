@@ -66,8 +66,6 @@ shared_interface_def_tpl_path = 'templates/Shared/interface_def.tpl'
 shared_impl_decl_tpl_path = 'templates/Shared/impl_decl.tpl'
 shared_impl_def_tpl_path = 'templates/Shared/impl_def.tpl'
 shared_method_tpl_path = 'templates/Shared/method.tpl'
-shared_bind_decl_tpl_path = 'templates/Shared/bind_decl.tpl'
-shared_bind_def_tpl_path = 'templates/Shared/bind_def.tpl'
 shared_bind_using_tpl_path = 'templates/Shared/bind_using.tpl'
 
 
@@ -487,6 +485,11 @@ def fill_shared_impl_header(_class, stream):
     type_name = _class.type_name
     full_type_name = _class.full_type_name
 
+    all_bases_list = []
+    for base in get_all_serializable_bases(_class):
+        all_bases_list.append(', ' + base.full_type_name)
+    all_bases = '\n'.join(all_bases_list)
+
     method_arg_types_list = []
     for method in _class.methods:
         method_arg_types_list.append(', ' + method.full_type_name)
@@ -543,61 +546,20 @@ def fill_shared_impl_source(_class, stream):
 
 
 shared_interface_hpp_tpl = Template(Path(shared_interface_decl_tpl_path).read_text())
-bindImpl_shared_hpp_tpl = Template(Path(shared_bind_decl_tpl_path).read_text())
 
 
 def fill_shared_interface_header(_class, stream):
     type_name = _class.type_name
     full_type_name = _class.full_type_name
-
-    child_include_list = []
-    for child in _class.children:
-        if PurePath(child.filename) == PurePath(_class.filename):
-            continue
-        gen_path = PurePath(out_include_dir).joinpath(get_gen_path_for(child.filename)).with_suffix('.hpp')
-        child_include = '#include ' + '"' + str(gen_path).replace('\\', '/') + '"'
-        if child_include_list.count(child_include) == 0:
-            child_include_list.append(child_include)
-    children_include = '\n'.join(child_include_list)
-
-    impl_name_list = []
-    if not consist_tag(_class.tags, 'abstract'):
-        impl_type_name = _class.type_name
-        impl_name_list.append(', ' + impl_hpp_tpl.substitute(locals()))
-    for child in _class.children:
-        impl_type_name = child.type_name
-        impl_name_list.append(', ' + impl_hpp_tpl.substitute(locals()))
-    impl_names = '\n'.join(impl_name_list)
-
-    bind_impl_list = []
-    if not consist_tag(_class.tags, 'abstract'):
-        impl_type_name = _class.type_name
-        bind_impl_list.append(bindImpl_shared_hpp_tpl.substitute(locals()))
-    for child in _class.children:
-        impl_type_name = child.type_name
-        bind_impl_list.append(bindImpl_shared_hpp_tpl.substitute(locals()))
-    bind_impls = '\n'.join(bind_impl_list)
-
     stream.write(shared_interface_hpp_tpl.substitute(locals()))
 
 
 shared_interface_cpp_tpl = Template(Path(shared_interface_def_tpl_path).read_text())
-bindImpl_shared_cpp_tpl = Template(Path(shared_bind_def_tpl_path).read_text())
 
 
 def fill_shared_interface_source(_class, stream):
     type_name = _class.type_name
     full_type_name = _class.full_type_name
-
-    bind_impl_list = []
-    if not consist_tag(_class.tags, 'abstract'):
-        impl_type_name = _class.type_name
-        bind_impl_list.append(bindImpl_shared_cpp_tpl.substitute(locals()))
-    for child in _class.children:
-        impl_type_name = child.type_name
-        bind_impl_list.append(bindImpl_shared_cpp_tpl.substitute(locals()))
-    bind_impls = '\n'.join(bind_impl_list)
-
     stream.write(shared_interface_cpp_tpl.substitute(locals()))
 
 
