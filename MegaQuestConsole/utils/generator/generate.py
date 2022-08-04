@@ -82,12 +82,6 @@ class Base:
     full_type_name = ''
 
 
-class Child:
-    filename = ''
-    type_name = ''
-    full_type_name = ''
-
-
 class Property:
     arg_name = ''
     full_type_name = ''
@@ -105,7 +99,6 @@ class SerializableClass:
     full_type_name = ''
     tags = []
     bases = []
-    children = []
     properties = []
     methods = []
 
@@ -174,7 +167,7 @@ def replace_tag(source_tag, dest_tag):
         return
     if not dest_tag.args:
         return
-    
+
     assert not source_tag.args
     source_tag.args = dest_tag.args
 
@@ -394,22 +387,6 @@ def get_all_serializable_bases(_class):
     return all_bases
 
 
-def compute_children():
-    for _class in classes:
-        _class.children = []
-        for child_class in classes:
-            for base_class in get_all_serializable_bases(child_class):
-                if base_class.full_type_name != _class.full_type_name:
-                    continue
-                if consist_tag(child_class.tags, 'abstract'):
-                    continue
-                new_child = Child()
-                new_child.filename = child_class.filename
-                new_child.type_name = child_class.type_name
-                new_child.full_type_name = child_class.full_type_name
-                _class.children.append(new_child)
-
-
 def open_or_create(filename):
     try:
         return open(filename, 'r')
@@ -473,7 +450,6 @@ property_cpp_tpl = Template(Path(property_tpl_path).read_text())
 impl_hpp_tpl = Template(Path(impl_tpl_path).read_text())
 factoryBinderImpl_cpp_tpl = Template(Path(polymorphic_bind_using_tpl_path).read_text())
 
-
 shared_impl_hpp_tpl = Template(Path(shared_impl_decl_tpl_path).read_text())
 
 
@@ -531,7 +507,7 @@ def fill_shared_impl_source(_class, stream):
         container_binder_impl = containerBinderImpl_cpp_tpl.substitute(locals())
         base_list.append(container_binder_impl)
     container_binder_impls = '\n'.join(base_list)
-    
+
     shared_name = ''
     for tag in _class.tags:
         if tag.name == 'shared':
@@ -712,9 +688,14 @@ def analyze_sources(files):
         for add_include in add_includes:
             add_include_path = PurePath(add_include)
             argList.append('-I' + str(add_include_path))
-        translation_unit = index.parse(str(path), args=argList)
+        translation_unit = index.parse(
+            str(path),
+            args=argList,
+            options=clang.cindex.TranslationUnit.PARSE_INCOMPLETE
+                    | clang.cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES
+                    | clang.cindex.TranslationUnit.PARSE_PRECOMPILED_PREAMBLE
+        )
         analyze_unit(translation_unit.cursor)
-    compute_children()
 
 
 def consist_base_classes(class_list, base_classes):
