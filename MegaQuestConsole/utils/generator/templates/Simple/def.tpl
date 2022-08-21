@@ -1,3 +1,5 @@
+${dependencies}
+
 ${type_name}Impl_Binder ${type_name}Impl_Binder::instance;
 
 ${type_name}Impl_Binder::${type_name}Impl_Binder()

@@ -25,11 +25,6 @@ private:
 
 using ${type_name}Factory = Factory<${full_type_name}>;
 
-template<>
-void FactoryBinder<${full_type_name}>::BindImpl(const FactoryBinder::FactoryImplPtr& impl);
-
-template<>
-const std::shared_ptr<IFactory<${full_type_name}>>& GlobalContext::GetFactory<${full_type_name}>();
-
-template <>
-std::shared_ptr<IReaderStrategy<${full_type_name}>> GetReader();
+DECLARE_FACTORY_BIND_IMPL(${full_type_name})
+DECLARE_FACTORY(${full_type_name})
+DECLARE_READER(${full_type_name})

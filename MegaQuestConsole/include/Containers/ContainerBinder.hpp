@@ -27,3 +27,5 @@ private:
 private:
 	std::shared_ptr<IContainer<Type>> _container;
 };
+
+#define DECLARE_CONTAINER_BIND_IMPL(Type) template<> void ContainerBinder<Type>::BindImpl(const ContainerBinder::ContainerImplPtr& impl);

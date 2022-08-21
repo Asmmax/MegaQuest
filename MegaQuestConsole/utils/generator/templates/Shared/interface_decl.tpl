@@ -4,11 +4,6 @@
 
 using ${type_name}Container = Container<${full_type_name}>;
 
-template<>
-void ContainerBinder<${full_type_name}>::BindImpl(const ContainerBinder::ContainerImplPtr& impl);
-
-template<>
-const std::shared_ptr<IContainer<${full_type_name}>>& GlobalContext::GetContainer<${full_type_name}>();
-
-template <>
-std::shared_ptr<IReaderStrategy<std::shared_ptr<${full_type_name}>>> GetReader();
+DECLARE_CONTAINER_BIND_IMPL(${full_type_name})
+DECLARE_CONTAINER(${full_type_name})
+DECLARE_READER(std::shared_ptr<${full_type_name}>)

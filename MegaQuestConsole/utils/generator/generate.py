@@ -357,10 +357,32 @@ def get_gen_path_for(path):
     return raw_path.with_name(filename + '_gen')
 
 
+redundants = ['std::vector', 'std::shared_ptr']
+
+
+def clean_up(raw_str):
+    for redundant in redundants:
+        if raw_str.startswith(redundant):
+            raw_str = raw_str.removeprefix(redundant)
+            raw_str = raw_str.removeprefix('<')
+            raw_str = raw_str.removesuffix('>')
+            clean_up(raw_str)
+    return raw_str
+
+
 def get_class(full_type_name):
+    clean_type_name = clean_up(full_type_name)
     for _class in classes:
-        if _class.full_type_name == full_type_name:
+        if clean_type_name == _class.full_type_name:
             return _class
+    return None
+
+
+def get_enum(full_type_name):
+    clean_type_name = clean_up(full_type_name)
+    for enum in enums:
+        if clean_type_name == enum.full_type_name:
+            return enum
     return None
 
 
@@ -385,6 +407,46 @@ def get_all_serializable_bases(_class):
                 if base_base_class and all_bases.count(base_base) == 0:
                     all_bases.append(base_base)
     return all_bases
+
+
+class Dependency:
+    filename = ''
+
+
+def get_all_dependencies(_class):
+    dependencies = []
+    for base in get_all_serializable_bases(_class):
+        base_class = get_class(base.full_type_name)
+        if base_class:
+            dependency = Dependency()
+            dependency.filename = base_class.filename
+            dependencies.append(dependency)
+
+    for property in _class.properties:
+        property_class = get_class(property.full_type_name)
+        if property_class:
+            dependency = Dependency()
+            dependency.filename = property_class.filename
+            dependencies.append(dependency)
+        property_enum = get_enum(property.full_type_name)
+        if property_enum:
+            dependency = Dependency()
+            dependency.filename = property_enum.filename
+            dependencies.append(dependency)
+
+    for method in _class.methods:
+        method_class = get_class(method.full_type_name)
+        if method_class:
+            dependency = Dependency()
+            dependency.filename = method_class.filename
+            dependencies.append(dependency)
+        method_enum = get_enum(method.full_type_name)
+        if method_enum:
+            dependency = Dependency()
+            dependency.filename = method_enum.filename
+            dependencies.append(dependency)
+
+    return dependencies
 
 
 def open_or_create(filename):
@@ -484,6 +546,16 @@ def fill_shared_impl_source(_class, stream):
     type_name = _class.type_name
     full_type_name = _class.full_type_name
 
+    dependencies_list = []
+    for dependency in get_all_dependencies(_class):
+        if dependency.filename == _class.filename:
+            continue
+        gen_path = PurePath(out_include_dir).joinpath(get_gen_path_for(dependency.filename)).with_suffix('.hpp')
+        dependency_include = '#include ' + '"' + str(gen_path).replace('\\', '/') + '"'
+        if not dependencies_list.count(dependency_include):
+            dependencies_list.append(dependency_include)
+    dependencies = '\n'.join(dependencies_list)
+
     method_list = []
     for method in _class.methods:
         full_arg_type_name = method.full_type_name
@@ -577,6 +649,16 @@ def fill_polymorphic_impl_source(_class, stream):
         base_list.append(factory_binder_impl)
     factory_binder_impls = '\n'.join(base_list)
 
+    dependencies_list = []
+    for dependency in get_all_dependencies(_class):
+        if dependency.filename == _class.filename:
+            continue
+        gen_path = PurePath(out_include_dir).joinpath(get_gen_path_for(dependency.filename)).with_suffix('.hpp')
+        dependency_include = '#include ' + '"' + str(gen_path).replace('\\', '/') + '"'
+        if not dependencies_list.count(dependency_include):
+            dependencies_list.append(dependency_include)
+    dependencies = '\n'.join(dependencies_list)
+
     stream.write(polymorphic_impl_cpp_tpl.substitute(locals()))
 
 
@@ -624,6 +706,16 @@ simple_cpp_tpl = Template(Path(simple_def_tpl_path).read_text())
 def fill_simple_source(_class, stream):
     type_name = _class.type_name
     full_type_name = _class.full_type_name
+
+    dependencies_list = []
+    for dependency in get_all_dependencies(_class):
+        if dependency.filename == _class.filename:
+            continue
+        gen_path = PurePath(out_include_dir).joinpath(get_gen_path_for(dependency.filename)).with_suffix('.hpp')
+        dependency_include = '#include ' + '"' + str(gen_path).replace('\\', '/') + '"'
+        if not dependencies_list.count(dependency_include):
+            dependencies_list.append(dependency_include)
+    dependencies = '\n'.join(dependencies_list)
 
     property_list = []
     for property in _class.properties:

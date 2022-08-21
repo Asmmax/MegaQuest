@@ -27,15 +27,9 @@ MethodInitializer<ElementType, ArgType> CreateMethod(
 	return MethodInitializer<ElementType, ArgType>(CreateProperty<ArgType>(name, defValue), callback);
 }
 
+#define DECLARE_READER(Type) template<> std::shared_ptr<IReaderStrategy<Type>> GetReader();
 
-template<>
-std::shared_ptr<IReaderStrategy<bool>> GetReader();
-
-template<>
-std::shared_ptr<IReaderStrategy<int>> GetReader();
-
-template<>
-std::shared_ptr<IReaderStrategy<size_t>> GetReader();
-
-template<>
-std::shared_ptr<IReaderStrategy<std::string>> GetReader();
+DECLARE_READER(bool)
+DECLARE_READER(int)
+DECLARE_READER(size_t)
+DECLARE_READER(std::string)

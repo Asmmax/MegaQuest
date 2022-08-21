@@ -27,3 +27,5 @@ private:
 private:
 	std::shared_ptr<IFactory<Type>> _factory;
 };
+
+#define DECLARE_FACTORY_BIND_IMPL(Type) template<> void FactoryBinder<Type>::BindImpl(const FactoryBinder::FactoryImplPtr& impl);

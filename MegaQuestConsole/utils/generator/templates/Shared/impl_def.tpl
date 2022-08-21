@@ -1,3 +1,4 @@
+${dependencies}
 #include "Containers/GlobalRootReader.hpp"
 
 ${type_name}Impl_Binder ${type_name}Impl_Binder::instance;

@@ -4,11 +4,6 @@
 
 using ${type_name}Factory = Factory<std::shared_ptr<${full_type_name}>>;
 
-template<>
-void FactoryBinder<std::shared_ptr<${full_type_name}>>::BindImpl(const FactoryBinder::FactoryImplPtr& impl);
-
-template<>
-const std::shared_ptr<IFactory<std::shared_ptr<${full_type_name}>>>& GlobalContext::GetFactory<std::shared_ptr<${full_type_name}>>();
-
-template <>
-std::shared_ptr<IReaderStrategy<std::shared_ptr<${full_type_name}>>> GetReader();
+DECLARE_FACTORY_BIND_IMPL(std::shared_ptr<${full_type_name}>)
+DECLARE_FACTORY(std::shared_ptr<${full_type_name}>)
+DECLARE_READER(std::shared_ptr<${full_type_name}>)
