@@ -1,7 +1,7 @@
 #pragma once
-#include "GlobalContext.hpp"
-#include <functional>
+#include "json.hpp"
 #include <vector>
+#include <memory>
 
 class IContainerReader;
 

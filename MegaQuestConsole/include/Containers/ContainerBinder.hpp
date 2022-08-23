@@ -1,5 +1,5 @@
 #pragma once
-#include "GlobalContext.hpp"
+#include "Context.hpp"
 
 template<typename Type>
 class IContainerImpl;
@@ -10,7 +10,7 @@ class ContainerBinder
 	using ContainerImplPtr = std::shared_ptr<IContainerImpl<Type>>;
 public:
 	ContainerBinder()
-		: _container(GlobalContext::GetContainer<Type>())
+		: _container(Context::Global().GetContainer<Type>())
 	{
 	}
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "GlobalContext.hpp"
+#include "Context.hpp"
 
 template<typename Type>
 class IFactoryImpl;
@@ -10,7 +10,7 @@ class FactoryBinder
 	using FactoryImplPtr = std::shared_ptr<IFactoryImpl<Type>>;
 public:
 	FactoryBinder()
-		: _factory(GlobalContext::GetFactory<Type>())
+		: _factory(Context::Global().GetFactory<Type>())
 	{
 	}
 

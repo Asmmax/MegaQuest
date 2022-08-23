@@ -1,7 +1,6 @@
 #pragma once
 #include "Containers/PropertyReader.hpp"
 #include "Containers/MethodInitializer.hpp"
-#include <type_traits>
 
 template <typename Type>
 std::shared_ptr<IReaderStrategy<Type>> GetReader();

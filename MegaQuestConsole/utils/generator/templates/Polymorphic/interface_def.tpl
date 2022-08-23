@@ -7,17 +7,16 @@ void FactoryBinder<std::shared_ptr<${full_type_name}>>::BindImpl(const FactoryBi
 }
 
 template<>
-const std::shared_ptr<IFactory<std::shared_ptr<${full_type_name}>>>& GlobalContext::GetFactory<std::shared_ptr<${full_type_name}>>()
+template<>
+std::shared_ptr<IFactory<std::shared_ptr<${full_type_name}>>> ContainerFactory<IFactory>::Create<std::shared_ptr<${full_type_name}>>()
 {
-    static std::shared_ptr<IFactory<std::shared_ptr<${full_type_name}>>>
-        instancePtr = std::make_shared<${type_name}Factory>();
-    return instancePtr;
+    return std::make_shared<${type_name}Factory>();
 }
 
 template <>
 std::shared_ptr<IReaderStrategy<std::shared_ptr<${full_type_name}>>> GetReader()
 {
-    auto factory = GlobalContext::GetFactory<std::shared_ptr<${full_type_name}>>();
+    auto factory = Context::Global().GetFactory<std::shared_ptr<${full_type_name}>>();
     return std::make_shared<FactoryReader<std::shared_ptr<${full_type_name}>>>(factory);
 }
 

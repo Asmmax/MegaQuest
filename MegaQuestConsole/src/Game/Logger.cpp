@@ -1,12 +1,14 @@
 #include "IO/Logger.hpp"
 #include "Game/IOutput.hpp"
-#include "Containers/GlobalContext.hpp"
+#include "Containers/Context.hpp"
 
 using namespace IO;
 
+DECLARE_CONTAINER(Logger)
+
 Logger& Logger::Instance()
 {
-	static std::shared_ptr<Logger> instance = GlobalContext::GetContainer<Logger>()->Get();
+	static std::shared_ptr<Logger> instance = Context::Global().GetContainer<Logger>()->Get();
 	return *instance;
 }
 
