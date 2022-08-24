@@ -1,9 +1,8 @@
 ${dependencies}
 #include "Containers/Context.hpp"
+#include "Containers/RegisterBinder.hpp"
 
-${type_name}Impl_Binder ${type_name}Impl_Binder::instance;
-
-${type_name}Impl_Binder::${type_name}Impl_Binder()
+void RegisterBinder<${full_type_name}>::Init(Context& context)
 {
     auto impl = std::make_shared<${type_name}Impl>(
 		"${shared_name}"
@@ -14,9 +13,11 @@ ${methods}
 ${properties}
         );
 		
-	Context::Global().RegisterContainerReader(impl);
+	context.RegisterContainerReader(impl);
 
-	Context::Global().GetContainer<${full_type_name}>()->AddInheritor(impl);
+	context.GetContainer<${full_type_name}>()->AddInheritor(impl);
 	${container_binder_impls}
 }
+
+RegisterBinder<${full_type_name}> ${type_name}Impl_Binder;
 

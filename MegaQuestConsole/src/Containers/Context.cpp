@@ -1,10 +1,12 @@
 #include "Containers/Context.hpp"
 #include "Containers/IContainerReader.hpp"
 #include "Containers/ReaderStrategy/PrimitiveReader.hpp"
+#include "Containers/Register.hpp"
 
 Context::Context(const std::string& id) :
 	_id(id)
 {
+	Register::Instance().RegisterContext(*this);
 }
 
 Context& Context::Global() {
