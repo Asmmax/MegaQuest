@@ -1,4 +1,5 @@
 ${dependencies}
+#include "Containers/Context.hpp"
 
 ${type_name}Impl_Binder ${type_name}Impl_Binder::instance;
 
@@ -8,23 +9,11 @@ ${type_name}Impl_Binder::${type_name}Impl_Binder()
 ${properties}
         );
 
-    FactoryBinder<${full_type_name}>().BindImpl(impl);
+	Context::Global().GetFactory<${full_type_name}>()->AddInheritor(impl);
 }
 
 #include "Containers/ReaderStrategy/FactoryReader.hpp"
-
-template<>
-void FactoryBinder<${full_type_name}>::BindImpl(const FactoryBinder::FactoryImplPtr& impl)
-{
-    BindImplWithCast<${type_name}Factory>(impl);
-}
-
-template<>
-template<>
-std::shared_ptr<IFactory<${full_type_name}>> ContainerFactory<IFactory>::Create<${full_type_name}>()
-{
-    return std::make_shared<${type_name}Factory>();
-}
+#include "Containers/Context.hpp"
 
 template <>
 std::shared_ptr<IReaderStrategy<${full_type_name}>> GetReader()

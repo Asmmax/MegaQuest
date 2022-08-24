@@ -1,7 +1,7 @@
 #pragma once
 #include "Containers/ContainerCollection.hpp"
-#include "Containers/IContainer.hpp"
-#include "Containers/IFactory.hpp"
+#include "Containers/Container.hpp"
+#include "Containers/Factory.hpp"
 
 class Context
 {
@@ -17,15 +17,16 @@ public:
 	}
 
 	template <typename Type>
-	std::shared_ptr<IContainer<Type>> GetContainer() {
-		return ContainerCollection<IContainer, Type>::Instance().GetContainer(_id);
+	std::shared_ptr<Container<Type>> GetContainer() {
+		return ContainerCollection<Container, Type>::Instance().GetContainer(_id);
 	}
 
 	template <typename Type>
-	std::shared_ptr<IFactory<Type>> GetFactory()
+	std::shared_ptr<Factory<Type>> GetFactory()
 	{
-		return ContainerCollection<IFactory, Type>::Instance().GetContainer(_id);
+		return ContainerCollection<Factory, Type>::Instance().GetContainer(_id);
 	}
+
 private:
 	std::string _id;
 };

@@ -3,8 +3,6 @@
 #include "Containers/Context.hpp"
 #include "Quests/QuestTarget.hpp"
 
-DECLARE_CONTAINER(IO::InputHandler)
-
 int main()
 {
     Config::SettingsLoader::Load("config.json");

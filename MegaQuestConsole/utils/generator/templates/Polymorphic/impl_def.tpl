@@ -1,4 +1,5 @@
 ${dependencies}
+#include "Containers/Context.hpp"
 
 ${type_name}Impl_Binder ${type_name}Impl_Binder::instance;
 
@@ -8,6 +9,6 @@ ${type_name}Impl_Binder::${type_name}Impl_Binder()
 ${properties}
         );
 
-    FactoryBinder<std::shared_ptr<${full_type_name}>>().BindImpl(impl);
+    Context::Global().GetFactory<std::shared_ptr<${full_type_name}>>()->AddInheritor(impl);
 	${factory_binder_impls}
 }

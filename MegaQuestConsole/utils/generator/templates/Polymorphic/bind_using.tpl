@@ -1,1 +1,1 @@
-FactoryBinder<std::shared_ptr<${full_base_type_name}>>().BindImpl(impl);
+Context::Global().GetFactory<std::shared_ptr<${full_base_type_name}>>()->AddInheritor(impl);

@@ -4,8 +4,6 @@
 
 using namespace IO;
 
-DECLARE_CONTAINER(Logger)
-
 Logger& Logger::Instance()
 {
 	static std::shared_ptr<Logger> instance = Context::Global().GetContainer<Logger>()->Get();

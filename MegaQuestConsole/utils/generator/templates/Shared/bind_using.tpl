@@ -1,1 +1,1 @@
-ContainerBinder<${full_base_type_name}>().BindImpl(impl);
+Context::Global().GetContainer<${full_base_type_name}>()->AddInheritor(impl);

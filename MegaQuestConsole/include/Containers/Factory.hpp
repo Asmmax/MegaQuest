@@ -1,11 +1,10 @@
 #pragma once
 #include "IFactoryImpl.hpp"
-#include "IFactory.hpp"
 #include "Utils/Reader.hpp"
 #include <vector>
 
 template<typename Type>
-class Factory : public IFactory<Type>
+class Factory
 {
 	using FactoryImplPtr = std::shared_ptr<IFactoryImpl<Type>>;
 public:
@@ -15,7 +14,7 @@ public:
 		_inheritors.push_back(inheritor);
 	}
 
-	Type Get(const nlohmann::json& node) override
+	Type Get(const nlohmann::json& node)
 	{
 		auto typeId = Utils::Read<std::string>(node, "type", std::string());
 		for (auto& inheritor : _inheritors) {
@@ -26,7 +25,7 @@ public:
 		return Type();
 	}
 
-	void InitDependencies(const nlohmann::json& node) override
+	void InitDependencies(const nlohmann::json& node)
 	{
 		auto typeId = Utils::Read<std::string>(node, "type", std::string());
 		for (auto& inheritor : _inheritors) {

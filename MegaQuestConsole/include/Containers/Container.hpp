@@ -1,10 +1,9 @@
 #pragma once
 #include "IContainerImpl.hpp"
-#include "IContainer.hpp"
 #include <vector>
 
 template<typename Type>
-class Container : public IContainer<Type>
+class Container
 {
 	using TypePtr = std::shared_ptr<Type>;
 	using ContainerImplPtr = std::shared_ptr<IContainerImpl<Type>>;
@@ -15,21 +14,21 @@ public:
 		_inheritors.push_back(inheritor);
 	}
 
-	void CreateById(const std::string& id) override
+	void CreateById(const std::string& id)
 	{
 		for (auto& inheritor : _inheritors) {
 			inheritor->CreateById(id);
 		}
 	}
 
-	void InitById(const std::string& id) override
+	void InitById(const std::string& id)
 	{
 		for (auto& inheritor : _inheritors) {
 			inheritor->InitById(id);
 		}
 	}
 
-	TypePtr Get(const std::string& id) override
+	TypePtr Get(const std::string& id)
 	{
 		for (auto& inheritor : _inheritors) {
 			if (inheritor->Contains(id)) {
@@ -39,7 +38,7 @@ public:
 		return nullptr;
 	}
 
-	TypePtr Get() override
+	TypePtr Get()
 	{
 		for (auto& inheritor : _inheritors) {
 			if (!inheritor->Empty()) {

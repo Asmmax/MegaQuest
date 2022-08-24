@@ -1,5 +1,6 @@
 ${dependencies}
 #include "Containers/GlobalRootReader.hpp"
+#include "Containers/Context.hpp"
 
 ${type_name}Impl_Binder ${type_name}Impl_Binder::instance;
 
@@ -16,7 +17,7 @@ ${properties}
 		
 	GlobalRootReader::Instance().AddContainer(impl);
 
-    ContainerBinder<${full_type_name}>().BindImpl(impl);
+	Context::Global().GetContainer<${full_type_name}>()->AddInheritor(impl);
 	${container_binder_impls}
 }
 

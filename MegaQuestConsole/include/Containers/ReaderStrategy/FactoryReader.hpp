@@ -1,6 +1,6 @@
 #pragma once
 #include "Containers/IReaderStrategy.hpp"
-#include "Containers/IFactory.hpp"
+#include "Containers/Factory.hpp"
 #include "json.hpp"
 #include <memory>
 #include <assert.h>
@@ -8,7 +8,7 @@
 template<typename Type>
 class FactoryReader : public IReaderStrategy<Type>
 {
-	using FactoryPtr = std::weak_ptr<IFactory<Type>>;
+	using FactoryPtr = std::weak_ptr<Factory<Type>>;
 
 public:
 	FactoryReader(const FactoryPtr& factory) :

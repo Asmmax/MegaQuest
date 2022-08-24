@@ -1,17 +1,5 @@
 #include "Containers/ReaderStrategy/ContainerReader.hpp"
-
-template<>
-void ContainerBinder<${full_type_name}>::BindImpl(const ContainerBinder::ContainerImplPtr& impl)
-{
-	BindImplWithCast<${type_name}Container>(impl);
-}
-
-template<>
-template<>
-std::shared_ptr<IContainer<${full_type_name}>> ContainerFactory<IContainer>::Create<${full_type_name}>()
-{
-	return std::make_shared<${type_name}Container>();
-}
+#include "Containers/Context.hpp"
 
 template <>
 std::shared_ptr<IReaderStrategy<std::shared_ptr<${full_type_name}>>> GetReader()
