@@ -19,6 +19,6 @@ private:
     static ${type_name}Impl_Binder instance;
 };
 
-#include "Containers/Utils.hpp"
+#include "Containers/Context.hpp"
 
 DECLARE_READER(${full_type_name})

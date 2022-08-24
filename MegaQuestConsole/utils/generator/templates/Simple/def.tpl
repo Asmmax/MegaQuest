@@ -16,8 +16,8 @@ ${properties}
 #include "Containers/Context.hpp"
 
 template <>
-std::shared_ptr<IReaderStrategy<${full_type_name}>> GetReader()
+std::shared_ptr<IReaderStrategy<${full_type_name}>> Context::GetReader()
 {
-    auto factory = Context::Global().GetFactory<${full_type_name}>();
+    auto factory = GetFactory<${full_type_name}>();
     return std::make_shared<FactoryReader<${full_type_name}>>(factory);
 }

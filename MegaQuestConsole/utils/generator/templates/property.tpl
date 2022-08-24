@@ -1,1 +1,1 @@
-,CreateProperty<${full_arg_type_name}>("${arg_name}", ${full_arg_type_name}())
+,Context::Global().CreateProperty<${full_arg_type_name}>("${arg_name}", ${full_arg_type_name}())

@@ -2,8 +2,8 @@
 #include "Containers/Context.hpp"
 
 template <>
-std::shared_ptr<IReaderStrategy<std::shared_ptr<${full_type_name}>>> GetReader()
+std::shared_ptr<IReaderStrategy<std::shared_ptr<${full_type_name}>>> Context::GetReader()
 {
-	auto container = Context::Global().GetContainer<${full_type_name}>();
+	auto container = GetContainer<${full_type_name}>();
 	return std::make_shared<ContainerReader<std::shared_ptr<${full_type_name}>>>(container);
 }
