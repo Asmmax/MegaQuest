@@ -1,6 +1,6 @@
 #include "Config/SettingsLoader.hpp"
 
-#include "Containers/GlobalRootReader.hpp"
+#include "Containers/Context.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -67,7 +67,7 @@ void SettingsLoader::LoadSettings(const std::string& settingsPath)
         }
 
         auto jsonAsset = LoadJson(dir_entry.path().u8string());
-        GlobalRootReader::Instance().AddRoot(jsonAsset);
+        Context::Global().AddRoot(jsonAsset);
     }
-    GlobalRootReader::Instance().Read();
+    Context::Global().Read();
 }

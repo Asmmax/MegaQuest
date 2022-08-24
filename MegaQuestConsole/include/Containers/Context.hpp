@@ -3,18 +3,15 @@
 #include "Containers/Container.hpp"
 #include "Containers/Factory.hpp"
 
+class IContainerReader;
+
 class Context
 {
+	using ContainerReaderPtr = std::shared_ptr<IContainerReader>;
 public:
-	Context(const std::string& id):
-		_id(id)
-	{
-	}
+	Context(const std::string& id);
 
-	static Context& Global() {
-		static Context globalContext("");
-		return globalContext;
-	}
+	static Context& Global();
 
 	template <typename Type>
 	std::shared_ptr<Container<Type>> GetContainer() {
@@ -27,6 +24,12 @@ public:
 		return ContainerCollection<Factory, Type>::Instance().GetContainer(_id);
 	}
 
+	void RegisterContainerReader(const ContainerReaderPtr& container);
+
+	void AddRoot(const nlohmann::json& root);
+	void Read();
+
 private:
 	std::string _id;
+	std::vector<ContainerReaderPtr> _containerReaders;
 };
