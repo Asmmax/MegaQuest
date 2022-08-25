@@ -4,7 +4,7 @@
 	{
 		"id":"main",
 		"type":"QuestList",
-		"quests":["testquest/root"],
+		"quests":["quests/testquest/root"],
 		"currentId":0
 	}
 	],

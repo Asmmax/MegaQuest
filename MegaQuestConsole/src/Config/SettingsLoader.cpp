@@ -68,13 +68,16 @@ void SettingsLoader::LoadSettings(const std::string& settingsPath)
         }
 
         auto jsonAsset = LoadJson(dir_entry.path().u8string());
-        auto contextId = GetContextId(jsonAsset, dir_entry.path().stem().u8string());
+        auto relativePath = std::filesystem::relative(dir_entry.path(), settingsPath);
+        auto rawContextId = relativePath.replace_extension().u8string();
+        std::replace(rawContextId.begin(), rawContextId.end(), '\\', '/');
+        auto contextId = ReadContextId(jsonAsset, rawContextId);
         ContextManager::Instance().AddRoot(jsonAsset, contextId);
     }
     ContextManager::Instance().Read();
 }
 
-std::string SettingsLoader::GetContextId(const nlohmann::json& asset, const std::string& defaultId)
+std::string SettingsLoader::ReadContextId(const nlohmann::json& asset, const std::string& defaultId)
 {
     if (asset.find("contextId") != asset.end()) {
         return Utils::Read(asset, "contextId", std::string());

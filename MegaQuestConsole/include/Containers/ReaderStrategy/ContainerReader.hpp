@@ -69,7 +69,7 @@ private:
 
 	std::pair<std::string, std::string> ParseId(const std::string& complexId)
 	{
-		auto delimiterPos = complexId.find("/");
+		auto delimiterPos = complexId.rfind("/");
 		if (delimiterPos == std::string::npos) {
 			return std::pair<std::string, std::string>("", complexId);
 		}
