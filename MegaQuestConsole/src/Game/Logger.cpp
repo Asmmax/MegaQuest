@@ -1,12 +1,13 @@
 #include "IO/Logger.hpp"
 #include "Game/IOutput.hpp"
 #include "Containers/Context.hpp"
+#include "Containers/ContextManager.hpp"
 
 using namespace IO;
 
 Logger& Logger::Instance()
 {
-	static std::shared_ptr<Logger> instance = Context::Global().GetContainer<Logger>()->Get();
+	static std::shared_ptr<Logger> instance = ContextManager::Instance().GetContext().GetContainer<Logger>()->Get();
 	return *instance;
 }
 

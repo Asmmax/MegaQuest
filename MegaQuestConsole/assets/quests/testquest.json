@@ -1,7 +1,7 @@
 {
 	"quests":[
 	{
-		"id":"testquest",
+		"id":"root",
 		"type":"QuestHeader"
 	}
 	],
@@ -11,28 +11,28 @@
 		"type":"ParagraphInput",
 		"slot":"paragraph_main",
 		"paragraph":"root",
-		"quest":"testquest"
+		"quest":"root"
 	},
 	{
 		"id":"testquest_container_main",
 		"type":"CaseContainerInput",
 		"slot":"container_main",
 		"container":"root",
-		"quest":"testquest"
+		"quest":"root"
 	},
 	{
 		"id":"testquest_container_inventory",
 		"type":"CaseContainerInput",
 		"slot":"container_inventory",
 		"container":"to_inventory",
-		"quest":"testquest"
+		"quest":"root"
 	},
 	{
 		"id":"testquest_inventory_player",
 		"type":"InventoryInput",
 		"slot":"inventory_player",
 		"inventory":"player",
-		"quest":"testquest"
+		"quest":"root"
 	}
 	],
 	"items": [
@@ -154,7 +154,7 @@
 			"count":0
 		}
 		],
-		"quest":"testquest"
+		"quest":"root"
 	}
 	],
 	"paragraphs":[
@@ -162,7 +162,7 @@
 		"type":"ParagraphStateMachine",
 		"id":"root",
 		"state":"world",
-		"quest":"testquest"
+		"quest":"root"
 	},
 	{
 		"type":"ParagraphGroup",
@@ -182,7 +182,7 @@
 		"type":"ParagraphStateMachine",
 		"id":"world_root",
 		"state":"road",
-		"quest":"testquest"
+		"quest":"root"
 	},
 	{
 		"type":"ConditionalParagraph",
@@ -245,7 +245,7 @@
 		"type":"ParagraphStateMachine",
 		"id":"trump",
 		"state":"talked_trump",
-		"quest":"testquest"
+		"quest":"root"
 	},
 	{
 		"type":"TextParagraph",
@@ -462,7 +462,7 @@
 		"type":"CaseContainerStateMachine",
 		"id":"root",
 		"state":"world",
-		"quest":"testquest"
+		"quest":"root"
 	},
 	{
 		"type":"CaseContainerGroup",
@@ -473,7 +473,7 @@
 		"type":"CaseContainerStateMachine",
 		"id":"world_root",
 		"state":"road",
-		"quest":"testquest"
+		"quest":"root"
 	},
 	{
 		"type":"ConditionalCaseContainer",
@@ -558,7 +558,7 @@
 		"type":"CaseContainerStateMachine",
 		"id":"trump",
 		"state":"talked_trump",
-		"quest":"testquest"
+		"quest":"root"
 	},
 	{
 		"type":"SimpleCaseContainer",
@@ -614,7 +614,7 @@
 		"type":"CaseContainerStateMachine",
 		"id":"to_inventory",
 		"state":"to_inventory_root",
-		"quest":"testquest"
+		"quest":"root"
 	},
 	{
 		"type":"SimpleCaseContainer",

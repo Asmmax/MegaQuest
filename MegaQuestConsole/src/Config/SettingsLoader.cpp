@@ -1,6 +1,7 @@
 #include "Config/SettingsLoader.hpp"
 
-#include "Containers/Context.hpp"
+#include "Containers/ContextManager.hpp"
+#include "Utils/Reader.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -67,7 +68,16 @@ void SettingsLoader::LoadSettings(const std::string& settingsPath)
         }
 
         auto jsonAsset = LoadJson(dir_entry.path().u8string());
-        Context::Global().AddRoot(jsonAsset);
+        auto contextId = GetContextId(jsonAsset, dir_entry.path().stem().u8string());
+        ContextManager::Instance().AddRoot(jsonAsset, contextId);
     }
-    Context::Global().Read();
+    ContextManager::Instance().Read();
+}
+
+std::string SettingsLoader::GetContextId(const nlohmann::json& asset, const std::string& defaultId)
+{
+    if (asset.find("contextId") != asset.end()) {
+        return Utils::Read(asset, "contextId", std::string());
+    }
+    return defaultId;
 }

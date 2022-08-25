@@ -1,9 +1,10 @@
 {
+	"contextId":"",
 	"quests":[
 	{
 		"id":"main",
 		"type":"QuestList",
-		"quests":["testquest"],
+		"quests":["testquest/root"],
 		"currentId":0
 	}
 	],

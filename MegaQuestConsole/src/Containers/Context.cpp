@@ -9,11 +9,6 @@ Context::Context(const std::string& id) :
 	Register::Instance().RegisterContext(*this);
 }
 
-Context& Context::Global() {
-	static Context globalContext("");
-	return globalContext;
-}
-
 void Context::RegisterContainerReader(const ContainerReaderPtr& container)
 {
 	_containerReaders.push_back(container);

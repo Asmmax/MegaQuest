@@ -13,8 +13,6 @@ class Context
 public:
 	Context(const std::string& id);
 
-	static Context& Global();
-
 	template <typename Type>
 	std::shared_ptr<Container<Type>> GetContainer() {
 		return ContainerCollection<Container, Type>::Instance().GetContainer(_id);

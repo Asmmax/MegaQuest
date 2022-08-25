@@ -11,5 +11,6 @@ namespace Config
 	private:
 		static nlohmann::json LoadJson(const std::string& filename);
 		static void LoadSettings(const std::string& settingsPath);
+		static std::string GetContextId(const nlohmann::json& asset, const std::string& defaultId);
 	};
 }
