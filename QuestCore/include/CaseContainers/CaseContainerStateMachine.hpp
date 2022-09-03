@@ -8,7 +8,7 @@ namespace QuestCore
 	class CaseContainerStateMachine : public ICaseContainer, public QuestInitable
 	{
 	public:
-		CaseContainerStateMachine(const QuestHeaderPtr& quest);
+		CaseContainerStateMachine(const QuestPtr& quest);
 		/// @inject
 		void InitState(const ICaseContainer::WeakPtr& state);
 		void SetState(const ICaseContainer::WeakPtr& state);

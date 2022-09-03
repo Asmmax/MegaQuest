@@ -11,7 +11,7 @@ namespace QuestCore
 		using Base = Slot<IParagraph>;
 		using ParagraphPtr = std::shared_ptr<IParagraph>;
 	public:
-		ParagraphSlot(const QuestHeaderPtr& quest);
+		ParagraphSlot(const QuestPtr& quest);
 		ParagraphPtr GetParagraph() const;
 	};
 }

@@ -5,7 +5,7 @@ using namespace QuestCore;
 
 CaseContainerInput::CaseContainerInput(const CaseContainerPtr& container, 
 	const CaseContainerSlotPtr& slot,
-	const QuestHeaderPtr& quest) :
+	const QuestPtr& quest) :
 
 	Base(container, slot, quest)
 {

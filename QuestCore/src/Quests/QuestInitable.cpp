@@ -1,9 +1,9 @@
 #include "Quests/QuestInitable.hpp"
-#include "Quests/QuestHeader.hpp"
+#include "Quests/Quest.hpp"
 
 using namespace QuestCore;
 
-QuestInitable::QuestInitable(const QuestHeaderPtr& quest):
+QuestInitable::QuestInitable(const QuestPtr& quest):
 	_quest(quest)
 {
 	_quest->AddInitCallback([this]() {

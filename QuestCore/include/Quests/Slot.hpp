@@ -11,7 +11,7 @@ namespace QuestCore
 		using TPtr = std::shared_ptr<T>;
 		using InputWeakPtr = std::weak_ptr<IInput<T>>;
 	public:
-		Slot(const QuestHeaderPtr& quest):
+		Slot(const QuestPtr& quest):
 			QuestInitable(quest)
 		{
 		}

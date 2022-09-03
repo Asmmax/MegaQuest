@@ -4,7 +4,7 @@
 
 using namespace QuestCore;
 
-ParagraphStateMachine::ParagraphStateMachine(const QuestHeaderPtr& quest):
+ParagraphStateMachine::ParagraphStateMachine(const QuestPtr& quest):
 	QuestInitable(quest)
 {
 }

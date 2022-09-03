@@ -3,7 +3,7 @@
 
 using namespace QuestCore;
 
-CaseContainerStateMachine::CaseContainerStateMachine(const QuestHeaderPtr& quest):
+CaseContainerStateMachine::CaseContainerStateMachine(const QuestPtr& quest):
 	QuestInitable(quest)
 {
 }

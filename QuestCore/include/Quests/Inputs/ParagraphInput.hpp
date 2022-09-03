@@ -16,6 +16,6 @@ namespace QuestCore
 	public:
 		ParagraphInput(const ParagraphPtr& paragraph, 
 			const ParagraphSlotPtr& slot,
-			const QuestHeaderPtr& quest);
+			const QuestPtr& quest);
 	};
 }

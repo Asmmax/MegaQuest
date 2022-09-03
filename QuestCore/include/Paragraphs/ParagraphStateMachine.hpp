@@ -10,7 +10,7 @@ namespace QuestCore
 	class ParagraphStateMachine : public IParagraph, public QuestInitable
 	{
 	public:
-		ParagraphStateMachine(const QuestHeaderPtr& quest);
+		ParagraphStateMachine(const QuestPtr& quest);
 		/// @inject
 		void InitState(const std::weak_ptr<IParagraph>& state);
 		void SetState(const std::weak_ptr<IParagraph>& state);

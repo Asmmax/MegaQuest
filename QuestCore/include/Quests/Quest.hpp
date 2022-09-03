@@ -6,7 +6,7 @@
 namespace QuestCore
 {
 	/// @serializable
-	class QuestHeader : public IQuest
+	class Quest : public IQuest
 	{
 	protected:
 		using Callback = std::function<void()>;

@@ -11,7 +11,7 @@ namespace QuestCore
 		using Base = Slot<ICaseContainer>;
 		using CaseContainerPtr = std::shared_ptr<ICaseContainer>;
 	public:
-		CaseContainerSlot(const QuestHeaderPtr& quest);
+		CaseContainerSlot(const QuestPtr& quest);
 		CaseContainerPtr GetCaseContainer() const;
 	};
 }

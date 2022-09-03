@@ -14,7 +14,7 @@ namespace QuestCore
 	public:
 		Input(const TPtr& ptr,
 			const SlotPtr& slot,
-			const QuestHeaderPtr& quest):
+			const QuestPtr& quest):
 
 			QuestInitable(quest),
 			_ptr(ptr),

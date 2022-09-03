@@ -3,7 +3,7 @@
 
 using namespace QuestCore;
 
-InventorySlot::InventorySlot(const QuestHeaderPtr& quest):
+InventorySlot::InventorySlot(const QuestPtr& quest):
 	Base(quest)
 {
 }

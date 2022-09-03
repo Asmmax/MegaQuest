@@ -3,19 +3,19 @@
 
 namespace QuestCore
 {
-	class QuestHeader;
+	class Quest;
 
 	class QuestInitable
 	{
 	protected:
-		using QuestHeaderPtr = std::shared_ptr<QuestHeader>;
+		using QuestPtr = std::shared_ptr<Quest>;
 	public:
-		QuestInitable(const QuestHeaderPtr& quest);
+		QuestInitable(const QuestPtr& quest);
 
 		virtual ~QuestInitable() = default;
 		virtual void Init() = 0;
 
 	private:
-		QuestHeaderPtr _quest;
+		QuestPtr _quest;
 	};
 }

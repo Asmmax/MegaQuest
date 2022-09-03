@@ -1,10 +1,10 @@
 #pragma once
-#include "Quests/QuestHeader.hpp"
+#include "Quests/Quest.hpp"
 
 namespace QuestCore
 {
 	/// @serializable
-	class QuestList : public QuestHeader
+	class QuestList : public Quest
 	{
 	public:
 		QuestList(const std::vector<IQuest::Ptr>& quests);

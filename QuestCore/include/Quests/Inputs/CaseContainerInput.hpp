@@ -15,6 +15,6 @@ namespace QuestCore
 	public:
 		CaseContainerInput(const CaseContainerPtr& container,
 			const CaseContainerSlotPtr& slot,
-			const QuestHeaderPtr& quest);
+			const QuestPtr& quest);
 	};
 }

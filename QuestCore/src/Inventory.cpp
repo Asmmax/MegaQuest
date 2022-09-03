@@ -3,7 +3,7 @@
 
 using namespace QuestCore;
 
-Inventory::Inventory(const QuestHeaderPtr& quest, const std::vector<ItemRecord>& items):
+Inventory::Inventory(const QuestPtr& quest, const std::vector<ItemRecord>& items):
     QuestInitable(quest)
 {
     for (auto& item : items) {

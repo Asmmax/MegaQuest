@@ -3,7 +3,7 @@
 
 using namespace QuestCore;
 
-ParagraphSlot::ParagraphSlot(const QuestHeaderPtr& quest):
+ParagraphSlot::ParagraphSlot(const QuestPtr& quest):
 	Base(quest)
 {
 }

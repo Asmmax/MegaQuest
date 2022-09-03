@@ -9,6 +9,6 @@ void QuestTarget::SetCurrent(const IQuest::Ptr& current)
 
 void QuestTarget::Init()
 {
-	QuestHeader::Init();
+	Quest::Init();
 	_current->Init();
 }

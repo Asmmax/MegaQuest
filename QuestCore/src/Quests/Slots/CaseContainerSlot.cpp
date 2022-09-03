@@ -3,7 +3,7 @@
 
 using namespace QuestCore;
 
-CaseContainerSlot::CaseContainerSlot(const QuestHeaderPtr& quest):
+CaseContainerSlot::CaseContainerSlot(const QuestPtr& quest):
 	Base(quest)
 {
 }

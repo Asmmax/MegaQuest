@@ -1,10 +1,10 @@
 #pragma once
-#include "Quests/QuestHeader.hpp"
+#include "Quests/Quest.hpp"
 
 namespace QuestCore
 {
 	/// @serializable
-	class QuestTarget : public QuestHeader
+	class QuestTarget : public Quest
 	{
 	public:
 		/// @inject

@@ -15,6 +15,6 @@ namespace QuestCore
 	public:
 		InventoryInput(const InventoryPtr& inventory, 
 			const InventorySlotPtr& slot,
-			const QuestHeaderPtr& quest);
+			const QuestPtr& quest);
 	};
 }

@@ -28,6 +28,6 @@ void QuestList::Down()
 
 void QuestList::Init()
 {
-	QuestHeader::Init();
+	Quest::Init();
 	_current->Init();
 }

@@ -1,13 +1,13 @@
-#include "Quests/QuestHeader.hpp"
+#include "Quests/Quest.hpp"
 
 using namespace QuestCore;
 
-void QuestHeader::AddInitCallback(const Callback& callback)
+void Quest::AddInitCallback(const Callback& callback)
 {
 	_initCallbacks.push_back(callback);
 }
 
-void QuestHeader::Init()
+void Quest::Init()
 {
 	for (auto& callback : _initCallbacks) {
 		callback();

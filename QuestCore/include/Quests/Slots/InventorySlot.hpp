@@ -11,7 +11,7 @@ namespace QuestCore
 		using Base = Slot<Inventory>;
 		using InventoryPtr = std::shared_ptr<Inventory>;
 	public:
-		InventorySlot(const QuestHeaderPtr& quest);
+		InventorySlot(const QuestPtr& quest);
 		InventoryPtr GetInventory() const;
 	};
 }
