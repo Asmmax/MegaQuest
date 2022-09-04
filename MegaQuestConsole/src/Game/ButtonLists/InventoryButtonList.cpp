@@ -7,13 +7,13 @@
 using namespace Game;
 
 InventoryButtonList::InventoryButtonList(const QuestCore::TextString& error,
-	const InventorySlotPtr& inventorySlot,
+	const InventoryFactoryPtr& inventoryFactory,
 	const std::vector<int>& counts,
 	const QuestCore::TextString& putMessage,
 	const QuestCore::TextString& throwMessage) :
 
 	ButtonListBase(error),
-	_inventorySlot(inventorySlot),
+	_inventoryFactory(inventoryFactory),
 	_counts(counts),
 	_putMessage(putMessage),
 	_throwMessage(throwMessage)
@@ -44,8 +44,8 @@ void InventoryButtonList::AddPutButton(const ItemPtr& item, int count)
 
 	Button button;
 	button.name = _putMessage + item->GetContains(count);
-	button.callback = [inventorySlot = _inventorySlot, item, count]() {
-		if (auto inventory = inventorySlot->GetInventory()) {
+	button.callback = [inventoryFactory = _inventoryFactory, item, count]() {
+		if (auto inventory = inventoryFactory->GetInventory()) {
 			inventory->PutItem(item, count);
 		}
 	};
@@ -61,8 +61,8 @@ void InventoryButtonList::AddThrowButton(const ItemPtr& item, int count)
 
 	Button button;
 	button.name = _throwMessage + item->GetContains(count);
-	button.callback = [inventorySlot = _inventorySlot, item, count]() {
-		if (auto inventory = inventorySlot->GetInventory()) {
+	button.callback = [inventoryFactory = _inventoryFactory, item, count]() {
+		if (auto inventory = inventoryFactory->GetInventory()) {
 			inventory->ThrowItem(item, count);
 		}
 	};
@@ -74,7 +74,7 @@ std::vector<std::pair<QuestCore::Item::Ptr, int>> InventoryButtonList::GetOrdere
 {
 	std::vector<std::pair<QuestCore::Item::Ptr, int>> result;
 
-	auto inventory = _inventorySlot->GetInventory();
+	auto inventory = _inventoryFactory->GetInventory();
 	if (!inventory) {
 		return result;
 	}

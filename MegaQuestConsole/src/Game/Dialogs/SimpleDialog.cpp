@@ -8,11 +8,11 @@ using namespace Game;
 
 
 SimpleDialog::SimpleDialog(const QuestCore::TextString& intro,
-	const ParagraphSlotPtr& paragraphSlot,
+	const ParagraphFactoryPtr& paragraphFactory,
 	const std::vector<ButtonListPtr> buttonGroups) :
 
 	DialogBase(intro, buttonGroups),
-	_paragraphSlot(paragraphSlot)
+	_paragraphFactory(paragraphFactory)
 {
 }
 
@@ -25,7 +25,7 @@ void SimpleDialog::Draw(IOutput& output)
 {
 	_text = QuestCore::TextString();
 
-	auto paragraph = _paragraphSlot->GetParagraph();
+	auto paragraph = _paragraphFactory->GetParagraph();
 	if (!paragraph) {
 		return;
 	}

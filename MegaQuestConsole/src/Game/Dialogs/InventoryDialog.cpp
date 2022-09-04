@@ -8,17 +8,17 @@
 using namespace Game;
 
 InventoryDialog::InventoryDialog(const QuestCore::TextString& intro,
-	const InventorySlotPtr& inventorySlot,
+	const InventoryFactoryPtr& inventoryFactory,
 	const std::vector<ButtonListPtr> buttonGroups):
 
 	DialogBase(intro, buttonGroups),
-	_inventorySlot(inventorySlot)
+	_inventoryFactory(inventoryFactory)
 {
 }
 
 void InventoryDialog::Draw(IOutput& output)
 {
-	auto inventory = _inventorySlot->GetInventory();
+	auto inventory = _inventoryFactory->GetInventory();
 	if (!inventory) {
 		return;
 	}

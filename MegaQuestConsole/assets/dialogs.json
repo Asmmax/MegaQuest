@@ -13,7 +13,7 @@
 	{
 		"id":"root_buttons",
 		"type":"SimpleButtonList",
-		"containerSlot":"container_main",
+		"containerFactory":"container_main",
 		"show":true,
 		"error":
 		{
@@ -24,12 +24,12 @@
 	{
 		"id":"to_inventory_button",
 		"type":"SimpleButtonList",
-		"containerSlot":"container_inventory"
+		"containerFactory":"container_inventory"
 	},
 	{
 		"id":"inventory_buttons",
 		"type":"InventoryButtonList",
-		"inventorySlot":"inventory_player",
+		"inventoryFactory":"inventory_player",
 		"counts":[1,10],
 		"putMessage":
 		{
@@ -62,7 +62,7 @@
 	{
 		"id":"main",
 		"type":"SimpleDialog",
-		"paragraphSlot":"paragraph_main",
+		"paragraphFactory":"paragraph_main",
 		"intro":
 		{
 			"type":"TextString",
@@ -74,7 +74,7 @@
 	{
 		"id":"inventory",
 		"type":"InventoryDialog",
-		"inventorySlot":"inventory_player",
+		"inventoryFactory":"inventory_player",
 		"intro":
 		{
 			"type":"TextString",

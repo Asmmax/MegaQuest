@@ -1,15 +1,13 @@
 #pragma once
 #include "Quests/Slot.hpp"
+#include "IInventoryFactory.hpp"
 
 namespace QuestCore
 {
-	class Inventory;
-
 	/// @serializable @shared slots
-	class InventorySlot : public Slot<Inventory>
+	class InventorySlot : public IInventoryFactory, public Slot<Inventory>
 	{
 		using Base = Slot<Inventory>;
-		using InventoryPtr = std::shared_ptr<Inventory>;
 	public:
 		InventorySlot(const QuestPtr& quest);
 		InventoryPtr GetInventory() const;

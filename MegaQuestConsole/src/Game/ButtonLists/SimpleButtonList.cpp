@@ -7,18 +7,18 @@ using namespace Game;
 
 SimpleButtonList::SimpleButtonList(const QuestCore::TextString& error,
 	bool show,
-	const ContainerSlotPtr& containerSlot,
+	const ContainerFactoryPtr& containerFactory,
 	const std::string& containerName):
 
 	ButtonListBase(error, show),
-	_containerSlot(containerSlot)
+	_containerFactory(containerFactory)
 {
 }
 
 void SimpleButtonList::UpdateImpl()
 {
 	Clear();
-	if (auto container = _containerSlot->GetCaseContainer()) {
+	if (auto container = _containerFactory->GetCaseContainer()) {
 		container->Print(*this);
 	}
 }

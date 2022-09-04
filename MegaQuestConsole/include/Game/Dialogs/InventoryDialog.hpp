@@ -3,7 +3,7 @@
 
 namespace QuestCore
 {
-	class InventorySlot;
+	class IInventoryFactory;
 	class Inventory;
 }
 
@@ -12,15 +12,15 @@ namespace Game
 	/// @serializable
 	class InventoryDialog : public DialogBase
 	{
-		using InventorySlotPtr = std::shared_ptr<QuestCore::InventorySlot>;
+		using InventoryFactoryPtr = std::shared_ptr<QuestCore::IInventoryFactory>;
 		using InventoryPtr = std::shared_ptr<QuestCore::Inventory>;
 
 	public:
-		InventoryDialog(const QuestCore::TextString& intro, const InventorySlotPtr& inventorySlot,
+		InventoryDialog(const QuestCore::TextString& intro, const InventoryFactoryPtr& inventoryFactory,
 			const std::vector<ButtonListPtr> buttonGroups = std::vector<ButtonListPtr>());
 		virtual void Draw(IOutput& output) override;
 		
 	private:
-		InventorySlotPtr _inventorySlot;
+		InventoryFactoryPtr _inventoryFactory;
 	};
 }

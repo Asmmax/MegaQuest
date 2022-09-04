@@ -1,17 +1,15 @@
 #pragma once
 #include "Quests/Slot.hpp"
+#include "IParagraphFactory.hpp"
 
 namespace QuestCore
 {
-	class IParagraph;
-
 	/// @serializable @shared slots
-	class ParagraphSlot : public Slot<IParagraph>
+	class ParagraphSlot : public IParagraphFactory, public Slot<IParagraph>
 	{
 		using Base = Slot<IParagraph>;
-		using ParagraphPtr = std::shared_ptr<IParagraph>;
 	public:
 		ParagraphSlot(const QuestPtr& quest);
-		ParagraphPtr GetParagraph() const;
+		virtual ParagraphPtr GetParagraph() const override;
 	};
 }
