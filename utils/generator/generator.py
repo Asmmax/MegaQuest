@@ -27,6 +27,11 @@ shared_method_tpl_path = 'templates/Shared/method.tpl'
 shared_bind_using_tpl_path = 'templates/Shared/bind_using.tpl'
 
 
+class Tag:
+    name = ''
+    args = []
+
+
 class TagUtils:
     inherited_tags = ['shared', 'polymorphic']
 
@@ -82,14 +87,14 @@ class TagUtils:
         return tags
 
     @staticmethod
-    def replace_tag(source_tag, dest_tag):
-        if source_tag.args == dest_tag.args:
+    def replace_tag(source_tag, destination_tag):
+        if source_tag.args == destination_tag.args:
             return
-        if not dest_tag.args:
+        if not destination_tag.args:
             return
 
         assert not source_tag.args
-        source_tag.args = dest_tag.args
+        source_tag.args = destination_tag.args
 
     @staticmethod
     def merge_tags(result_tags, input_tags):
@@ -118,6 +123,23 @@ class TagUtils:
             TagUtils.merge_tags(tags, temp_tags)
         return tags
 
+    @staticmethod
+    def get_class_tags(node):
+        tags = TagUtils.parse_tags(node.raw_comment)
+        base_tags = TagUtils.get_inherited_tags(node)
+        for class_tag in tags:
+            TagUtils.remove_tag(base_tags, class_tag.name)
+        for base_tag in base_tags:
+            tags.append(base_tag)
+        return tags
+
+    @staticmethod
+    def get_tag_arg(tags, tag_name):
+        for tag in tags:
+            if tag.name == tag_name:
+                assert tag.args
+                return tag.args[0]
+
 
 class TypeUtils:
     @staticmethod
@@ -130,10 +152,10 @@ class TypeUtils:
 
     @staticmethod
     def clean_up(raw_str):
-        redundants = ['std::vector', 'std::shared_ptr']
-        for redundant in redundants:
-            if raw_str.startswith(redundant):
-                raw_str = raw_str.removeprefix(redundant)
+        redundant = ['std::vector', 'std::shared_ptr']
+        for expr in redundant:
+            if raw_str.startswith(expr):
+                raw_str = raw_str.removeprefix(expr)
                 raw_str = raw_str.removeprefix('<')
                 raw_str = raw_str.removesuffix('>')
                 TypeUtils.clean_up(raw_str)
@@ -226,11 +248,6 @@ class SerializableEnum:
         stream.write(enum_cpp_tpl.substitute(locals()))
 
 
-class Tag:
-    name = ''
-    args = []
-
-
 class Base:
     def __init__(self, full_type_name):
         self.full_type_name = full_type_name
@@ -266,13 +283,6 @@ class SerializableClass:
         self.type_name = node.spelling
         self.full_type_name = node.type.spelling
 
-        self.tags = TagUtils.parse_tags(node.raw_comment)
-        base_tags = TagUtils.get_inherited_tags(node)
-        for class_tag in self.tags:
-            TagUtils.remove_tag(base_tags, class_tag.name)
-        for base_tag in base_tags:
-            self.tags.append(base_tag)
-
         self.bases = SerializableClass.find_bases(node)
         self.properties = SerializableClass.find_properties(node)
         self.methods = SerializableClass.find_methods(node)
@@ -301,7 +311,6 @@ class SerializableClass:
     def find_properties(node):
         properties = []
         constructor = SerializableClass.get_suit_constructor(node)
-        args = []
         if constructor:
             args = constructor.get_arguments()
         else:
@@ -363,30 +372,46 @@ class SerializableClass:
         return methods
 
     def fill_header(self, stream):
-        if TagUtils.consist_tag(self.tags, 'shared'):
-            if not TagUtils.consist_tag(self.tags, 'abstract'):
-                self.fill_shared_impl_header(stream)
-            self.fill_shared_interface_header(stream)
-        elif TagUtils.consist_tag(self.tags, 'polymorphic'):
-            if not TagUtils.consist_tag(self.tags, 'abstract'):
-                self.fill_polymorphic_impl_header(stream)
-            self.fill_polymorphic_interface_header(stream)
-        else:
-            self.fill_simple_header(stream)
+        pass
 
     def fill_source(self, stream, path_utils):
-        if TagUtils.consist_tag(self.tags, 'shared'):
-            if not TagUtils.consist_tag(self.tags, 'abstract'):
-                self.fill_shared_impl_source(stream, path_utils)
-            self.fill_shared_interface_source(stream)
-        elif TagUtils.consist_tag(self.tags, 'polymorphic'):
-            if not TagUtils.consist_tag(self.tags, 'abstract'):
-                self.fill_polymorphic_impl_source(stream, path_utils)
-            self.fill_polymorphic_interface_source(stream)
-        else:
-            self.fill_simple_source(stream, path_utils)
+        pass
 
-    def fill_shared_impl_header(self, stream):
+    def init_dependencies(self, dependencies):
+        self.dependencies = dependencies
+
+    def get_all_serializable_bases(self):
+        all_bases = []
+        for base in self.bases:
+            all_bases.extend(base.get_all_serializable_classes())
+        return all_bases
+
+
+class SharedInterface(SerializableClass):
+    def __init__(self, node):
+        super(SharedInterface, self).__init__(node)
+
+    def fill_header(self, stream):
+        shared_interface_hpp_tpl = Template(Path(shared_interface_decl_tpl_path).read_text())
+
+        type_name = self.type_name
+        full_type_name = self.full_type_name
+        stream.write(shared_interface_hpp_tpl.substitute(locals()))
+
+    def fill_source(self, stream, path_utils):
+        shared_interface_cpp_tpl = Template(Path(shared_interface_def_tpl_path).read_text())
+
+        type_name = self.type_name
+        full_type_name = self.full_type_name
+        stream.write(shared_interface_cpp_tpl.substitute(locals()))
+
+
+class SharedClass(SharedInterface):
+    def __init__(self, node, shared_name):
+        self.shared_name = shared_name
+        super(SharedClass, self).__init__(node)
+
+    def fill_header(self, stream):
         shared_impl_hpp_tpl = Template(Path(shared_impl_decl_tpl_path).read_text())
 
         type_name = self.type_name
@@ -403,16 +428,17 @@ class SerializableClass:
         method_arg_types = '\n'.join(method_arg_types_list)
 
         property_types_list = []
-        for property in self.properties:
-            property_types_list.append(', ' + property.full_type_name)
+        for _property in self.properties:
+            property_types_list.append(', ' + _property.full_type_name)
         property_types = '\n'.join(property_types_list)
 
         stream.write(shared_impl_hpp_tpl.substitute(locals()))
+        super(SharedClass, self).fill_header(stream)
 
-    def fill_shared_impl_source(self, stream, path_utils):
+    def fill_source(self, stream, path_utils):
         method_cpp_tpl = Template(Path(shared_method_tpl_path).read_text())
         shared_impl_cpp_tpl = Template(Path(shared_impl_def_tpl_path).read_text())
-        containerBinderImpl_cpp_tpl = Template(Path(shared_bind_using_tpl_path).read_text())
+        container_binder_impl_cpp_tpl = Template(Path(shared_bind_using_tpl_path).read_text())
         property_cpp_tpl = Template(Path(property_tpl_path).read_text())
 
         type_name = self.type_name
@@ -422,7 +448,7 @@ class SerializableClass:
         for dependency in self.dependencies:
             if dependency.filename == self.filename:
                 continue
-            gen_path = PurePath(path_utils.out_include_dir).\
+            gen_path = PurePath(path_utils.out_include_dir). \
                 joinpath(path_utils.get_gen_path_for(dependency.filename)).with_suffix('.hpp')
             dependency_include = '#include ' + '"' + str(gen_path).replace('\\', '/') + '"'
             if not dependencies_list.count(dependency_include):
@@ -439,9 +465,9 @@ class SerializableClass:
         methods = ',\n'.join(method_list)
 
         property_list = []
-        for property in self.properties:
-            full_arg_type_name = property.full_type_name
-            arg_name = property.arg_name
+        for _property in self.properties:
+            full_arg_type_name = _property.full_type_name
+            arg_name = _property.arg_name
             simple_property = property_cpp_tpl.substitute(locals())
             property_list.append(simple_property)
         properties = '\n'.join(property_list)
@@ -449,33 +475,40 @@ class SerializableClass:
         base_list = []
         for base in self.get_all_serializable_bases():
             full_base_type_name = base.full_type_name
-            container_binder_impl = containerBinderImpl_cpp_tpl.substitute(locals())
+            container_binder_impl = container_binder_impl_cpp_tpl.substitute(locals())
             base_list.append(container_binder_impl)
         container_binder_impls = '\n'.join(base_list)
 
-        shared_name = ''
-        for tag in self.tags:
-            if tag.name == 'shared':
-                assert tag.args
-                shared_name = tag.args[0]
+        shared_name = self.shared_name
 
         stream.write(shared_impl_cpp_tpl.substitute(locals()))
+        super(SharedClass, self).fill_source(stream, path_utils)
 
-    def fill_shared_interface_header(self, stream):
-        shared_interface_hpp_tpl = Template(Path(shared_interface_decl_tpl_path).read_text())
+
+class PolymorphicInterface(SerializableClass):
+    def __init__(self, node):
+        super(PolymorphicInterface, self).__init__(node)
+
+    def fill_header(self, stream):
+        polymorphic_interface_hpp_tpl = Template(Path(polymorphic_interface_decl_tpl_path).read_text())
 
         type_name = self.type_name
         full_type_name = self.full_type_name
-        stream.write(shared_interface_hpp_tpl.substitute(locals()))
+        stream.write(polymorphic_interface_hpp_tpl.substitute(locals()))
 
-    def fill_shared_interface_source(self, stream):
-        shared_interface_cpp_tpl = Template(Path(shared_interface_def_tpl_path).read_text())
+    def fill_source(self, stream, path_utils):
+        polymorphic_interface_cpp_tpl = Template(Path(polymorphic_interface_def_tpl_path).read_text())
 
         type_name = self.type_name
         full_type_name = self.full_type_name
-        stream.write(shared_interface_cpp_tpl.substitute(locals()))
+        stream.write(polymorphic_interface_cpp_tpl.substitute(locals()))
 
-    def fill_polymorphic_impl_header(self, stream):
+
+class PolymorphicClass(PolymorphicInterface):
+    def __init__(self, node):
+        super(PolymorphicClass, self).__init__(node)
+
+    def fill_header(self, stream):
         polymorphic_impl_hpp_tpl = Template(Path(polymorphic_impl_decl_tpl_path).read_text())
 
         type_name = self.type_name
@@ -487,24 +520,25 @@ class SerializableClass:
         all_bases = '\n'.join(all_bases_list)
 
         property_types_list = []
-        for property in self.properties:
-            property_types_list.append(', ' + property.full_type_name)
+        for _property in self.properties:
+            property_types_list.append(', ' + _property.full_type_name)
         property_types = '\n'.join(property_types_list)
 
         stream.write(polymorphic_impl_hpp_tpl.substitute(locals()))
+        super(PolymorphicClass, self).fill_header(stream)
 
-    def fill_polymorphic_impl_source(self, stream, path_utils):
+    def fill_source(self, stream, path_utils):
         polymorphic_impl_cpp_tpl = Template(Path(polymorphic_impl_def_tpl_path).read_text())
         property_cpp_tpl = Template(Path(property_tpl_path).read_text())
-        factoryBinderImpl_cpp_tpl = Template(Path(polymorphic_bind_using_tpl_path).read_text())
+        factory_binder_impl_cpp_tpl = Template(Path(polymorphic_bind_using_tpl_path).read_text())
 
         type_name = self.type_name
         full_type_name = self.full_type_name
 
         property_list = []
-        for property in self.properties:
-            full_arg_type_name = property.full_type_name
-            arg_name = property.arg_name
+        for _property in self.properties:
+            full_arg_type_name = _property.full_type_name
+            arg_name = _property.arg_name
             simple_property = property_cpp_tpl.substitute(locals())
             property_list.append(simple_property)
         properties = '\n'.join(property_list)
@@ -512,7 +546,7 @@ class SerializableClass:
         base_list = []
         for base in self.get_all_serializable_bases():
             full_base_type_name = base.full_type_name
-            factory_binder_impl = factoryBinderImpl_cpp_tpl.substitute(locals())
+            factory_binder_impl = factory_binder_impl_cpp_tpl.substitute(locals())
             base_list.append(factory_binder_impl)
         factory_binder_impls = '\n'.join(base_list)
 
@@ -520,7 +554,7 @@ class SerializableClass:
         for dependency in self.dependencies:
             if dependency.filename == self.filename:
                 continue
-            gen_path = PurePath(path_utils.out_include_dir).\
+            gen_path = PurePath(path_utils.out_include_dir). \
                 joinpath(path_utils.get_gen_path_for(dependency.filename)).with_suffix('.hpp')
             dependency_include = '#include ' + '"' + str(gen_path).replace('\\', '/') + '"'
             if not dependencies_list.count(dependency_include):
@@ -528,22 +562,14 @@ class SerializableClass:
         dependencies = '\n'.join(dependencies_list)
 
         stream.write(polymorphic_impl_cpp_tpl.substitute(locals()))
+        super(PolymorphicClass, self).fill_source(stream, path_utils)
 
-    def fill_polymorphic_interface_header(self, stream):
-        polymorphic_interface_hpp_tpl = Template(Path(polymorphic_interface_decl_tpl_path).read_text())
 
-        type_name = self.type_name
-        full_type_name = self.full_type_name
-        stream.write(polymorphic_interface_hpp_tpl.substitute(locals()))
+class SimpleClass(SerializableClass):
+    def __init__(self, node):
+        super(SimpleClass, self).__init__(node)
 
-    def fill_polymorphic_interface_source(self, stream):
-        polymorphic_interface_cpp_tpl = Template(Path(polymorphic_interface_def_tpl_path).read_text())
-
-        type_name = self.type_name
-        full_type_name = self.full_type_name
-        stream.write(polymorphic_interface_cpp_tpl.substitute(locals()))
-
-    def fill_simple_header(self, stream):
+    def fill_header(self, stream):
         simple_hpp_tpl = Template(Path(simple_decl_tpl_path).read_text())
 
         type_name = self.type_name
@@ -555,13 +581,13 @@ class SerializableClass:
         all_bases = '\n'.join(all_bases_list)
 
         property_types_list = []
-        for property in self.properties:
-            property_types_list.append(', ' + property.full_type_name)
+        for _property in self.properties:
+            property_types_list.append(', ' + _property.full_type_name)
         property_types = '\n'.join(property_types_list)
 
         stream.write(simple_hpp_tpl.substitute(locals()))
 
-    def fill_simple_source(self, stream, path_utils):
+    def fill_source(self, stream, path_utils):
         simple_cpp_tpl = Template(Path(simple_def_tpl_path).read_text())
         property_cpp_tpl = Template(Path(property_tpl_path).read_text())
 
@@ -572,7 +598,7 @@ class SerializableClass:
         for dependency in self.dependencies:
             if dependency.filename == self.filename:
                 continue
-            gen_path = PurePath(path_utils.out_include_dir).\
+            gen_path = PurePath(path_utils.out_include_dir). \
                 joinpath(path_utils.get_gen_path_for(dependency.filename)).with_suffix('.hpp')
             dependency_include = '#include ' + '"' + str(gen_path).replace('\\', '/') + '"'
             if not dependencies_list.count(dependency_include):
@@ -580,23 +606,31 @@ class SerializableClass:
         dependencies = '\n'.join(dependencies_list)
 
         property_list = []
-        for property in self.properties:
-            full_arg_type_name = property.full_type_name
-            arg_name = property.arg_name
+        for _property in self.properties:
+            full_arg_type_name = _property.full_type_name
+            arg_name = _property.arg_name
             simple_property = property_cpp_tpl.substitute(locals())
             property_list.append(simple_property)
         properties = '\n'.join(property_list)
 
         stream.write(simple_cpp_tpl.substitute(locals()))
 
-    def init_dependencies(self, dependencies):
-        self.dependencies = dependencies
 
-    def get_all_serializable_bases(self):
-        all_bases = []
-        for base in self.bases:
-            all_bases.extend(base.get_all_serializable_classes())
-        return all_bases
+class SerializableClassFactory:
+    @staticmethod
+    def CreateClass(node):
+        tags = TagUtils.get_class_tags(node)
+        if TagUtils.consist_tag(tags, 'shared'):
+            if not TagUtils.consist_tag(tags, 'abstract'):
+                shared_name = TagUtils.get_tag_arg(tags, 'shared')
+                return SharedClass(node, shared_name)
+            return SharedInterface(node)
+        elif TagUtils.consist_tag(tags, 'polymorphic'):
+            if not TagUtils.consist_tag(tags, 'abstract'):
+                return PolymorphicClass(node)
+            return PolymorphicInterface(node)
+        else:
+            return SimpleClass(node)
 
 
 class Dependency:
@@ -684,13 +718,10 @@ class Generator:
             for add_include in self.path_utils.add_includes:
                 add_include_path = PurePath(add_include)
                 arg_list.append('-I' + str(add_include_path))
-            translation_unit = index.parse(
-                str(path),
-                args=arg_list,
-                options=clang.cindex.TranslationUnit.PARSE_INCOMPLETE
-                        | clang.cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES
-                        | clang.cindex.TranslationUnit.PARSE_PRECOMPILED_PREAMBLE
-            )
+            options = clang.cindex.TranslationUnit.PARSE_INCOMPLETE \
+                | clang.cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES\
+                | clang.cindex.TranslationUnit.PARSE_PRECOMPILED_PREAMBLE
+            translation_unit = index.parse(str(path), args=arg_list, options=options)
             self.analyze_unit(translation_unit.cursor)
 
         for _class in self.classes:
@@ -724,7 +755,7 @@ class Generator:
         self.enums.append(new_enum)
 
     def add_class(self, node: clang.cindex.Cursor):
-        new_class = SerializableClass(node)
+        new_class = SerializableClassFactory.CreateClass(node)
         self.classes.append(new_class)
 
     def generate(self):
@@ -800,12 +831,12 @@ class Generator:
                 dependency = Dependency(base_class.filename)
                 dependencies.append(dependency)
 
-        for property in _class.properties:
-            property_class = self.get_class(property.full_type_name)
+        for _property in _class.properties:
+            property_class = self.get_class(_property.full_type_name)
             if property_class:
                 dependency = Dependency(property_class.filename)
                 dependencies.append(dependency)
-            property_enum = self.get_enum(property.full_type_name)
+            property_enum = self.get_enum(_property.full_type_name)
             if property_enum:
                 dependency = Dependency(property_enum.filename)
                 dependencies.append(dependency)
