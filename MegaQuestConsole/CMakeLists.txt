@@ -2,8 +2,8 @@ cmake_minimum_required (VERSION 3.12)
 
 set(console_include_dir "include/")
 set(console_src_dir "src/")
-set(out_include_path "${PROJECT_SOURCE_DIR}/.generated/MegaQuestConsole/${console_include_dir}")
-set(out_source_path "${PROJECT_SOURCE_DIR}/.generated/MegaQuestConsole/${console_src_dir}")
+set(out_include_path "${PROJECT_BINARY_DIR}/.generated/MegaQuestConsole/${console_include_dir}")
+set(out_source_path "${PROJECT_BINARY_DIR}/.generated/MegaQuestConsole/${console_src_dir}")
 set(scripts_dir "${PROJECT_SOURCE_DIR}/scripts")
 
 if (WIN32)
@@ -21,8 +21,8 @@ endif()
 file(GLOB_RECURSE console_include CONFIGURE_DEPENDS "${console_include_dir}/*.hpp")
 file(GLOB_RECURSE console_src "${console_src_dir}/*.cpp")
 
-set(core_out_include_path "${PROJECT_SOURCE_DIR}/.generated/QuestCore/${console_include_dir}")
-set(core_out_source_path "${PROJECT_SOURCE_DIR}/.generated/QuestCore/${console_src_dir}")
+set(core_out_include_path "${PROJECT_BINARY_DIR}/.generated/QuestCore/${console_include_dir}")
+set(core_out_source_path "${PROJECT_BINARY_DIR}/.generated/QuestCore/${console_src_dir}")
 
 file(GLOB_RECURSE gen_include 
 "${out_include_path}/*.hpp" 

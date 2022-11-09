@@ -4,8 +4,8 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 set(quest_include_dir "include/")
 set(quest_src_dir "src/")
-set(out_include_path "${PROJECT_SOURCE_DIR}/.generated/QuestCore/${quest_include_dir}")
-set(out_source_path "${PROJECT_SOURCE_DIR}/.generated/QuestCore/${quest_src_dir}")
+set(out_include_path "${PROJECT_BINARY_DIR}/.generated/QuestCore/${quest_include_dir}")
+set(out_source_path "${PROJECT_BINARY_DIR}/.generated/QuestCore/${quest_src_dir}")
 set(scripts_dir "${PROJECT_SOURCE_DIR}/scripts")
 
 if (WIN32)
