@@ -44,7 +44,7 @@ target_include_directories(MegaQuestConsole
 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/${console_include_dir}"
 PRIVATE "${out_include_path}"
 PRIVATE "${core_out_include_path}")
-target_link_libraries(MegaQuestConsole PRIVATE QuestCore PRIVATE json)
+target_link_libraries(MegaQuestConsole PRIVATE QuestCore PRIVATE DIAssets)
 add_dependencies(MegaQuestConsole QuestCore)
 
 set(RESOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/assets")
