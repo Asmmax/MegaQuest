@@ -221,13 +221,20 @@ class PathUtils:
         return True
 
 
-class SerializableEnum:
+class EnumInfo:
     def __init__(self, node):
         self.filename = node.translation_unit.spelling
         self.full_type_name = node.type.spelling
         self.elements = []
         for elem in node.get_children():
             self.elements.append(elem.spelling)
+
+
+class SerializableEnum:
+    def __init__(self, filename, full_type_name, elements):
+        self.filename = filename
+        self.full_type_name = full_type_name
+        self.elements = elements
 
     def fill_header(self, stream):
         enum_hpp_tpl = Template(Path(enum_decl_tpl_path).read_text())
@@ -248,16 +255,25 @@ class SerializableEnum:
         stream.write(enum_cpp_tpl.substitute(locals()))
 
 
-class Base:
+class BaseInfo:
     def __init__(self, full_type_name):
         self.full_type_name = full_type_name
-        self.__classes = []
 
-    def init_classes(self, classes):
-        self.__classes = classes
 
-    def get_all_serializable_classes(self):
-        return self.__classes
+class Base:
+    def __init__(self, full_type_name, is_serializable, parents):
+        self.full_type_name = full_type_name
+        self.is_serializable = is_serializable
+        self.parents = parents
+
+    def get_all_serializable_parents(self):
+        serializable_parents = []
+        for parent in self.parents:
+            if parent.is_serializable:
+                serializable_parents.append(parent)
+            parents_of_parent = parent.get_all_serializable_parents()
+            serializable_parents.extend(parents_of_parent)
+        return serializable_parents
 
 
 class Property:
@@ -277,17 +293,16 @@ class Method:
             break
 
 
-class SerializableClass:
+class ClassInfo:
     def __init__(self, node):
         self.filename = node.translation_unit.spelling
         self.type_name = node.spelling
         self.full_type_name = node.type.spelling
 
-        self.bases = SerializableClass.find_bases(node)
-        self.properties = SerializableClass.find_properties(node)
-        self.methods = SerializableClass.find_methods(node)
-
-        self.dependencies = []
+        self.bases = ClassInfo.find_bases(node)
+        self.properties = ClassInfo.find_properties(node)
+        self.methods = ClassInfo.find_methods(node)
+        self.tags = TagUtils.get_class_tags(node)
 
     @staticmethod
     def find_bases_as_nodes(node):
@@ -301,27 +316,11 @@ class SerializableClass:
     @staticmethod
     def find_bases(node):
         bases = []
-        for child in SerializableClass.find_bases_as_nodes(node):
+        for child in ClassInfo.find_bases_as_nodes(node):
             base = child.type.get_declaration()
-            new_base = Base(base.type.spelling)
+            new_base = BaseInfo(base.type.spelling)
             bases.append(new_base)
         return bases
-
-    @staticmethod
-    def find_properties(node):
-        properties = []
-        constructor = SerializableClass.get_suit_constructor(node)
-        if constructor:
-            args = constructor.get_arguments()
-        else:
-            args = node.type.get_fields()
-
-        for arg in args:
-            if arg.access_specifier in [clang.cindex.AccessSpecifier.PRIVATE, clang.cindex.AccessSpecifier.PROTECTED]:
-                continue
-            new_prop = Property(arg)
-            properties.append(new_prop)
-        return properties
 
     @staticmethod
     def get_suit_constructor(node):
@@ -348,12 +347,28 @@ class SerializableClass:
         return suit_children[0]
 
     @staticmethod
+    def find_properties(node):
+        properties = []
+        constructor = ClassInfo.get_suit_constructor(node)
+        if constructor:
+            args = constructor.get_arguments()
+        else:
+            args = node.type.get_fields()
+
+        for arg in args:
+            if arg.access_specifier in [clang.cindex.AccessSpecifier.PRIVATE, clang.cindex.AccessSpecifier.PROTECTED]:
+                continue
+            new_prop = Property(arg)
+            properties.append(new_prop)
+        return properties
+
+    @staticmethod
     def find_methods(node):
         methods = []
-        for base_as_node in SerializableClass.find_bases_as_nodes(node):
-            for base_method in SerializableClass.find_methods(base_as_node.type.get_declaration()):
+        for base_as_node in ClassInfo.find_bases_as_nodes(node):
+            for base_method in ClassInfo.find_methods(base_as_node.type.get_declaration()):
                 methods.append(base_method)
-        for method in SerializableClass.get_methods(node):
+        for method in ClassInfo.get_methods(node):
             new_method = Method(method)
             methods.append(new_method)
         return methods
@@ -371,25 +386,36 @@ class SerializableClass:
             methods.append(child)
         return methods
 
+
+class SerializableClass:
+    def __init__(self, filename, type_name, full_type_name, bases: list[Base], properties, methods, dependencies):
+        self.filename = filename
+        self.type_name = type_name
+        self.full_type_name = full_type_name
+        self.bases = bases
+        self.properties = properties
+        self.methods = methods
+        self.dependencies = dependencies
+
     def fill_header(self, stream):
         pass
 
     def fill_source(self, stream, path_utils):
         pass
 
-    def init_dependencies(self, dependencies):
-        self.dependencies = dependencies
-
     def get_all_serializable_bases(self):
         all_bases = []
         for base in self.bases:
-            all_bases.extend(base.get_all_serializable_classes())
+            if base.is_serializable:
+                all_bases.append(base)
+            all_bases.extend(base.get_all_serializable_parents())
         return all_bases
 
 
 class SharedInterface(SerializableClass):
-    def __init__(self, node):
-        super(SharedInterface, self).__init__(node)
+    def __init__(self, filename, type_name, full_type_name, bases, properties, methods, dependencies):
+        super(SharedInterface, self).__init__(filename, type_name, full_type_name, bases,
+                                              properties, methods, dependencies)
 
     def fill_header(self, stream):
         shared_interface_hpp_tpl = Template(Path(shared_interface_decl_tpl_path).read_text())
@@ -407,9 +433,10 @@ class SharedInterface(SerializableClass):
 
 
 class SharedClass(SharedInterface):
-    def __init__(self, node, shared_name):
+    def __init__(self, filename, type_name, full_type_name, bases, properties, methods, dependencies, shared_name):
         self.shared_name = shared_name
-        super(SharedClass, self).__init__(node)
+        super(SharedClass, self).__init__(filename, type_name, full_type_name, bases,
+                                          properties, methods, dependencies)
 
     def fill_header(self, stream):
         shared_impl_hpp_tpl = Template(Path(shared_impl_decl_tpl_path).read_text())
@@ -486,8 +513,9 @@ class SharedClass(SharedInterface):
 
 
 class PolymorphicInterface(SerializableClass):
-    def __init__(self, node):
-        super(PolymorphicInterface, self).__init__(node)
+    def __init__(self, filename, type_name, full_type_name, bases, properties, methods, dependencies):
+        super(PolymorphicInterface, self).__init__(filename, type_name, full_type_name, bases,
+                                                   properties, methods, dependencies)
 
     def fill_header(self, stream):
         polymorphic_interface_hpp_tpl = Template(Path(polymorphic_interface_decl_tpl_path).read_text())
@@ -505,8 +533,9 @@ class PolymorphicInterface(SerializableClass):
 
 
 class PolymorphicClass(PolymorphicInterface):
-    def __init__(self, node):
-        super(PolymorphicClass, self).__init__(node)
+    def __init__(self, filename, type_name, full_type_name, bases, properties, methods, dependencies):
+        super(PolymorphicClass, self).__init__(filename, type_name, full_type_name, bases,
+                                               properties, methods, dependencies)
 
     def fill_header(self, stream):
         polymorphic_impl_hpp_tpl = Template(Path(polymorphic_impl_decl_tpl_path).read_text())
@@ -566,8 +595,9 @@ class PolymorphicClass(PolymorphicInterface):
 
 
 class SimpleClass(SerializableClass):
-    def __init__(self, node):
-        super(SimpleClass, self).__init__(node)
+    def __init__(self, filename, type_name, full_type_name, bases, properties, methods, dependencies):
+        super(SimpleClass, self).__init__(filename, type_name, full_type_name, bases,
+                                          properties, methods, dependencies)
 
     def fill_header(self, stream):
         simple_hpp_tpl = Template(Path(simple_decl_tpl_path).read_text())
@@ -618,19 +648,19 @@ class SimpleClass(SerializableClass):
 
 class SerializableClassFactory:
     @staticmethod
-    def CreateClass(node):
-        tags = TagUtils.get_class_tags(node)
+    def create_class(filename, type_name, full_type_name, bases, properties, methods, dependencies, tags):
         if TagUtils.consist_tag(tags, 'shared'):
             if not TagUtils.consist_tag(tags, 'abstract'):
                 shared_name = TagUtils.get_tag_arg(tags, 'shared')
-                return SharedClass(node, shared_name)
-            return SharedInterface(node)
+                return SharedClass(filename, type_name, full_type_name, bases, properties, methods, dependencies,
+                                   shared_name)
+            return SharedInterface(filename, type_name, full_type_name, bases, properties, methods, dependencies)
         elif TagUtils.consist_tag(tags, 'polymorphic'):
             if not TagUtils.consist_tag(tags, 'abstract'):
-                return PolymorphicClass(node)
-            return PolymorphicInterface(node)
+                return PolymorphicClass(filename, type_name, full_type_name, bases, properties, methods, dependencies)
+            return PolymorphicInterface(filename, type_name, full_type_name, bases, properties, methods, dependencies)
         else:
-            return SimpleClass(node)
+            return SimpleClass(filename, type_name, full_type_name, bases, properties, methods, dependencies)
 
 
 class Dependency:
@@ -639,7 +669,7 @@ class Dependency:
 
 
 class GenerateUnit:
-    def __init__(self, filename, path_utils, enums, sorted_classes):
+    def __init__(self, filename, path_utils, enums: list[SerializableEnum], sorted_classes: list[SerializableClass]):
         self.path_utils = path_utils
         self.origin_path = PurePath(filename)
         self.include_path = PurePath(path_utils.out_include_path).joinpath(
@@ -703,12 +733,21 @@ class GenerateUnit:
         cpp_file.close()
 
 
-class Generator:
-    def __init__(self, path_utils):
+class ClassesWriter:
+    def write_enums(self, enums: list[EnumInfo]):
+        pass
+
+    def write_classes(self, classes: list[ClassInfo]):
+        pass
+
+
+class Analyzer:
+    def __init__(self, path_utils, classes_writer: ClassesWriter):
         self.path_utils = path_utils
+        self.classes_writer = classes_writer
         self.files = path_utils.get_path_list()
-        self.enums = []
-        self.classes = []
+        self.enums_info = []
+        self.classes_info = []
 
     def analyze_sources(self):
         for path in self.files:
@@ -719,17 +758,13 @@ class Generator:
                 add_include_path = PurePath(add_include)
                 arg_list.append('-I' + str(add_include_path))
             options = clang.cindex.TranslationUnit.PARSE_INCOMPLETE \
-                | clang.cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES\
-                | clang.cindex.TranslationUnit.PARSE_PRECOMPILED_PREAMBLE
+                      | clang.cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES \
+                      | clang.cindex.TranslationUnit.PARSE_PRECOMPILED_PREAMBLE
             translation_unit = index.parse(str(path), args=arg_list, options=options)
             self.analyze_unit(translation_unit.cursor)
 
-        for _class in self.classes:
-            dependencies = self.get_all_dependencies(_class)
-            _class.init_dependencies(dependencies)
-            for base in _class.bases:
-                serializable_bases = self.get_all_serializable_bases(base.full_type_name)
-                base.init_classes(serializable_bases)
+        self.classes_writer.write_enums(self.enums_info)
+        self.classes_writer.write_classes(self.classes_info)
 
     def analyze_unit(self, root: clang.cindex.Cursor):
         for child in root.get_children():
@@ -751,12 +786,204 @@ class Generator:
                 self.add_class(child)
 
     def add_enum(self, node: clang.cindex.Cursor):
-        new_enum = SerializableEnum(node)
-        self.enums.append(new_enum)
+        new_enum = EnumInfo(node)
+        self.enums_info.append(new_enum)
 
     def add_class(self, node: clang.cindex.Cursor):
-        new_class = SerializableClassFactory.CreateClass(node)
+        new_class = ClassInfo(node)
+        self.classes_info.append(new_class)
+
+
+class ClassesReader:
+    def __init__(self):
+        self.enums = []
+        self.classes = []
+        self.is_red = False
+
+    def read(self):
+        self.read_enums()
+        self.read_classes()
+        self.is_red = True
+        pass
+
+    def read_enums(self):
+        enums_names = self.get_enums_names()
+        for enum_name in enums_names:
+            self.read_unique_enum(enum_name)
+
+    def get_enums_names(self) -> list[str]:
+        pass
+
+    def read_unique_enum(self, enum_name: str):
+        if self.has_enum(enum_name):
+            return
+        self.read_enum(enum_name)
+
+    def read_enum(self, enum_name: str):
+        pass
+
+    def read_classes(self):
+        classes_names = self.get_classes_names()
+        for class_name in classes_names:
+            self.read_unique_class(class_name)
+
+    def get_classes_names(self) -> list[str]:
+        pass
+
+    def read_unique_class(self, class_name: str):
+        if self.has_class(class_name):
+            return
+        self.read_class(class_name)
+
+    def read_class(self, class_name: str):
+        pass
+
+    def get_class(self, full_type_name: str):
+        self.read_unique_class(full_type_name)
+        clean_type_name = TypeUtils.clean_up(full_type_name)
+        for _class in self.classes:
+            if clean_type_name == _class.full_type_name:
+                return _class
+        return None
+
+    def get_enum(self, full_type_name: str):
+        self.read_unique_enum(full_type_name)
+        clean_type_name = TypeUtils.clean_up(full_type_name)
+        for enum in self.enums:
+            if clean_type_name == enum.full_type_name:
+                return enum
+        return None
+
+    def has_class(self, full_type_name: str):
+        clean_type_name = TypeUtils.clean_up(full_type_name)
+        for _class in self.classes:
+            if clean_type_name == _class.full_type_name:
+                return True
+        return False
+
+    def has_enum(self, full_type_name: str):
+        clean_type_name = TypeUtils.clean_up(full_type_name)
+        for enum in self.enums:
+            if clean_type_name == enum.full_type_name:
+                return True
+        return False
+
+    def get_enums(self):
+        if not self.is_red:
+            self.read()
+        return self.enums
+
+    def get_classes(self):
+        if not self.is_red:
+            self.read()
+        return self.classes
+
+
+class ClassesConverter(ClassesReader, ClassesWriter):
+    def __init__(self):
+        super(ClassesConverter, self).__init__()
+        self.enums_info = []
+        self.classes_info = []
+
+    def write_classes(self, classes_info: list[ClassInfo]):
+        self.classes_info = classes_info
+
+    def write_enums(self, enums_info: list[EnumInfo]):
+        self.enums_info = enums_info
+
+    def get_enums_names(self) -> list[str]:
+        names = []
+        for enum_info in self.enums_info:
+            names.append(enum_info.full_type_name)
+        return names
+
+    def read_enum(self, enum_name: str):
+        info = self.get_enum_info(enum_name)
+        if info is None:
+            return
+        new_enum = SerializableEnum(info.filename, info.full_type_name, info.elements)
+        self.enums.append(new_enum)
+
+    def get_enum_info(self, full_type_name):
+        clean_type_name = TypeUtils.clean_up(full_type_name)
+        for enum_info in self.enums_info:
+            if clean_type_name == enum_info.full_type_name:
+                return enum_info
+        return None
+
+    def get_classes_names(self) -> list[str]:
+        names = []
+        for class_info in self.classes_info:
+            names.append(class_info.full_type_name)
+        return names
+
+    def read_class(self, class_name: str):
+        info = self.get_class_info(class_name)
+        if info is None:
+            return
+        bases = self.prepare_bases(info)
+        dependencies = self.get_all_dependencies(info)
+        new_class = SerializableClassFactory.create_class(info.filename, info.type_name, info.full_type_name, bases,
+                                                          info.properties, info.methods, dependencies, info.tags)
         self.classes.append(new_class)
+
+    def get_class_info(self, full_type_name):
+        clean_type_name = TypeUtils.clean_up(full_type_name)
+        for _class_info in self.classes_info:
+            if clean_type_name == _class_info.full_type_name:
+                return _class_info
+        return None
+
+    def prepare_bases(self, info: ClassInfo):
+        new_bases = []
+        for base_info in info.bases:
+            base_class_info = self.get_class_info(base_info.full_type_name)
+            if base_class_info:
+                parents = self.prepare_bases(base_class_info)
+                new_base = Base(base_info.full_type_name, True, parents)
+                new_bases.append(new_base)
+            else:
+                new_base = Base(base_info.full_type_name, False, [])
+                new_bases.append(new_base)
+        return new_bases
+
+    def get_all_dependencies(self, info: ClassInfo):
+        dependencies = []
+        for base in info.bases:
+            base_class = self.get_class(base.full_type_name)
+            if base_class:
+                dependency = Dependency(base_class.filename)
+                dependencies.append(dependency)
+
+        for _property in info.properties:
+            property_class = self.get_class(_property.full_type_name)
+            if property_class:
+                dependency = Dependency(property_class.filename)
+                dependencies.append(dependency)
+            property_enum = self.get_enum(_property.full_type_name)
+            if property_enum:
+                dependency = Dependency(property_enum.filename)
+                dependencies.append(dependency)
+
+        for method in info.methods:
+            method_class = self.get_class(method.full_type_name)
+            if method_class:
+                dependency = Dependency(method_class.filename)
+                dependencies.append(dependency)
+            method_enum = self.get_enum(method.full_type_name)
+            if method_enum:
+                dependency = Dependency(method_enum.filename)
+                dependencies.append(dependency)
+
+        return dependencies
+
+
+class Generator:
+    def __init__(self, path_utils, reader: ClassesReader):
+        self.path_utils = path_utils
+        self.files = path_utils.get_path_list()
+        self.enums = reader.get_enums()
+        self.classes = reader.get_classes()
 
     def generate(self):
         print('Gathering generation info...')
@@ -789,7 +1016,7 @@ class Generator:
         result = []
 
         for _class in self.classes:
-            if not self.get_only_serializable_bases(_class):
+            if not _class.get_all_serializable_bases():
                 result.append(_class)
 
         while len(result) != len(self.classes):
@@ -798,7 +1025,7 @@ class Generator:
                 if result.count(_class) > 0:
                     continue
 
-                if Generator.consist_base_classes(result, self.get_only_serializable_bases(_class)):
+                if Generator.consist_base_classes(result, _class.get_all_serializable_bases()):
                     temp_classes.append(_class)
 
             for temp_class in temp_classes:
@@ -814,67 +1041,3 @@ class Generator:
                 if _class.full_type_name == base_class.full_type_name:
                     return True
         return False
-
-    def get_only_serializable_bases(self, _class):
-        bases = []
-        for base in _class.bases:
-            base_class = self.get_class(base.full_type_name)
-            if base_class:
-                bases.append(base)
-        return bases
-
-    def get_all_dependencies(self, _class):
-        dependencies = []
-        for base in _class.get_all_serializable_bases():
-            base_class = self.get_class(base.full_type_name)
-            if base_class:
-                dependency = Dependency(base_class.filename)
-                dependencies.append(dependency)
-
-        for _property in _class.properties:
-            property_class = self.get_class(_property.full_type_name)
-            if property_class:
-                dependency = Dependency(property_class.filename)
-                dependencies.append(dependency)
-            property_enum = self.get_enum(_property.full_type_name)
-            if property_enum:
-                dependency = Dependency(property_enum.filename)
-                dependencies.append(dependency)
-
-        for method in _class.methods:
-            method_class = self.get_class(method.full_type_name)
-            if method_class:
-                dependency = Dependency(method_class.filename)
-                dependencies.append(dependency)
-            method_enum = self.get_enum(method.full_type_name)
-            if method_enum:
-                dependency = Dependency(method_enum.filename)
-                dependencies.append(dependency)
-
-        return dependencies
-
-    def get_class(self, full_type_name):
-        clean_type_name = TypeUtils.clean_up(full_type_name)
-        for _class in self.classes:
-            if clean_type_name == _class.full_type_name:
-                return _class
-        return None
-
-    def get_all_serializable_bases(self, full_type_name):
-        all_bases = []
-        base_class = self.get_class(full_type_name)
-        if base_class:
-            all_bases.append(base_class)
-            for base_base in base_class.bases:
-                base_bases = self.get_all_serializable_bases(base_base.full_type_name)
-                for base_base_class in base_bases:
-                    if all_bases.count(base_base_class) == 0:
-                        all_bases.append(base_base_class)
-        return all_bases
-
-    def get_enum(self, full_type_name):
-        clean_type_name = TypeUtils.clean_up(full_type_name)
-        for enum in self.enums:
-            if clean_type_name == enum.full_type_name:
-                return enum
-        return None
