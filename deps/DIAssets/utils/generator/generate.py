@@ -1,6 +1,6 @@
 import argparse
-from generator import Analyzer
-from generator import ClassesConverter
+from analyzer import Analyzer
+from analyzer import ClassesConverter
 from generator import Generator
 from generator import PathUtils
 
@@ -38,11 +38,9 @@ if args.add_includes:
 
 path_utils = PathUtils(working_env_in_path, working_env_out_include_path, working_env_out_source_path,
                        in_dir, out_include_dir, out_source_dir, add_includes)
-classes_converter = ClassesConverter()
 
-analyzer = Analyzer(path_utils, classes_converter)
-print('Analysis of input files...')
-analyzer.analyze_sources()
+analyzer = Analyzer(path_utils)
+classes_converter = ClassesConverter(analyzer)
 
 generator = Generator(path_utils, classes_converter)
 print('Generate files...')
