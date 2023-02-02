@@ -1,6 +1,6 @@
 from pathlib import PurePath
 from pathlib import Path
-from generator import PathUtils
+from generator import DirEnvironment
 from generator import Property
 from generator import Method
 from generator import Base
@@ -36,118 +36,73 @@ class TypeUtils:
         return raw_str
 
 
-class Tag:
-    name = ''
-    args = []
+class TagContainer:
+    def __init__(self, node):
+        self.__tags = {}
+        self.__read_tags(node)
 
+    def has_tag(self, tag_name):
+        return tag_name in self.__tags.keys()
 
-class TagUtils:
-    inherited_tags = ['shared', 'polymorphic']
+    def get_tag_args(self, tag_name):
+        return self.__tags[tag_name]
+
+    def get_first_tag_arg(self, tag_name):
+        tag_args = self.get_tag_args(tag_name)
+        assert tag_args
+        return tag_args[0]
+
+    def remove_tag(self, tag_name):
+        self.__tags.pop(tag_name)
+
+    def replace_tags(self, tags: dict):
+        if tags is None:
+            return
+        for name, args in tags.items():
+            self.__tags[name] = args
+
+    def __read_tags(self, node):
+        self.__read_inherited_tags(node)
+        tags = self.__parse_tags(node.raw_comment)
+        self.replace_tags(tags)
+
+    def __read_inherited_tags(self, node):
+        for child in node.get_children():
+            if child.kind != clang.cindex.CursorKind.CXX_BASE_SPECIFIER:
+                continue
+            base = child.type.get_declaration().get_definition()
+            self.__read_inherited_tags(base)
+            base_tags = self.__parse_tags(base.raw_comment)
+            if base_tags is not None:
+                inherited_base_tags = TagContainer.__filter_inherited_tags(base_tags)
+                self.replace_tags(inherited_base_tags)
 
     @staticmethod
-    def has_tag(node, tag_name):
-        comment = node.raw_comment
-        tags = []
-        if comment:
-            tags = comment.split()
-
-        return tags.count('@' + tag_name) > 0
-
-    @staticmethod
-    def consist_tag(tags, tag_name):
-        for tag in tags:
-            if tag.name == tag_name:
-                return True
-        return False
-
-    @staticmethod
-    def get_tag(tags, tag_name):
-        for tag in tags:
-            if tag.name == tag_name:
-                return tag
-        return None
-
-    @staticmethod
-    def remove_tag(tags, tag_name):
-        remove_list = []
-        for tag in tags:
-            if tag.name == tag_name:
-                remove_list.append(tag)
-        for removed_tag in remove_list:
-            tags.remove(removed_tag)
-
-    @staticmethod
-    def parse_tags(comment):
-        tags = []
+    def __parse_tags(comment: str):
+        tags = {}
         if not comment:
-            return tags
-
+            return
         raw_tags = comment.replace('///', ' ').split('@')
         for raw_tag in raw_tags:
             tag_with_args = raw_tag.split()
             if tag_with_args:
-                new_tag = Tag()
-                new_tag.name = tag_with_args.pop(0)
+                tag_args = []
+                tag_name = tag_with_args.pop(0)
                 if tag_with_args:
-                    new_tag.args = []
                     for arg in tag_with_args.pop(0).split(','):
-                        new_tag.args.append(arg)
-                tags.append(new_tag)
+                        tag_args.append(arg)
+                tags[tag_name] = tag_args
         return tags
 
-    @staticmethod
-    def replace_tag(source_tag, destination_tag):
-        if source_tag.args == destination_tag.args:
-            return
-        if not destination_tag.args:
-            return
-
-        assert not source_tag.args
-        source_tag.args = destination_tag.args
+    inherited_tags = ['shared', 'polymorphic']
 
     @staticmethod
-    def merge_tags(result_tags, input_tags):
-        for result_tag in result_tags:
-            some_tag = TagUtils.get_tag(input_tags, result_tag.name)
-            if some_tag:
-                TagUtils.replace_tag(result_tag, some_tag)
-                TagUtils.remove_tag(input_tags, some_tag.name)
-        for input_tag in input_tags:
-            result_tags.append(input_tag)
-
-    @staticmethod
-    def get_inherited_tags(node):
-        tags = []
-        for child in node.get_children():
-            if child.kind != clang.cindex.CursorKind.CXX_BASE_SPECIFIER:
-                continue
-
-            base = child.type.get_declaration().get_definition()
-            temp_tags = TagUtils.get_inherited_tags(base)
-            base_tags = TagUtils.parse_tags(base.raw_comment)
-            for base_tag in base_tags:
-                if base_tag.name in TagUtils.inherited_tags:
-                    TagUtils.remove_tag(temp_tags, base_tag.name)
-                    temp_tags.append(base_tag)
-            TagUtils.merge_tags(tags, temp_tags)
-        return tags
-
-    @staticmethod
-    def get_class_tags(node):
-        tags = TagUtils.parse_tags(node.raw_comment)
-        base_tags = TagUtils.get_inherited_tags(node)
-        for class_tag in tags:
-            TagUtils.remove_tag(base_tags, class_tag.name)
-        for base_tag in base_tags:
-            tags.append(base_tag)
-        return tags
-
-    @staticmethod
-    def get_tag_arg(tags, tag_name):
-        for tag in tags:
-            if tag.name == tag_name:
-                assert tag.args
-                return tag.args[0]
+    def __filter_inherited_tags(tags: dict):
+        filtered_tags = {}
+        for name, args in tags.items():
+            if name in TagContainer.inherited_tags:
+                filtered_tags[name] = args
+        return filtered_tags
 
 
 class EnumInfo:
@@ -173,7 +128,7 @@ class ClassInfo:
         self.bases = ClassInfo.find_bases(node)
         self.properties = ClassInfo.find_properties(node)
         self.methods = ClassInfo.find_methods(node)
-        self.tags = TagUtils.get_class_tags(node)
+        self.tags = TagContainer(node)
 
     @staticmethod
     def find_bases_as_nodes(node):
@@ -212,7 +167,7 @@ class ClassInfo:
             return None
 
         for child in suit_children:
-            if TagUtils.has_tag(child, 'inject'):
+            if TagContainer(child).has_tag('inject'):
                 return child
 
         return suit_children[0]
@@ -260,7 +215,7 @@ class ClassInfo:
                 continue
             if child.access_specifier in [clang.cindex.AccessSpecifier.PRIVATE, clang.cindex.AccessSpecifier.PROTECTED]:
                 continue
-            if not TagUtils.has_tag(child, 'inject'):
+            if not TagContainer(child).has_tag('inject'):
                 continue
             methods.append(child)
         return methods
@@ -268,15 +223,15 @@ class ClassInfo:
 
 class SerializableClassFactory:
     @staticmethod
-    def create_class(filename, type_name, full_type_name, bases, properties, methods, dependencies, tags):
-        if TagUtils.consist_tag(tags, 'shared'):
-            if not TagUtils.consist_tag(tags, 'abstract'):
-                shared_name = TagUtils.get_tag_arg(tags, 'shared')
+    def create_class(filename, type_name, full_type_name, bases, properties, methods, dependencies, tags: TagContainer):
+        if tags.has_tag('shared'):
+            if not tags.has_tag('abstract'):
+                shared_name = tags.get_first_tag_arg('shared')
                 return SharedClass(filename, type_name, full_type_name, bases, properties, methods, dependencies,
                                    shared_name)
             return SharedInterface(filename, type_name, full_type_name, bases, properties, methods, dependencies)
-        elif TagUtils.consist_tag(tags, 'polymorphic'):
-            if not TagUtils.consist_tag(tags, 'abstract'):
+        elif tags.has_tag('polymorphic'):
+            if not tags.has_tag('abstract'):
                 return PolymorphicClass(filename, type_name, full_type_name, bases, properties, methods, dependencies)
             return PolymorphicInterface(filename, type_name, full_type_name, bases, properties, methods, dependencies)
         else:
@@ -295,7 +250,7 @@ class ClassesInfoGateway:
 
 
 class Analyzer(ClassesInfoGateway):
-    def __init__(self, path_utils: PathUtils):
+    def __init__(self, path_utils: DirEnvironment):
         self.__path_utils = path_utils
         self.__enums_info = []
         self.__classes_info = []
@@ -336,7 +291,7 @@ class Analyzer(ClassesInfoGateway):
                 self._analyze_unit(child)
                 continue
 
-            if not TagUtils.has_tag(child, 'serializable'):
+            if not TagContainer(child).has_tag('serializable'):
                 continue
 
             if child.kind == clang.cindex.CursorKind.ENUM_DECL:

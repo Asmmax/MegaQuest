@@ -2,7 +2,7 @@ import argparse
 from analyzer import Analyzer
 from analyzer import ClassesConverter
 from generator import Generator
-from generator import PathUtils
+from generator import DirEnvironment
 
 
 parser = argparse.ArgumentParser(description="Generator",
@@ -36,8 +36,8 @@ add_includes = []
 if args.add_includes:
     add_includes = args.add_includes.split(';')
 
-path_utils = PathUtils(working_env_in_path, working_env_out_include_path, working_env_out_source_path,
-                       in_dir, out_include_dir, out_source_dir, add_includes)
+path_utils = DirEnvironment(working_env_in_path, working_env_out_include_path, working_env_out_source_path,
+                            in_dir, out_include_dir, out_source_dir, add_includes)
 
 analyzer = Analyzer(path_utils)
 classes_converter = ClassesConverter(analyzer)

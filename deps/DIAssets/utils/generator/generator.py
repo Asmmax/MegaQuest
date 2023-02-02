@@ -26,7 +26,7 @@ shared_method_tpl_path = 'templates/Shared/method.tpl'
 shared_bind_using_tpl_path = 'templates/Shared/bind_using.tpl'
 
 
-class PathUtils:
+class DirEnvironment:
     def __init__(self, working_env_in_path, working_env_out_include_path, working_env_out_source_path,
                  in_dir, out_include_dir, out_source_dir, add_includes):
 
@@ -48,8 +48,8 @@ class PathUtils:
         return raw_path.with_name(filename + '_gen')
 
     def rm_out_dirs(self):
-        PathUtils.rm_tree(self.out_include_path)
-        PathUtils.rm_tree(self.out_source_path)
+        DirEnvironment.rm_tree(self.out_include_path)
+        DirEnvironment.rm_tree(self.out_source_path)
 
     def relative_to_working_in_env(self, path):
         return PurePath(path).relative_to(self.working_env_in_path)
@@ -61,7 +61,7 @@ class PathUtils:
         raw_path_list = sorted(Path(self.in_path).rglob('*.hpp'))
         path_list = []
         for raw_path in raw_path_list:
-            if PathUtils.suit_file(raw_path):
+            if DirEnvironment.suit_file(raw_path):
                 path_list.append(raw_path)
         return path_list
 
@@ -81,7 +81,7 @@ class PathUtils:
             if child.is_file():
                 child.unlink()
             else:
-                PathUtils.rm_tree(child)
+                DirEnvironment.rm_tree(child)
         pth.rmdir()
 
 
@@ -553,7 +553,7 @@ class ClassesGateway:
 
 
 class GenerateUnitGateway:
-    def __init__(self, path_utils: PathUtils, classes_gateway: ClassesGateway):
+    def __init__(self, path_utils: DirEnvironment, classes_gateway: ClassesGateway):
         self.__path_utils = path_utils
         self.__classes_gateway = classes_gateway
 
@@ -626,7 +626,7 @@ class GenerateUnitGateway:
 
 
 class Generator:
-    def __init__(self, path_utils: PathUtils, classes_gateway: ClassesGateway):
+    def __init__(self, path_utils: DirEnvironment, classes_gateway: ClassesGateway):
         self.__path_utils = path_utils
         self.__gateway = GenerateUnitGateway(path_utils, classes_gateway)
 
