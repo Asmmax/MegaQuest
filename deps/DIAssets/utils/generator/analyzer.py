@@ -12,9 +12,9 @@ from generator import SharedInterface
 from generator import PolymorphicClass
 from generator import PolymorphicInterface
 from generator import SimpleClass
+from changes_list import ChangesList
 import clang.cindex
 import pickle
-import os.path
 
 
 class TypeUtils:
@@ -317,29 +317,6 @@ class Cache:
         self.classes_info = classes_info
 
 
-class ChangesList:
-    def __init__(self):
-        self.__changes = {}
-
-    def update(self, files: list[Path]):
-        for file in files:
-            date = os.path.getmtime(file)
-            self.__changes[file] = date
-
-    def get_changes(self, files: list[Path]) -> list[Path]:
-        changed_files = []
-        for file in files:
-            if self.has_changes(file):
-                changed_files.append(file)
-        return changed_files
-
-    def has_changes(self, file: Path) -> bool:
-        if file not in self.__changes.keys():
-            return True
-        new_mod_date = os.path.getmtime(file)
-        return self.__changes[file] != new_mod_date
-
-
 class CachedAnalyzer(ClassesInfoGateway):
     def __init__(self, path_utils: DirEnvironment):
         self.__path_utils = path_utils
@@ -350,6 +327,7 @@ class CachedAnalyzer(ClassesInfoGateway):
     def read(self, files: list[Path]):
         self._reset()
         self._read_cache()
+        self._remove_non_existent()
         changed_files = self._get_changes(files)
         self.__analyzer.read(changed_files)
         self.__add_enums(self.__analyzer.get_enums())
@@ -388,6 +366,19 @@ class CachedAnalyzer(ClassesInfoGateway):
             self.__enums_info = cache.enums_info
             self.__classes_info = cache.classes_info
 
+    def _remove_non_existent(self):
+        new_enums_info = []
+        for enum_info in self.__enums_info:
+            if Path(enum_info.filename).exists():
+                new_enums_info.append(enum_info)
+        self.__enums_info = new_enums_info
+
+        new_classes_info = []
+        for class_info in self.__classes_info:
+            if Path(class_info.filename).exists():
+                new_classes_info.append(class_info)
+        self.__classes_info = new_classes_info
+
     def _write_cache(self):
         cache_file_name = 'analyzer.cache'
         cache_path = PurePath(self.__path_utils.cache_path).joinpath(cache_file_name)
@@ -396,20 +387,9 @@ class CachedAnalyzer(ClassesInfoGateway):
             pickle.dump(cache, cache_file)
 
     def _get_changes(self, files: list[Path]) -> list[Path]:
-        changes_file_name = 'changes.cache'
-        changes_path = PurePath(self.__path_utils.cache_path).joinpath(changes_file_name)
-        if not Path(changes_path).exists():
-            new_changes_list = ChangesList()
-            new_changes_list.update(files)
-            with open(changes_path, 'wb') as new_changes_file:
-                pickle.dump(new_changes_list, new_changes_file)
-                return files
-        with open(changes_path, 'r+b') as changes_file:
-            changes_list = pickle.load(changes_file)
-            changes = changes_list.get_changes(files)
-            changes_list.update(files)
-            pickle.dump(changes_list, changes_file)
-            return changes
+        cache_path = Path(self.__path_utils.cache_path)
+        changes_list = ChangesList.get_or_create_changes_list(cache_path)
+        return changes_list.get_changes(files)
 
     def __add_enums(self, new_enums: list[EnumInfo]):
         self.__enums_info.extend(new_enums)

@@ -1,6 +1,7 @@
 from pathlib import Path
 from pathlib import PurePath
 from string import Template
+from changes_list import ChangesList
 
 property_tpl_path = 'templates/property.tpl'
 impl_tpl_path = 'templates/impl.tpl'
@@ -48,9 +49,9 @@ class DirEnvironment:
         filename = raw_path.name
         return raw_path.with_name(filename + '_gen')
 
-    def rm_out_dirs(self):
-        DirEnvironment.rm_tree(self.out_include_path)
-        DirEnvironment.rm_tree(self.out_source_path)
+    def rm_out_dirs(self, include_excludes: list[Path], source_excludes: list[Path]):
+        DirEnvironment.rm_tree(self.out_include_path, include_excludes)
+        DirEnvironment.rm_tree(self.out_source_path, source_excludes)
 
     def relative_to_working_in_env(self, path):
         return PurePath(path).relative_to(self.working_env_in_path)
@@ -74,16 +75,17 @@ class DirEnvironment:
         return True
 
     @staticmethod
-    def rm_tree(pth):
+    def rm_tree(pth, excludes=None):
         pth = Path(pth)
         if not pth.exists():
             return
-        for child in pth.glob('*'):
+        for child in pth.iterdir():
             if child.is_file():
+                if child in excludes:
+                    continue
                 child.unlink()
             else:
-                DirEnvironment.rm_tree(child)
-        pth.rmdir()
+                DirEnvironment.rm_tree(child, excludes)
 
 
 class SerializableEnum:
@@ -408,14 +410,11 @@ class SimpleClass(SerializableClass):
 
 
 class GenerateUnit:
-    def __init__(self, filename, path_utils, enums: list[SerializableEnum], classes: list[SerializableClass]):
+    def __init__(self, filename: Path, path_utils, enums: list[SerializableEnum], classes: list[SerializableClass]):
         self.path_utils = path_utils
         self.origin_path = PurePath(filename)
-        self.include_path = PurePath(path_utils.out_include_path).joinpath(
-            path_utils.get_gen_path_for(filename)).with_suffix('.hpp')
-        self.cpp_path = PurePath(path_utils.out_source_path).joinpath(
-            path_utils.get_gen_path_for(filename)).with_suffix(
-            '.cpp')
+        self.include_path = GenerateUnit.get_include_path(filename, path_utils)
+        self.cpp_path = GenerateUnit.get_cpp_path(filename, path_utils)
         self.serializable_enums = enums
         self.serializable_classes = classes
 
@@ -462,6 +461,23 @@ class GenerateUnit:
         for _class in self.serializable_classes:
             _class.fill_source(cpp_file, self.path_utils)
         cpp_file.close()
+
+    def get_dependencies(self) -> list[Path]:
+        files = []
+        for _class in self.serializable_classes:
+            for dependency in _class.dependencies:
+                files.append(Path(dependency.filename))
+        return files
+
+    @staticmethod
+    def get_cpp_path(filename: Path, path_utils: DirEnvironment) -> PurePath:
+        relative_path = path_utils.get_gen_path_for(filename)
+        return PurePath(path_utils.out_source_path).joinpath(relative_path).with_suffix('.cpp')
+
+    @staticmethod
+    def get_include_path(filename: Path, path_utils: DirEnvironment) -> PurePath:
+        relative_path = path_utils.get_gen_path_for(filename)
+        return PurePath(path_utils.out_include_path).joinpath(relative_path).with_suffix('.hpp')
 
 
 class ClassesGateway:
@@ -563,7 +579,30 @@ class GenerateUnitGateway:
         self.__classes_gateway.read(files)
         enums = self.__classes_gateway.get_enums()
         classes = self.__classes_gateway.get_classes()
-        return self.__get_generate_info(files, enums, classes)
+        raw_generate_units = self.__get_generate_info(files, enums, classes)
+
+        cache_path = Path(self.__path_utils.cache_path)
+        changes_list = ChangesList.get_or_create_changes_list(cache_path)
+        changed_files = changes_list.get_changes(files)
+        changes_list.update(changed_files)
+        changes_list.remove_non_existent()
+        changes_list.save()
+
+        generate_units = []
+        for unit in raw_generate_units:
+            dependencies = unit.get_dependencies()
+            for dependency in dependencies:
+                if dependency in changed_files:
+                    generate_units.append(unit)
+        for unit in raw_generate_units:
+            unit_file = Path(unit.origin_path)
+            if unit_file in changed_files:
+                generate_units.append(unit)
+
+        for generate_unit in generate_units:
+            print(str(generate_unit.origin_path) + ' is changed')
+
+        return generate_units
 
     def __get_generate_info(self, files: list[Path], enums: list[SerializableEnum], classes: list[SerializableClass]):
         generate_units = []
@@ -636,8 +675,17 @@ class Generator:
         files = self.__path_utils.get_path_list()
         generate_units = self.__gateway.get_generate_units(files)
 
+        print('Cleaning directories...')
+        include_files = []
+        source_files = []
+        for file in files:
+            include_path = Path(GenerateUnit.get_include_path(file, self.__path_utils))
+            include_files.append(include_path)
+            source_path = Path(GenerateUnit.get_cpp_path(file, self.__path_utils))
+            source_files.append(source_path)
+        self.__path_utils.rm_out_dirs(include_files, source_files)
+
         print('Preparing files...')
-        self.__path_utils.rm_out_dirs()
         for generate_unit in generate_units:
             generate_unit.prepare_files()
 
