@@ -6,6 +6,7 @@ set(quest_include_dir "include/")
 set(quest_src_dir "src/")
 set(out_include_path "${PROJECT_BINARY_DIR}/.generated/QuestCore/${quest_include_dir}")
 set(out_source_path "${PROJECT_BINARY_DIR}/.generated/QuestCore/${quest_src_dir}")
+set(cache_path "${PROJECT_BINARY_DIR}/.generated/QuestCore")
 set(scripts_dir "${PROJECT_SOURCE_DIR}/scripts")
 
 if (WIN32)
@@ -13,7 +14,7 @@ if (WIN32)
 	set(in_path "${CMAKE_CURRENT_SOURCE_DIR}/${quest_include_dir}")
 	set(gen_dir "QuestCore")
 	execute_process(
-		COMMAND cmd /C set out_include_dir=${gen_dir} && set out_source_dir=${gen_dir} && call "${scripts_dir}/win/generate_containers.bat" ${in_path} ${out_include_path} ${out_source_path}
+		COMMAND cmd /C set out_include_dir=${gen_dir} && set out_source_dir=${gen_dir} && set cache_path=${cache_path} && call "${scripts_dir}/win/generate_containers.bat" ${in_path} ${out_include_path} ${out_source_path}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		)
 endif()

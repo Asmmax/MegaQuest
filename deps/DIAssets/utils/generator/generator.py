@@ -28,7 +28,7 @@ shared_bind_using_tpl_path = 'templates/Shared/bind_using.tpl'
 
 class DirEnvironment:
     def __init__(self, working_env_in_path, working_env_out_include_path, working_env_out_source_path,
-                 in_dir, out_include_dir, out_source_dir, add_includes):
+                 in_dir, out_include_dir, out_source_dir, cache_path, add_includes):
 
         self.working_env_in_path = working_env_in_path
         self.working_env_out_include_path = working_env_out_include_path
@@ -36,6 +36,7 @@ class DirEnvironment:
         self.in_dir = in_dir
         self.out_include_dir = out_include_dir
         self.out_source_dir = out_source_dir
+        self.cache_path = cache_path
         self.add_includes = add_includes
 
         self.in_path = PurePath(working_env_in_path).joinpath(in_dir)

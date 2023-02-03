@@ -13,6 +13,8 @@ from generator import PolymorphicClass
 from generator import PolymorphicInterface
 from generator import SimpleClass
 import clang.cindex
+import pickle
+import os.path
 
 
 class TypeUtils:
@@ -307,6 +309,125 @@ class Analyzer(ClassesInfoGateway):
     def _add_class(self, node: clang.cindex.Cursor):
         new_class = ClassInfo(node)
         self.__classes_info.append(new_class)
+
+
+class Cache:
+    def __init__(self, enums_info: list[EnumInfo], classes_info: list[ClassInfo]):
+        self.enums_info = enums_info
+        self.classes_info = classes_info
+
+
+class ChangesList:
+    def __init__(self):
+        self.__changes = {}
+
+    def update(self, files: list[Path]):
+        for file in files:
+            date = os.path.getmtime(file)
+            self.__changes[file] = date
+
+    def get_changes(self, files: list[Path]) -> list[Path]:
+        changed_files = []
+        for file in files:
+            if self.has_changes(file):
+                changed_files.append(file)
+        return changed_files
+
+    def has_changes(self, file: Path) -> bool:
+        if file not in self.__changes.keys():
+            return True
+        new_mod_date = os.path.getmtime(file)
+        return self.__changes[file] != new_mod_date
+
+
+class CachedAnalyzer(ClassesInfoGateway):
+    def __init__(self, path_utils: DirEnvironment):
+        self.__path_utils = path_utils
+        self.__analyzer = Analyzer(path_utils)
+        self.__enums_info = []
+        self.__classes_info = []
+
+    def read(self, files: list[Path]):
+        self._reset()
+        self._read_cache()
+        changed_files = self._get_changes(files)
+        self.__analyzer.read(changed_files)
+        self.__add_enums(self.__analyzer.get_enums())
+        self.__add_classes(self.__analyzer.get_classes())
+        self._write_cache()
+
+    def get_enums(self) -> list[EnumInfo]:
+        return self.__enums_info
+
+    def get_classes(self) -> list[ClassInfo]:
+        return self.__classes_info
+
+    def has_class(self, full_type_name: str):
+        for class_info in self.__classes_info:
+            if full_type_name == class_info.full_type_name:
+                return True
+        return False
+
+    def has_enum(self, full_type_name: str):
+        for enum_info in self.__enums_info:
+            if full_type_name == enum_info.full_type_name:
+                return True
+        return False
+
+    def _reset(self):
+        self.__enums_info = []
+        self.__classes_info = []
+
+    def _read_cache(self):
+        cache_file_name = 'analyzer.cache'
+        cache_path = PurePath(self.__path_utils.cache_path).joinpath(cache_file_name)
+        if not Path(cache_path).exists():
+            return
+        with open(cache_path, 'rb') as cache_file:
+            cache = pickle.load(cache_file)
+            self.__enums_info = cache.enums_info
+            self.__classes_info = cache.classes_info
+
+    def _write_cache(self):
+        cache_file_name = 'analyzer.cache'
+        cache_path = PurePath(self.__path_utils.cache_path).joinpath(cache_file_name)
+        cache = Cache(self.__enums_info, self.__classes_info)
+        with open(cache_path, 'wb') as cache_file:
+            pickle.dump(cache, cache_file)
+
+    def _get_changes(self, files: list[Path]) -> list[Path]:
+        changes_file_name = 'changes.cache'
+        changes_path = PurePath(self.__path_utils.cache_path).joinpath(changes_file_name)
+        if not Path(changes_path).exists():
+            new_changes_list = ChangesList()
+            new_changes_list.update(files)
+            with open(changes_path, 'wb') as new_changes_file:
+                pickle.dump(new_changes_list, new_changes_file)
+                return files
+        with open(changes_path, 'r+b') as changes_file:
+            changes_list = pickle.load(changes_file)
+            changes = changes_list.get_changes(files)
+            changes_list.update(files)
+            pickle.dump(changes_list, changes_file)
+            return changes
+
+    def __add_enums(self, new_enums: list[EnumInfo]):
+        self.__enums_info.extend(new_enums)
+        unique_enums = {}
+        for enum_info in self.__enums_info:
+            unique_enums[enum_info.full_type_name] = enum_info
+        self.__enums_info.clear()
+        for key, unique_enum in unique_enums.items():
+            self.__enums_info.append(unique_enum)
+
+    def __add_classes(self, new_classes: list[ClassInfo]):
+        self.__classes_info.extend(new_classes)
+        unique_classes = {}
+        for class_info in self.__classes_info:
+            unique_classes[class_info.full_type_name] = class_info
+        self.__classes_info.clear()
+        for key, unique_class in unique_classes.items():
+            self.__classes_info.append(unique_class)
 
 
 class ClassesConverter(ClassesGateway):
