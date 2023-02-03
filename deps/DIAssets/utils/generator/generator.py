@@ -76,16 +76,25 @@ class DirEnvironment:
 
     @staticmethod
     def rm_tree(pth, excludes=None):
-        pth = Path(pth)
-        if not pth.exists():
+        path = Path(pth)
+        if not path.exists():
             return
-        for child in pth.iterdir():
+        for child in path.iterdir():
             if child.is_file():
                 if child in excludes:
                     continue
                 child.unlink()
             else:
                 DirEnvironment.rm_tree(child, excludes)
+        DirEnvironment.rm_empty_dir(path)
+
+    @staticmethod
+    def rm_empty_dir(path: Path):
+        count = 0
+        for child in path.iterdir():
+            count = count+1
+        if count == 0:
+            path.rmdir()
 
 
 class SerializableEnum:
@@ -593,11 +602,13 @@ class GenerateUnitGateway:
             dependencies = unit.get_dependencies()
             for dependency in dependencies:
                 if dependency in changed_files:
-                    generate_units.append(unit)
+                    if unit not in generate_units:
+                        generate_units.append(unit)
         for unit in raw_generate_units:
             unit_file = Path(unit.origin_path)
             if unit_file in changed_files:
-                generate_units.append(unit)
+                if unit not in generate_units:
+                    generate_units.append(unit)
 
         for generate_unit in generate_units:
             print(str(generate_unit.origin_path) + ' is changed')
