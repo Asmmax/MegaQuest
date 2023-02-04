@@ -29,7 +29,7 @@ shared_bind_using_tpl_path = 'templates/Shared/bind_using.tpl'
 
 class DirEnvironment:
     def __init__(self, working_env_in_path, working_env_out_include_path, working_env_out_source_path,
-                 in_dir, out_include_dir, out_source_dir, cache_path, add_includes):
+                 in_dir, out_include_dir, out_source_dir, cache_path, extra_cache_paths, add_includes):
 
         self.working_env_in_path = working_env_in_path
         self.working_env_out_include_path = working_env_out_include_path
@@ -38,16 +38,29 @@ class DirEnvironment:
         self.out_include_dir = out_include_dir
         self.out_source_dir = out_source_dir
         self.cache_path = cache_path
+        self.extra_cache_paths = extra_cache_paths
         self.add_includes = add_includes
 
         self.in_path = PurePath(working_env_in_path).joinpath(in_dir)
         self.out_include_path = PurePath(working_env_out_include_path).joinpath(out_include_dir)
         self.out_source_path = PurePath(working_env_out_source_path).joinpath(out_source_dir)
 
-    def get_gen_path_for(self, path):
+    def get_gen_path_for(self, path: Path):
         raw_path = PurePath(path).relative_to(self.in_path).with_suffix('')
         filename = raw_path.name
         return raw_path.with_name(filename + '_gen')
+
+    def get_gen_cpp_path(self, filename: Path) -> PurePath:
+        relative_path = self.get_gen_path_for(filename)
+        return PurePath(self.out_source_path).joinpath(relative_path).with_suffix('.cpp')
+
+    def get_gen_include_path(self, filename: Path) -> PurePath:
+        relative_path = self.get_gen_path_for(filename)
+        return PurePath(self.out_include_path).joinpath(relative_path).with_suffix('.hpp')
+
+    def get_gen_relative_include_path(self, filename: Path) -> PurePath:
+        full_gen_path = self.get_gen_include_path(filename)
+        return self.relative_to_working_out_include_env(full_gen_path)
 
     def rm_out_dirs(self, include_excludes: list[Path], source_excludes: list[Path]):
         DirEnvironment.rm_tree(self.out_include_path, include_excludes)
@@ -91,7 +104,7 @@ class DirEnvironment:
     @staticmethod
     def rm_empty_dir(path: Path):
         count = 0
-        for child in path.iterdir():
+        for _ in path.iterdir():
             count = count+1
         if count == 0:
             path.rmdir()
@@ -154,8 +167,9 @@ class Method:
 
 
 class Dependency:
-    def __init__(self, filename: str):
+    def __init__(self, filename: str, include: PurePath):
         self.filename = filename
+        self.include = include
 
 
 class SerializableClass:
@@ -247,9 +261,9 @@ class SharedClass(SharedInterface):
         for dependency in self.dependencies:
             if dependency.filename == self.filename:
                 continue
-            gen_path = PurePath(path_utils.out_include_dir). \
-                joinpath(path_utils.get_gen_path_for(dependency.filename)).with_suffix('.hpp')
-            dependency_include = '#include ' + '"' + str(gen_path).replace('\\', '/') + '"'
+            if dependency.include is None:
+                continue
+            dependency_include = '#include ' + '"' + str(dependency.include).replace('\\', '/') + '"'
             if not dependencies_list.count(dependency_include):
                 dependencies_list.append(dependency_include)
         dependencies = '\n'.join(dependencies_list)
@@ -355,9 +369,9 @@ class PolymorphicClass(PolymorphicInterface):
         for dependency in self.dependencies:
             if dependency.filename == self.filename:
                 continue
-            gen_path = PurePath(path_utils.out_include_dir). \
-                joinpath(path_utils.get_gen_path_for(dependency.filename)).with_suffix('.hpp')
-            dependency_include = '#include ' + '"' + str(gen_path).replace('\\', '/') + '"'
+            if dependency.include is None:
+                continue
+            dependency_include = '#include ' + '"' + str(dependency.include).replace('\\', '/') + '"'
             if not dependencies_list.count(dependency_include):
                 dependencies_list.append(dependency_include)
         dependencies = '\n'.join(dependencies_list)
@@ -400,9 +414,9 @@ class SimpleClass(SerializableClass):
         for dependency in self.dependencies:
             if dependency.filename == self.filename:
                 continue
-            gen_path = PurePath(path_utils.out_include_dir). \
-                joinpath(path_utils.get_gen_path_for(dependency.filename)).with_suffix('.hpp')
-            dependency_include = '#include ' + '"' + str(gen_path).replace('\\', '/') + '"'
+            if dependency.include is None:
+                continue
+            dependency_include = '#include ' + '"' + str(dependency.include).replace('\\', '/') + '"'
             if not dependencies_list.count(dependency_include):
                 dependencies_list.append(dependency_include)
         dependencies = '\n'.join(dependencies_list)
@@ -419,11 +433,12 @@ class SimpleClass(SerializableClass):
 
 
 class GenerateUnit:
-    def __init__(self, filename: Path, path_utils, enums: list[SerializableEnum], classes: list[SerializableClass]):
+    def __init__(self, filename: Path, path_utils: DirEnvironment,
+                 enums: list[SerializableEnum], classes: list[SerializableClass]):
         self.path_utils = path_utils
         self.origin_path = PurePath(filename)
-        self.include_path = GenerateUnit.get_include_path(filename, path_utils)
-        self.cpp_path = GenerateUnit.get_cpp_path(filename, path_utils)
+        self.include_path = path_utils.get_gen_include_path(filename)
+        self.cpp_path = path_utils.get_gen_cpp_path(filename)
         self.serializable_enums = enums
         self.serializable_classes = classes
 
@@ -477,16 +492,6 @@ class GenerateUnit:
             for dependency in _class.dependencies:
                 files.append(Path(dependency.filename))
         return files
-
-    @staticmethod
-    def get_cpp_path(filename: Path, path_utils: DirEnvironment) -> PurePath:
-        relative_path = path_utils.get_gen_path_for(filename)
-        return PurePath(path_utils.out_source_path).joinpath(relative_path).with_suffix('.cpp')
-
-    @staticmethod
-    def get_include_path(filename: Path, path_utils: DirEnvironment) -> PurePath:
-        relative_path = path_utils.get_gen_path_for(filename)
-        return PurePath(path_utils.out_include_path).joinpath(relative_path).with_suffix('.hpp')
 
 
 class ClassesGateway:
@@ -690,9 +695,9 @@ class Generator:
         include_files = []
         source_files = []
         for file in files:
-            include_path = Path(GenerateUnit.get_include_path(file, self.__path_utils))
+            include_path = Path(self.__path_utils.get_gen_include_path(file))
             include_files.append(include_path)
-            source_path = Path(GenerateUnit.get_cpp_path(file, self.__path_utils))
+            source_path = Path(self.__path_utils.get_gen_cpp_path(file))
             source_files.append(source_path)
         self.__path_utils.rm_out_dirs(include_files, source_files)
 

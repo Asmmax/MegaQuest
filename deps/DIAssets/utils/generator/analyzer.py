@@ -250,12 +250,16 @@ class ClassesInfoGateway:
     def get_classes(self) -> list[ClassInfo]:
         pass
 
+    def get_includes(self) -> dict:
+        pass
+
 
 class Analyzer(ClassesInfoGateway):
     def __init__(self, path_utils: DirEnvironment):
         self.__path_utils = path_utils
         self.__enums_info = []
         self.__classes_info = []
+        self.__includes = {}
 
     def read(self, files: list[Path]):
         self._reset()
@@ -272,6 +276,8 @@ class Analyzer(ClassesInfoGateway):
                       | clang.cindex.TranslationUnit.PARSE_PRECOMPILED_PREAMBLE
             translation_unit = index.parse(str(path), args=arg_list, options=options)
             self._analyze_unit(translation_unit.cursor)
+        for file in files:
+            self.__includes[file] = self.__path_utils.get_gen_relative_include_path(file)
 
     def get_enums(self) -> list[EnumInfo]:
         return self.__enums_info
@@ -279,9 +285,13 @@ class Analyzer(ClassesInfoGateway):
     def get_classes(self) -> list[ClassInfo]:
         return self.__classes_info
 
+    def get_includes(self) -> dict:
+        return self.__includes
+
     def _reset(self):
         self.__enums_info = []
         self.__classes_info = []
+        self.__includes = {}
 
     def _analyze_unit(self, root: clang.cindex.Cursor):
         for child in root.get_children():
@@ -312,9 +322,10 @@ class Analyzer(ClassesInfoGateway):
 
 
 class Cache:
-    def __init__(self, enums_info: list[EnumInfo], classes_info: list[ClassInfo]):
+    def __init__(self, enums_info: list[EnumInfo], classes_info: list[ClassInfo], includes: dict):
         self.enums_info = enums_info
         self.classes_info = classes_info
+        self.includes = includes
 
 
 class CachedAnalyzer(ClassesInfoGateway):
@@ -323,6 +334,7 @@ class CachedAnalyzer(ClassesInfoGateway):
         self.__analyzer = Analyzer(path_utils)
         self.__enums_info = []
         self.__classes_info = []
+        self.__includes = {}
 
     def read(self, files: list[Path]):
         self._reset()
@@ -332,13 +344,18 @@ class CachedAnalyzer(ClassesInfoGateway):
         self.__analyzer.read(changed_files)
         self.__add_enums(self.__analyzer.get_enums())
         self.__add_classes(self.__analyzer.get_classes())
+        self.__add_includes(self.__analyzer.get_includes())
         self._write_cache()
+        self._read_sub_caches()
 
     def get_enums(self) -> list[EnumInfo]:
         return self.__enums_info
 
     def get_classes(self) -> list[ClassInfo]:
         return self.__classes_info
+
+    def get_includes(self) -> dict:
+        return self.__includes
 
     def has_class(self, full_type_name: str):
         for class_info in self.__classes_info:
@@ -355,6 +372,7 @@ class CachedAnalyzer(ClassesInfoGateway):
     def _reset(self):
         self.__enums_info = []
         self.__classes_info = []
+        self.__includes = {}
 
     def _read_cache(self):
         cache_file_name = 'analyzer.cache'
@@ -365,6 +383,19 @@ class CachedAnalyzer(ClassesInfoGateway):
             cache = pickle.load(cache_file)
             self.__enums_info = cache.enums_info
             self.__classes_info = cache.classes_info
+            self.__add_includes = cache.includes
+
+    def _read_sub_caches(self):
+        cache_file_name = 'analyzer.cache'
+        for sub_cache_path in self.__path_utils.extra_cache_paths:
+            cache_path = PurePath(sub_cache_path).joinpath(cache_file_name)
+            if not Path(cache_path).exists():
+                continue
+            with open(cache_path, 'rb') as cache_file:
+                cache = pickle.load(cache_file)
+                self.__add_enums(cache.enums_info)
+                self.__add_classes(cache.classes_info)
+                self.__add_includes(cache.includes)
 
     def _remove_non_existent(self):
         new_enums_info = []
@@ -382,7 +413,7 @@ class CachedAnalyzer(ClassesInfoGateway):
     def _write_cache(self):
         cache_file_name = 'analyzer.cache'
         cache_path = PurePath(self.__path_utils.cache_path).joinpath(cache_file_name)
-        cache = Cache(self.__enums_info, self.__classes_info)
+        cache = Cache(self.__enums_info, self.__classes_info, self.__includes)
         with open(cache_path, 'wb') as cache_file:
             pickle.dump(cache, cache_file)
 
@@ -409,6 +440,10 @@ class CachedAnalyzer(ClassesInfoGateway):
         for key, unique_class in unique_classes.items():
             self.__classes_info.append(unique_class)
 
+    def __add_includes(self, new_includes: dict):
+        for file, new_include in new_includes.items():
+            self.__includes[file] = new_include
+
 
 class ClassesConverter(ClassesGateway):
     def __init__(self, analyzer: ClassesInfoGateway):
@@ -416,6 +451,7 @@ class ClassesConverter(ClassesGateway):
         self.analyzer = analyzer
         self.enums_info = []
         self.classes_info = []
+        self.includes = {}
 
     def get_enum_info(self, full_type_name):
         clean_type_name = TypeUtils.clean_up(full_type_name)
@@ -431,10 +467,17 @@ class ClassesConverter(ClassesGateway):
                 return _class_info
         return None
 
+    def get_include(self, filename: str):
+        file_path = Path(filename)
+        if file_path in self.includes.keys():
+            return self.includes[file_path]
+        return None
+
     def _init(self, files: list[Path]):
         self.analyzer.read(files)
         self.enums_info = self.analyzer.get_enums()
         self.classes_info = self.analyzer.get_classes()
+        self.includes = self.analyzer.get_includes()
 
     def _get_enums_names(self) -> list[str]:
         names = []
@@ -484,29 +527,29 @@ class ClassesConverter(ClassesGateway):
             clean_base_type = TypeUtils.clean_up(base.full_type_name)
             base_class = self.get_class(clean_base_type)
             if base_class:
-                dependency = Dependency(base_class.filename)
+                dependency = Dependency(base_class.filename, self.get_include(base_class.filename))
                 dependencies.append(dependency)
 
         for _property in info.properties:
             clean_property_type = TypeUtils.clean_up(_property.full_type_name)
             property_class = self.get_class(clean_property_type)
             if property_class:
-                dependency = Dependency(property_class.filename)
+                dependency = Dependency(property_class.filename, self.get_include(property_class.filename))
                 dependencies.append(dependency)
             property_enum = self.get_enum(clean_property_type)
             if property_enum:
-                dependency = Dependency(property_enum.filename)
+                dependency = Dependency(property_enum.filename, self.get_include(property_enum.filename))
                 dependencies.append(dependency)
 
         for method in info.methods:
             clean_method_type = TypeUtils.clean_up(method.full_type_name)
             method_class = self.get_class(clean_method_type)
             if method_class:
-                dependency = Dependency(method_class.filename)
+                dependency = Dependency(method_class.filename, self.get_include(method_class.filename))
                 dependencies.append(dependency)
             method_enum = self.get_enum(clean_method_type)
             if method_enum:
-                dependency = Dependency(method_enum.filename)
+                dependency = Dependency(method_enum.filename, self.get_include(method_enum.filename))
                 dependencies.append(dependency)
 
         return dependencies
