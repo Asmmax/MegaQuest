@@ -341,6 +341,7 @@ class CachedAnalyzer(ClassesInfoGateway):
         self._read_cache()
         self._remove_non_existent()
         changed_files = self._get_changes(files)
+        self._remove_old_info(changed_files)
         self.__analyzer.read(changed_files)
         self.__add_enums(self.__analyzer.get_enums())
         self.__add_classes(self.__analyzer.get_classes())
@@ -383,7 +384,7 @@ class CachedAnalyzer(ClassesInfoGateway):
             cache = pickle.load(cache_file)
             self.__enums_info = cache.enums_info
             self.__classes_info = cache.classes_info
-            self.__add_includes = cache.includes
+            self._includes = cache.includes
 
     def _read_sub_caches(self):
         cache_file_name = 'analyzer.cache'
@@ -410,11 +411,29 @@ class CachedAnalyzer(ClassesInfoGateway):
                 new_classes_info.append(class_info)
         self.__classes_info = new_classes_info
 
+    def _remove_old_info(self, files: list[Path]):
+        new_enums_info = []
+        for enum_info in self.__enums_info:
+            enum_file_path = Path(enum_info.filename)
+            if enum_file_path not in files:
+                new_enums_info.append(enum_info)
+        self.__enums_info = new_enums_info
+
+        new_classes_info = []
+        for class_info in self.__classes_info:
+            class_file_path = Path(class_info.filename)
+            if class_file_path not in files:
+                new_classes_info.append(class_info)
+        self.__classes_info = new_classes_info
+
     def _write_cache(self):
         cache_file_name = 'analyzer.cache'
-        cache_path = PurePath(self.__path_utils.cache_path).joinpath(cache_file_name)
+        cache_path = Path(self.__path_utils.cache_path)
+        if not cache_path.exists():
+            cache_path.mkdir(parents=True)
+        cache_file_path = cache_path.joinpath(cache_file_name)
         cache = Cache(self.__enums_info, self.__classes_info, self.__includes)
-        with open(cache_path, 'wb') as cache_file:
+        with open(cache_file_path, 'wb') as cache_file:
             pickle.dump(cache, cache_file)
 
     def _get_changes(self, files: list[Path]) -> list[Path]:

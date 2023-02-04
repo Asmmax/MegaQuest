@@ -105,7 +105,7 @@ class DirEnvironment:
     def rm_empty_dir(path: Path):
         count = 0
         for _ in path.iterdir():
-            count = count+1
+            count = count + 1
         if count == 0:
             path.rmdir()
 
@@ -616,7 +616,7 @@ class GenerateUnitGateway:
                     generate_units.append(unit)
 
         for generate_unit in generate_units:
-            print(str(generate_unit.origin_path) + ' is changed')
+            print(str(generate_unit.origin_path) + ' is regenerated')
 
         return generate_units
 
@@ -625,12 +625,11 @@ class GenerateUnitGateway:
         print('Sorting classes...')
         sorted_classes = GenerateUnitGateway.__sort_classes(classes)
         for filename in files:
-            print('Gathering generation info for ' + str(filename))
+            # print('Gathering generation info for ' + str(filename))
             file_enums = GenerateUnitGateway.__filter_enums(filename, enums)
             file_classes = GenerateUnitGateway.__filter_classes(filename, sorted_classes)
             new_unit = GenerateUnit(filename, self.__path_utils, file_enums, file_classes)
-            if new_unit.is_valid():
-                generate_units.append(new_unit)
+            generate_units.append(new_unit)
         return generate_units
 
     @staticmethod
@@ -699,15 +698,22 @@ class Generator:
             include_files.append(include_path)
             source_path = Path(self.__path_utils.get_gen_cpp_path(file))
             source_files.append(source_path)
+        for unit in generate_units:
+            if not unit.is_valid():
+                include_files.remove(Path(unit.include_path))
+                source_files.remove(Path(unit.cpp_path))
         self.__path_utils.rm_out_dirs(include_files, source_files)
 
         print('Preparing files...')
         for generate_unit in generate_units:
-            generate_unit.prepare_files()
+            if generate_unit.is_valid():
+                generate_unit.prepare_files()
 
         print('Filling enums...')
         for generate_unit in generate_units:
-            generate_unit.gen_enums()
+            if generate_unit.is_valid():
+                generate_unit.gen_enums()
         print('Filling classes...')
         for generate_unit in generate_units:
-            generate_unit.gen_classes()
+            if generate_unit.is_valid():
+                generate_unit.gen_classes()
