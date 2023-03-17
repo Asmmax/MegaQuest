@@ -17,12 +17,14 @@ namespace IO
 		using OutputPtr = std::shared_ptr<Game::IOutput>;
 
 	public:
+		static void Init(const std::shared_ptr<Logger>& logger);
 		static Logger& Instance();
 		/// @inject
-		void Init(const OutputPtr& output);
+		void SetOutput(const OutputPtr& output);
 		void Log(const QuestCore::TextString& text);
 
 	private:
 		OutputPtr _output;
+		static std::shared_ptr<Logger> _instance;
 	};
 }

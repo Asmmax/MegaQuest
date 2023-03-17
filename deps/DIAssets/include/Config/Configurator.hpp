@@ -7,10 +7,10 @@
 #include <iostream>
 #include <filesystem>
 
-class SettingsLoader
+class Configurator : public ContextManager
 {
 public:
-	static void Load(const std::string& configFile)
+	void Load(const std::string& configFile)
 	{
 		auto configJson = LoadJson(configFile);
 		if (configJson.empty()) {
@@ -27,6 +27,28 @@ public:
 	}
 
 private:
+	void LoadSettings(const std::string& settingsPath)
+	{
+		for (auto const& dir_entry : std::filesystem::recursive_directory_iterator(settingsPath))
+		{
+			if (dir_entry.is_directory()) {
+				continue;
+			}
+
+			if (dir_entry.path().extension().u8string() != ".json") {
+				continue;
+			}
+
+			auto jsonAsset = LoadJson(dir_entry.path().u8string());
+			auto relativePath = std::filesystem::relative(dir_entry.path(), settingsPath);
+			auto rawContextId = relativePath.replace_extension().u8string();
+			std::replace(rawContextId.begin(), rawContextId.end(), '\\', '/');
+			auto contextId = ReadContextId(jsonAsset, rawContextId);
+			AddRoot(jsonAsset, contextId);
+		}
+		Read();
+	}
+
 	static nlohmann::json LoadJson(const std::string& filename)
 	{
 		nlohmann::json root;
@@ -55,28 +77,6 @@ private:
 		}
 
 		return root;
-	}
-
-	static void LoadSettings(const std::string& settingsPath)
-	{
-		for (auto const& dir_entry : std::filesystem::recursive_directory_iterator(settingsPath))
-		{
-			if (dir_entry.is_directory()) {
-				continue;
-			}
-
-			if (dir_entry.path().extension().u8string() != ".json") {
-				continue;
-			}
-
-			auto jsonAsset = LoadJson(dir_entry.path().u8string());
-			auto relativePath = std::filesystem::relative(dir_entry.path(), settingsPath);
-			auto rawContextId = relativePath.replace_extension().u8string();
-			std::replace(rawContextId.begin(), rawContextId.end(), '\\', '/');
-			auto contextId = ReadContextId(jsonAsset, rawContextId);
-			ContextManager::Instance().AddRoot(jsonAsset, contextId);
-		}
-		ContextManager::Instance().Read();
 	}
 
 	static std::string ReadContextId(const nlohmann::json& asset, const std::string& defaultId)

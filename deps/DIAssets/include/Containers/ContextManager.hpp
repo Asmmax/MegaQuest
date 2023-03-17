@@ -5,14 +5,13 @@
 #include <memory>
 
 #include "Containers/Context.hpp"
+#include "ContainerCollection.hpp"
 
 class ContextManager
 {
 public:
-	static ContextManager& Instance()
-	{
-		static ContextManager instance;
-		return instance;
+	ContextManager() {
+
 	}
 
 	Context& GetContext(const std::string& id = std::string())

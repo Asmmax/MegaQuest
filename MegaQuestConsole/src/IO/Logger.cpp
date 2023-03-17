@@ -5,13 +5,17 @@
 
 using namespace IO;
 
-Logger& Logger::Instance()
+void Logger::Init(const std::shared_ptr<Logger>& logger)
 {
-	static std::shared_ptr<Logger> instance = ContextManager::Instance().GetContext().GetContainer<Logger>()->Get();
-	return *instance;
+	_instance = logger;
 }
 
-void Logger::Init(const Game::IOutput::Ptr& output)
+Logger& Logger::Instance()
+{
+	return *_instance;
+}
+
+void Logger::SetOutput(const Game::IOutput::Ptr& output)
 {
 	_output = output;
 }

@@ -9,12 +9,6 @@ class ContainerCollection
 {
 	using ContainerPtr = std::shared_ptr<ContainerType<Type>>;
 public:
-	static ContainerCollection& Instance()
-	{
-		static ContainerCollection instance;
-		return instance;
-	}
-
 	ContainerPtr GetContainer(const std::string & id)
 	{
 		if (_containers.find(id) == _containers.end()) {
