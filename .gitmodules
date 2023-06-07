@@ -1,0 +1,3 @@
+[submodule "deps/DIAssets"]
+	path = deps/DIAssets
+	url = git@github.com:Asmmax/DIAssets.git

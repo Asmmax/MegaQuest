@@ -1,1 +1,0 @@
-{ "${enum_value_name}", ${enum_full_type}::${enum_value_name} }

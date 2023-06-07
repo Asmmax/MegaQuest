@@ -1,1 +1,0 @@
-context.GetFactory<std::shared_ptr<${full_base_type_name}>>()->AddInheritor(impl);

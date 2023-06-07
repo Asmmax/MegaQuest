@@ -1,1 +1,0 @@
-context.GetContainer<${full_base_type_name}>()->AddInheritor(impl);
