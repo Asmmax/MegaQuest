@@ -3,7 +3,6 @@
 
 namespace Game
 {
-	/// @serializable @abstract
 	class VoidCommand :public ICommand
 	{
 	public:

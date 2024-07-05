@@ -3,27 +3,28 @@
 
 using namespace QuestCore;
 
-CaseContainerStateMachine::CaseContainerStateMachine(const QuestPtr& quest):
-	QuestInitable(quest)
+CaseContainerStateMachine::CaseContainerStateMachine(Quest* quest):
+	QuestInitable(quest),
+	_initState(nullptr),
+	_state(nullptr)
 {
 }
 
-void CaseContainerStateMachine::InitState(const ICaseContainer::WeakPtr& state)
+void CaseContainerStateMachine::InitState(ICaseContainer* state)
 {
 	_initState = state;
 }
 
-void CaseContainerStateMachine::SetState(const ICaseContainer::WeakPtr& state)
+void CaseContainerStateMachine::SetState(ICaseContainer* state)
 {
 	_state = state;
 }
 
 void CaseContainerStateMachine::Print(IButtonGroup& buttons)
 {
-	auto statePtr = _state.lock();
-	assert(statePtr);
-	if (statePtr) {
-		statePtr->Print(buttons);
+	assert(_state);
+	if (_state) {
+		_state->Print(buttons);
 	}
 }
 

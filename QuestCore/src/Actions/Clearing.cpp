@@ -3,7 +3,7 @@
 
 using namespace  QuestCore;
 
-Clearing::Clearing(const std::shared_ptr<Inventory>& inventory):
+Clearing::Clearing(Inventory* inventory):
 	_inventory(inventory)
 {
 }

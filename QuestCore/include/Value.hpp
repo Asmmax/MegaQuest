@@ -6,7 +6,6 @@ namespace QuestCore
 	class Item;
 	class Inventory;
 
-	/// @serializable @polymorphic @abstract
 	class Value 
 	{
 	public:
@@ -14,7 +13,6 @@ namespace QuestCore
 		virtual int Get() const = 0;
 	};
 
-	/// @serializable
 	class SimpleValue : public Value
 	{
 	public:
@@ -24,14 +22,13 @@ namespace QuestCore
 		int _value;
 	};
 
-	/// @serializable
 	class InventoryValue : public Value
 	{
 	public:
-		InventoryValue(const std::weak_ptr<Item>& item, const std::weak_ptr<Inventory>& inventory);
+		InventoryValue(Item* item, Inventory* inventory);
 		virtual int Get() const override;
 	private:
-		std::weak_ptr<Inventory> _inventory;
-		std::weak_ptr<Item> _item;
+		Inventory* _inventory;
+		Item* _item;
 	};
 }

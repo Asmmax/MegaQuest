@@ -3,7 +3,7 @@
 
 using namespace QuestCore;
 
-FormatedString::FormatedString(const std::vector<FormPtr>& forms):
+FormatedString::FormatedString(const std::vector<FormBase*>& forms):
 	_forms(forms)
 {
 }
@@ -13,14 +13,14 @@ void FormatedString::ClearForms()
 	_forms.clear();
 }
 
-void FormatedString::AddForm(const FormPtr& form)
+void FormatedString::AddForm(FormBase* form)
 {
 	_forms.emplace_back(form);
 }
 
 TextString FormatedString::GetContainsFor(int count) const
 {
-	for (auto& form : _forms) {
+	for (auto form : _forms) {
 		if (form->HasRuleFor(count)) {
 			return form->GetForm();
 		}

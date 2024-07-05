@@ -4,7 +4,7 @@
 using namespace Game;
 
 AliasCommand::AliasCommand(const std::string& alias,
-	const CommandManagerWeakPtr& commandManager):
+	CommandManager* commandManager):
 
 	_orig(alias),
 	_parent(commandManager)
@@ -13,7 +13,7 @@ AliasCommand::AliasCommand(const std::string& alias,
 
 void AliasCommand::Run(const std::vector<std::string>& args)
 {
-	if (auto ptr = _parent.lock()) {
-		ptr->Run(_orig, args);
+	if (_parent) {
+		_parent->Run(_orig, args);
 	}
 }

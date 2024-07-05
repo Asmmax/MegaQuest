@@ -6,7 +6,7 @@
 
 using namespace QuestCore;
 
-void InventoryParagraph::ItemOrganizer::AddItemOrder(const Item::Ptr& item, int order)
+void InventoryParagraph::ItemOrganizer::AddItemOrder(Item* item, int order)
 {
 	auto res = _itemOrders.emplace(item, order);
 	if (!res.second) {
@@ -14,7 +14,7 @@ void InventoryParagraph::ItemOrganizer::AddItemOrder(const Item::Ptr& item, int 
 	}
 }
 
-int InventoryParagraph::ItemOrganizer::GetOrder(const Item::Ptr& item) const
+int InventoryParagraph::ItemOrganizer::GetOrder(Item* item) const
 {
 	int order = 0;
 	auto foundIt = _itemOrders.find(item);
@@ -27,7 +27,7 @@ int InventoryParagraph::ItemOrganizer::GetOrder(const Item::Ptr& item) const
 InventoryParagraph::InventoryParagraph(const FormatedString& prefix, 
 	const TextString& gap, 
 	const FormatedString& postfix,
-	const Inventory::Ptr& inventory,
+	Inventory* inventory,
 	const std::vector<ItemOrder>& itemOrders):
 
 	_prefix(prefix),
@@ -61,7 +61,7 @@ void InventoryParagraph::Print(ITextView& view)
 	view.AppendText(_postfix.GetContainsFor(countItems));
 }
 
-void InventoryParagraph::SetItemOrder(const Item::Ptr& item, int order)
+void InventoryParagraph::SetItemOrder(Item* item, int order)
 {
 	_itemOrganizer.AddItemOrder(item, order >= 0 ? order + 1 : order);
 }
@@ -75,9 +75,9 @@ int InventoryParagraph::GetSumItemCount() const
 	return countItems;
 }
 
-std::vector<std::pair<InventoryParagraph::ItemPtr, int>> InventoryParagraph::GetOrderedItems() const
+std::vector<std::pair<Item*, int>> InventoryParagraph::GetOrderedItems() const
 {
-	std::vector<std::pair<ItemPtr, int>> orderedItems;
+	std::vector<std::pair<Item*, int>> orderedItems;
 	auto items = _inventory->GetItems();
 	for (auto& item : items) {
 		orderedItems.emplace_back(item);

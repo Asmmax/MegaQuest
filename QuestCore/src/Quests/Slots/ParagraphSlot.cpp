@@ -3,12 +3,12 @@
 
 using namespace QuestCore;
 
-ParagraphSlot::ParagraphSlot(const QuestPtr& quest):
+ParagraphSlot::ParagraphSlot(Quest* quest):
 	Base(quest)
 {
 }
 
-ParagraphSlot::ParagraphPtr ParagraphSlot::GetParagraph() const
+IParagraph* ParagraphSlot::GetParagraph() const
 {
 	return Get();
 }

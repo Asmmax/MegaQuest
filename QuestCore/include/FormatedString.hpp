@@ -7,17 +7,15 @@ namespace QuestCore
 {
 	class FormBase;
 
-	/// @serializable
 	class FormatedString
 	{
-		using FormPtr = std::shared_ptr<FormBase>;
 	public:
-		FormatedString(const std::vector<std::shared_ptr<FormBase>>& forms = std::vector<std::shared_ptr<FormBase>>());
+		FormatedString(const std::vector<FormBase*>& forms = std::vector<FormBase*>());
 		void ClearForms();
-		void AddForm(const FormPtr& form);
+		void AddForm(FormBase* form);
 		TextString GetContainsFor(int count) const;
 
 	private:
-		std::vector<FormPtr> _forms;
+		std::vector<FormBase*> _forms;
 	};
 }

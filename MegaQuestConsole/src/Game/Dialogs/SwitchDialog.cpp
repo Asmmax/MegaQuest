@@ -8,8 +8,8 @@
 using namespace Game;
 
 SwitchDialog::SwitchDialog(const QuestCore::TextString& intro, 
-	const std::vector<ButtonListPtr> buttonGroups,
-	const std::vector<DialogPtr>& dialogs):
+	const std::vector<IButtonList*> buttonGroups,
+	const std::vector<IDialog*>& dialogs):
 
 	DialogBase(intro, buttonGroups),
 	_isIntroShowed(false)
@@ -19,7 +19,7 @@ SwitchDialog::SwitchDialog(const QuestCore::TextString& intro,
 	}
 }
 
-void SwitchDialog::AddDialog(const DialogPtr& dialog)
+void SwitchDialog::AddDialog(IDialog* dialog)
 {
 	if (_dialogs.empty()) {
 		_currentDialog = dialog;
@@ -68,7 +68,7 @@ void SwitchDialog::Next()
 
 	_currentDialog = _dialogs[nextId];
 	
-	if (auto model = GetModel().lock()) {
+	if (auto model = GetModel()) {
 		model->Init();
 		model->Update();
 	}

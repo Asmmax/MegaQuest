@@ -1,52 +1,28 @@
-cmake_minimum_required (VERSION 3.12)
+cmake_minimum_required (VERSION 3.8)
 
-set(console_include_dir "include/")
-set(console_src_dir "src/")
-set(out_include_path "${PROJECT_BINARY_DIR}/.generated/MegaQuestConsole/${console_include_dir}")
-set(out_source_path "${PROJECT_BINARY_DIR}/.generated/MegaQuestConsole/${console_src_dir}")
-set(core_out_include_path "${PROJECT_BINARY_DIR}/.generated/QuestCore/${console_include_dir}")
-set(core_out_source_path "${PROJECT_BINARY_DIR}/.generated/QuestCore/${console_src_dir}")
-set(cache_path "${PROJECT_BINARY_DIR}/.generated/MegaQuestConsole")
-set(core_cache_path "${PROJECT_BINARY_DIR}/.generated/QuestCore")
-set(scripts_dir "${PROJECT_SOURCE_DIR}/scripts")
+set(assets_dir "${CMAKE_CURRENT_SOURCE_DIR}/assets")
 
-if (WIN32)
-	message (STATUS "Generating containers for Current")
-	get_target_property(add_includes QuestCore INCLUDE_DIRECTORIES)
-	list(GET add_includes 0 add_include)
-	set(in_path "${CMAKE_CURRENT_SOURCE_DIR}/${console_include_dir}")
-	set(gen_dir "MegaQuestConsole")
-	execute_process(
-		COMMAND cmd /C set out_include_dir=${gen_dir} && set out_source_dir=${gen_dir} && set add_includes=${add_include} && set cache_path=${cache_path} && set extra_cache_paths=${core_cache_path} && call "${scripts_dir}/win/generate_containers.bat" ${in_path} ${out_include_path} ${out_source_path}
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		)
-endif()
+generate_di_files(TARGET MegaQuestConsole DEPS QuestCore WITH_REGISTER WITH_META)
 
-file(GLOB_RECURSE console_include CONFIGURE_DEPENDS "${console_include_dir}/*.hpp")
-file(GLOB_RECURSE console_src "${console_src_dir}/*.cpp")
+file(GLOB_RECURSE cur_include "${DI_CURRENT_INCLUDE_DIR}/*.hpp")
+file(GLOB_RECURSE cur_src "${DI_CURRENT_SOURCE_DIR}/*.cpp")
 
-file(GLOB_RECURSE gen_include 
-"${out_include_path}/*.hpp" 
-"${core_out_include_path}/*.hpp")
-
-file(GLOB_RECURSE gen_src 
-"${out_source_path}/*.cpp" 
-"${core_out_source_path}/*.cpp")
+file(GLOB_RECURSE gen_include "${DI_CURRENT_OUT_INCLUDE_PATH}/*.hpp")
+file(GLOB_RECURSE gen_src "${DI_CURRENT_OUT_SOURCE_PATH}/*.cpp")
 
 add_executable (MegaQuestConsole 
-${console_include}
-${console_src}
+${cur_include}
+${cur_src}
 ${gen_include}
 ${gen_src})
 
 target_compile_features (MegaQuestConsole PRIVATE cxx_std_17)
-set_target_properties(MegaQuestConsole PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(MegaQuestConsole 
-PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/${console_include_dir}"
-PRIVATE "${out_include_path}"
-PRIVATE "${core_out_include_path}")
-target_link_libraries(MegaQuestConsole PRIVATE QuestCore PRIVATE DIAssets)
-add_dependencies(MegaQuestConsole QuestCore)
+PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include"
+PRIVATE "${DI_CURRENT_OUT_INCLUDE_PATH}")
 
-set(RESOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/assets")
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.json.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config.json)
+target_link_libraries(MegaQuestConsole PRIVATE QuestCore)
+setup_di_cache(TARGET MegaQuestConsole)
+
+file(RELATIVE_PATH RESOURCE_PATH ${PROJECT_BINARY_DIR} ${assets_dir})
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/settings.dat.in ${PROJECT_BINARY_DIR}/settings.dat)

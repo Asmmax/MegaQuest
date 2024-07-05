@@ -17,7 +17,7 @@ void CommandManager::RegisterCommands(const std::vector<CommandRecord>& commands
 	}
 }
 
-void CommandManager::Register(const std::string& text, const ICommand::Ptr& command)
+void CommandManager::Register(const std::string& text, ICommand* command)
 {
 	_commands.emplace(text, command);
 }

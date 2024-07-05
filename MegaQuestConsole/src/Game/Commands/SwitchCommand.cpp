@@ -3,7 +3,7 @@
 
 using namespace Game;
 
-SwitchCommand::SwitchCommand(const SwitchDialogPtr& dialog) :
+SwitchCommand::SwitchCommand(SwitchDialog* dialog) :
 	_dialog(dialog)
 {
 }

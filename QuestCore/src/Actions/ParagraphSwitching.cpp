@@ -3,19 +3,19 @@
 
 using namespace QuestCore;
 
-void ParagraphSwitching::SetStateMachine(const std::weak_ptr<ParagraphStateMachine>& stateMachine)
+void ParagraphSwitching::SetStateMachine(ParagraphStateMachine* stateMachine)
 {
 	_stateMachine = stateMachine;
 }
 
-void ParagraphSwitching::SetNextParagraph(const std::weak_ptr<IParagraph>& nextParagraph)
+void ParagraphSwitching::SetNextParagraph(IParagraph* nextParagraph)
 {
 	_nextParagraph = nextParagraph;
 }
 
 void ParagraphSwitching::Do()
 {
-	if (auto stateMachinePtr = _stateMachine.lock()) {
-		stateMachinePtr->SetState(_nextParagraph);
+	if (_stateMachine) {
+		_stateMachine->SetState(_nextParagraph);
 	}
 }

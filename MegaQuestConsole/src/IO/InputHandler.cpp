@@ -9,7 +9,7 @@
 using namespace Game;
 using namespace IO;
 
-InputHandler::InputHandler(const Game::IInput::Ptr& input, const IOutput::Ptr& output, const CommandManagerPtr& commandManager, const ModelPtr& model):
+InputHandler::InputHandler(Game::IInput* input, Game::IOutput* output, Game::CommandManager* commandManager, Game::Model* model):
 	_input(input),
 	_output(output),
 	_commandManager(commandManager),

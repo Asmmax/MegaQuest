@@ -3,19 +3,19 @@
 
 using namespace QuestCore;
 
-void CaseContainerSwitching::SetStateMachine(const std::weak_ptr<CaseContainerStateMachine>& stateMachine)
+void CaseContainerSwitching::SetStateMachine(CaseContainerStateMachine* stateMachine)
 {
 	_stateMachine = stateMachine;
 }
 
-void CaseContainerSwitching::SetNextContainer(const std::weak_ptr<ICaseContainer>& nextContainer)
+void CaseContainerSwitching::SetNextContainer(ICaseContainer* nextContainer)
 {
 	_nextContainer = nextContainer;
 }
 
 void CaseContainerSwitching::Do()
 {
-	if (auto stateMachinePtr = _stateMachine.lock()) {
-		stateMachinePtr->SetState(_nextContainer);
+	if (_stateMachine) {
+		_stateMachine->SetState(_nextContainer);
 	}
 }

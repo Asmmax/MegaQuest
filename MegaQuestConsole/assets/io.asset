@@ -1,0 +1,31 @@
+{
+	"inputs":[
+	{
+		"id":"main_input",
+		"type":"IO::ConsoleInput"
+	}
+	],
+	"outputs":[
+	{
+		"id":"main_output",
+		"type":"IO::ConsoleOutput"
+	}
+	],
+	"logger":[
+	{
+		"id":"main_logger",
+		"type":"IO::Logger",
+		"output":"main_output"
+	}
+	],
+	"inputHandler":[
+	{
+		"id":"main_input_handler",
+		"type":"IO::InputHandler",
+		"input":"main_input",
+		"output":"main_output",
+		"commandManager":"main_commands",
+		"model":"root_model"
+	}
+	]
+}

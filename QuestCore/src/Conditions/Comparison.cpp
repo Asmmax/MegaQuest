@@ -3,7 +3,7 @@
 
 using namespace QuestCore;
 
-Comparison::Comparison(std::shared_ptr<Value> left, std::shared_ptr<Value> right, Operation op):
+Comparison::Comparison(Value* left, Value* right, Operation op):
 	_left(left),
 	_right(right),
 	_op(op)

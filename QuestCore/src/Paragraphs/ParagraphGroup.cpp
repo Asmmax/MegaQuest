@@ -4,7 +4,7 @@
 using namespace QuestCore;
 
 ParagraphGroup::ParagraphGroup(
-	const std::vector<std::shared_ptr<IParagraph>>& children,
+	const std::vector<IParagraph*>& children,
 	const TextString& gap):
 
 	_paragraphs(children),
@@ -17,7 +17,7 @@ void ParagraphGroup::Clear()
 	_paragraphs.clear();
 }
 
-void ParagraphGroup::AddParagraph(const IParagraph::Ptr& paragraph)
+void ParagraphGroup::AddParagraph(IParagraph* paragraph)
 {
 	_paragraphs.emplace_back(paragraph);
 }

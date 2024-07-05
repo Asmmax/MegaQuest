@@ -4,13 +4,11 @@
 
 namespace QuestCore 
 {
-	/// @serializable
 	class TextString
 	{
 	public:
 		TextString(int value);
 		TextString(const TextString& other);
-		/// @inject
 		TextString(const std::string& u8 = std::string());
 		TextString operator+(const TextString& other) const;
 		TextString& operator=(const TextString& other);

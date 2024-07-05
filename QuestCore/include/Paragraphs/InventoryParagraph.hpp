@@ -9,49 +9,43 @@ namespace QuestCore
 	class Inventory;
 	class Item;
 
-	/// @serializable
 	struct ItemOrder
 	{
-		std::shared_ptr<Item> item;
+		Item* item;
 		int order;
 	};
 
-	/// @serializable
 	class InventoryParagraph: public IParagraph
 	{
-		using FormPtr = std::shared_ptr<FormBase>;
-		using InventoryPtr = std::shared_ptr<Inventory>;
-		using ItemPtr = std::shared_ptr<Item>;
-
 		class ItemOrganizer
 		{
 		public:
-			void AddItemOrder(const ItemPtr& item, int order);
-			int GetOrder(const ItemPtr& item) const;
+			void AddItemOrder(Item* item, int order);
+			int GetOrder(Item* item) const;
 
 		private:
-			std::map<ItemPtr, int> _itemOrders;
+			std::map<Item*, int> _itemOrders;
 		};
 
 	public:
 		InventoryParagraph(const FormatedString& prefix,
 			const TextString& gap,
 			const FormatedString& postfix,
-			const std::shared_ptr<Inventory>& inventory,
+			Inventory* inventory,
 			const std::vector<ItemOrder>& itemOrders = std::vector<ItemOrder>());
 
 		virtual void Print(ITextView& view) override;
-		void SetItemOrder(const ItemPtr& item, int order);
+		void SetItemOrder(Item* item, int order);
 
 	private:
 		int GetSumItemCount() const;
-		std::vector<std::pair<ItemPtr, int>> GetOrderedItems() const;
+		std::vector<std::pair<Item*, int>> GetOrderedItems() const;
 
 	private:
 		FormatedString _prefix;
 		TextString _gap;
 		FormatedString _postfix;
-		InventoryPtr _inventory;
+		Inventory* _inventory;
 		ItemOrganizer _itemOrganizer;
 	};
 }

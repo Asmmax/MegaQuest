@@ -3,16 +3,14 @@
 
 namespace QuestCore
 {
-	/// @serializable
 	class QuestTarget : public Quest
 	{
 	public:
-		/// @inject
-		void SetCurrent(const IQuest::Ptr& current);
+		void SetCurrent(IQuest* current);
 
 		virtual void Init() override;
 
 	private:
-		IQuest::Ptr _current;
+		IQuest* _current;
 	};
 }

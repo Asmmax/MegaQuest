@@ -12,18 +12,12 @@ namespace Game
 
 namespace IO
 {
-	/// @serializable @shared inputHandler
 	class InputHandler
 	{
-		using InputPtr = std::shared_ptr<Game::IInput>;
-		using OutputPtr = std::shared_ptr<Game::IOutput>;
-		using CommandManagerPtr = std::shared_ptr<Game::CommandManager>;
-		using ModelPtr = std::shared_ptr<Game::Model>;
-
 	public:
 		using Ptr = std::shared_ptr<InputHandler>;
 
-		InputHandler(const InputPtr& input, const OutputPtr& output, const CommandManagerPtr& commandManager, const ModelPtr& model);
+		InputHandler(Game::IInput* input, Game::IOutput* output, Game::CommandManager* commandManager, Game::Model* model);
 		void Init();
 		void Handle();
 
@@ -31,9 +25,9 @@ namespace IO
 		std::vector<std::string> Parse(const QuestCore::TextString& command);
 
 	private:
-		InputPtr _input;
-		OutputPtr _output;
-		ModelPtr _model;
-		CommandManagerPtr _commandManager;
+		Game::IInput* _input;
+		Game::IOutput* _output;
+		Game::Model* _model;
+		Game::CommandManager* _commandManager;
 	};
 }

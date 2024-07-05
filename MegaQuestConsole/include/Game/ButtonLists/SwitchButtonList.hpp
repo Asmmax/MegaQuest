@@ -5,16 +5,15 @@
 
 namespace Game
 {
-	/// @serializable
 	class SwitchButtonList : public IButtonList
 	{
 	public:
 		using Ptr = std::shared_ptr<SwitchButtonList>;
 
-		SwitchButtonList(const std::vector<IButtonList::Ptr>& targets = std::vector<IButtonList::Ptr>());
+		SwitchButtonList(const std::vector<IButtonList*>& targets = std::vector<IButtonList*>());
 		virtual void Draw(IOutput& output) override;
 		void Switch(const IButtonList* buttonList);
-		void AddButtonList(const IButtonList::Ptr& buttonList);
+		void AddButtonList(IButtonList* buttonList);
 
 		virtual bool IsUpdateAfterDone() const override { return false; }
 
@@ -23,7 +22,7 @@ namespace Game
 		virtual void DoImpl(int answer) override;
 
 	private:
-		std::vector<IButtonList::Ptr> _buttonLists;
-		IButtonList::Ptr _currentButtonList;
+		std::vector<IButtonList*> _buttonLists;
+		IButtonList* _currentButtonList;
 	};
 }

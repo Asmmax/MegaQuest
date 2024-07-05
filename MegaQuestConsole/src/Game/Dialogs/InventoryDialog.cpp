@@ -8,8 +8,8 @@
 using namespace Game;
 
 InventoryDialog::InventoryDialog(const QuestCore::TextString& intro,
-	const InventoryFactoryPtr& inventoryFactory,
-	const std::vector<ButtonListPtr> buttonGroups):
+	QuestCore::IInventoryFactory* inventoryFactory,
+	const std::vector<IButtonList*> buttonGroups):
 
 	DialogBase(intro, buttonGroups),
 	_inventoryFactory(inventoryFactory)

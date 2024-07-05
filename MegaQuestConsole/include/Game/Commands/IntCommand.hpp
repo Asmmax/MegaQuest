@@ -4,7 +4,6 @@
 
 namespace Game
 {
-	/// @serializable @abstract
 	class IntCommand :public ICommand
 	{
 	public:

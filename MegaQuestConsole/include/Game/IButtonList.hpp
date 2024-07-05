@@ -6,11 +6,9 @@ namespace Game
 {
 	class IOutput;
 
-	/// @serializable @shared buttonLists @abstract
 	class IButtonList
 	{
 	public:
-		using Ptr = std::shared_ptr<IButtonList>;
 		using Callback = std::function<void()>;
 
 		void Update();

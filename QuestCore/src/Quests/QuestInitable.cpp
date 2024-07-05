@@ -3,7 +3,7 @@
 
 using namespace QuestCore;
 
-QuestInitable::QuestInitable(const QuestPtr& quest):
+QuestInitable::QuestInitable(Quest* quest):
 	_quest(quest)
 {
 	_quest->AddInitCallback([this]() {

@@ -10,17 +10,15 @@ namespace Game
 {
     class GameLoop
     {
-        using InputHandlerPtr = std::shared_ptr<IO::InputHandler>;
-
     public:
-        GameLoop(const InputHandlerPtr& inputHandler);
+        GameLoop(IO::InputHandler* inputHandler);
         void Update();
         void Init();
         int Run();
         void Quit();
 
     private:
-        InputHandlerPtr _inputHandler;
+        IO::InputHandler* _inputHandler;
         bool _isStoped = true;
     };
 }

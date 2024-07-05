@@ -3,13 +3,11 @@
 
 namespace QuestCore
 {
-	/// @serializable
 	class QuestList : public Quest
 	{
 	public:
-		QuestList(const std::vector<IQuest::Ptr>& quests);
-		/// @inject
-		void SetCurrent(size_t currentId);
+		QuestList(const std::vector<IQuest*>& quests);
+		void SetCurrent(unsigned int currentId);
 
 		void Up();
 		void Down();
@@ -17,8 +15,8 @@ namespace QuestCore
 		virtual void Init() override;
 
 	private:
-		size_t _currentId;
-		IQuest::Ptr _current;
-		std::vector<IQuest::Ptr> _quests;
+		unsigned int _currentId;
+		IQuest* _current;
+		std::vector<IQuest*> _quests;
 	};
 }

@@ -15,7 +15,7 @@ int SimpleValue::Get() const
 
 
 
-InventoryValue::InventoryValue(const std::weak_ptr<Item>& item, const std::weak_ptr<Inventory>& inventory):
+InventoryValue::InventoryValue(Item* item, Inventory* inventory):
 	_item(item),
 	_inventory(inventory)
 {
@@ -23,13 +23,12 @@ InventoryValue::InventoryValue(const std::weak_ptr<Item>& item, const std::weak_
 
 int InventoryValue::Get() const
 {
-	auto inventoryPtr = _inventory.lock();
-	if (!inventoryPtr) {
+	if (!_inventory) {
 		return 0;
 	}
 
-	auto& items = inventoryPtr->GetItems();
-	auto foundIt = items.find(_item.lock());
+	auto& items = _inventory->GetItems();
+	auto foundIt = items.find(_item);
 	if (foundIt == items.end()) {
 		return 0;
 	}

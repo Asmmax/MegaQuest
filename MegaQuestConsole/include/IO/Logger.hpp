@@ -11,18 +11,14 @@ namespace Game
 
 namespace IO
 {
-	/// @serializable @shared logger
 	class Logger
 	{
-		using OutputPtr = std::shared_ptr<Game::IOutput>;
-
 	public:
 		static Logger& Instance();
-		/// @inject
-		void Init(const OutputPtr& output);
+		void Init(Game::IOutput* output);
 		void Log(const QuestCore::TextString& text);
 
 	private:
-		OutputPtr _output;
+		Game::IOutput* _output;
 	};
 }

@@ -6,13 +6,12 @@ namespace QuestCore
 {
 	class Inventory;
 
-	/// @serializable
 	class Clearing : public IAction
 	{
 	public:
-		Clearing(const std::shared_ptr<Inventory>& inventory);
+		Clearing(Inventory* inventory);
 		virtual void Do() override;
 	private:
-		std::shared_ptr<Inventory> _inventory;
+		Inventory* _inventory;
 	};
 }

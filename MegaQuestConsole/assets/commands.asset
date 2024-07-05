@@ -1,101 +1,100 @@
 {
-	"contextId":"",
 	"commandManagers":[
 	{
 		"id":"main_commands",
-		"type":"CommandManager",
+		"type":"Game::CommandManager",
 		"error":
 		{
-			"type":"TextString",
+			"type":"QuestCore::TextString",
 			"u8":"Вводить можно только цифру, Quit или Inventory!"
 		},
 		"commands":[
 		{
-			"type":"CommandRecord",
+			"type":"Game::CommandRecord",
 			"name":"quit",
 			"command":
 			{
-				"type":"QuitCommand"
+				"type":"Game::QuitCommand"
 			}
 		},
 		{
-			"type":"CommandRecord",
+			"type":"Game::CommandRecord",
 			"name":"q",
 			"command":
 			{
-				"type":"AliasCommand",
+				"type":"Game::AliasCommand",
 				"alias":"quit",
 				"commandManager":"main_commands"
 			}
 		},
 		{
-			"type":"CommandRecord",
+			"type":"Game::CommandRecord",
 			"name":"inventory",
 			"command":
 			{
-				"type":"ForceChoiceCommand",
+				"type":"Game::ForceChoiceCommand",
 				"buttonGroup":"inventory",
 				"choice":0
 			}
 		},
 		{
-			"type":"CommandRecord",
+			"type":"Game::CommandRecord",
 			"name":"i",
 			"command":
 			{
-				"type":"AliasCommand",
+				"type":"Game::AliasCommand",
 				"alias":"inventory",
 				"commandManager":"main_commands"
 			}
 		},
 		{
-			"type":"CommandRecord",
+			"type":"Game::CommandRecord",
 			"name":"next",
 			"command":
 			{
-				"type":"SwitchCommand",
-				"switchDialog":"root"
+				"type":"Game::SwitchCommand",
+				"switchDialog":"root_dialog"
 			}
 		},
 		{
-			"type":"CommandRecord",
+			"type":"Game::CommandRecord",
 			"name":"n",
 			"command":
 			{
-				"type":"AliasCommand",
+				"type":"Game::AliasCommand",
 				"alias":"next",
 				"commandManager":"main_commands"
 			}
 		},
 		{
-			"type":"CommandRecord",
+			"type":"Game::CommandRecord",
 			"name":"",
 			"command":
 			{
-				"type":"ChoiceCommand",
+				"type":"Game::ChoiceCommand",
 				"buttonGroup":"default",
 				"error":
 				{
-					"type":"TextString",
+					"type":"QuestCore::TextString",
 					"u8":"Вводить можно только цифру из предложенных!"
 				}
 			}
 		},
 		{
-			"type":"CommandRecord",
+			"type":"Game::CommandRecord",
 			"name":"reset",
 			"command":
 			{
-				"type":"ResetCommand",
+				"type":"Game::ResetCommand",
 				"model":"root_model"
 			}
 		},
 		{
-			"type":"CommandRecord",
+			"type":"Game::CommandRecord",
 			"name":"levelup",
 			"command":
 			{
-				"type":"LevelUpCommand",
+				"type":"Game::LevelUpCommand",
 				"model":"root_model",
 				"questList":"main"
 			}

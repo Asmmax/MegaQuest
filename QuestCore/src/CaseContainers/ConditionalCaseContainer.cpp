@@ -4,9 +4,9 @@
 using namespace QuestCore;
 
 ConditionalCaseContainer::ConditionalCaseContainer(
-	const std::shared_ptr<ICaseContainer>& thenContainer,
-	const std::shared_ptr<ICaseContainer>& elseContainer, 
-	const std::vector<std::shared_ptr<ICondition>>& conditions):
+	ICaseContainer* thenContainer,
+	ICaseContainer* elseContainer, 
+	const std::vector<ICondition*>& conditions):
 
 	_thenContainer(thenContainer),
 	_elseContainer(elseContainer),
@@ -34,7 +34,7 @@ void ConditionalCaseContainer::ClearConditions()
 	_conditions.clear();
 }
 
-void ConditionalCaseContainer::AddCondition(const ICondition::Ptr& condition)
+void ConditionalCaseContainer::AddCondition(ICondition* condition)
 {
 	_conditions.push_back(condition);
 }

@@ -5,7 +5,6 @@
 
 namespace QuestCore
 {
-	/// @serializable
 	class Quest : public IQuest
 	{
 	protected:

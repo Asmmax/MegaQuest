@@ -4,7 +4,7 @@
 
 using namespace Game;
 
-GameLoop::GameLoop(const IO::InputHandler::Ptr & inputHandler) :
+GameLoop::GameLoop(IO::InputHandler* inputHandler) :
     _inputHandler(inputHandler)
 {
     Game::Events::Quit.Subscribe([this]() {Quit(); });

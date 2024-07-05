@@ -4,12 +4,11 @@
 
 namespace QuestCore
 {
-	/// @serializable @shared slots
 	class CaseContainerSlot : public ICaseContainerFactory, public Slot<ICaseContainer>
 	{
 		using Base = Slot<ICaseContainer>;
 	public:
-		CaseContainerSlot(const QuestPtr& quest);
-		CaseContainerPtr GetCaseContainer() const;
+		CaseContainerSlot(Quest* quest);
+		ICaseContainer* GetCaseContainer() const;
 	};
 }

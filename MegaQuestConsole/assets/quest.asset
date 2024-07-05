@@ -1,0 +1,35 @@
+{
+	"usedContexts": [
+	"quests/testquest"
+	],
+	"quests":[
+	{
+		"id":"main_quest_list",
+		"type":"QuestCore::QuestList",
+		"quests":["quests/testquest/root"],
+		"currentId":0
+	}
+	],
+	"slots":[
+	{
+		"id":"paragraph_main",
+		"type":"QuestCore::ParagraphSlot",
+		"quest":"main_quest_list"
+	},
+	{
+		"id":"container_main",
+		"type":"QuestCore::CaseContainerSlot",
+		"quest":"main_quest_list"
+	},
+	{
+		"id":"container_inventory",
+		"type":"QuestCore::CaseContainerSlot",
+		"quest":"main_quest_list"
+	},
+	{
+		"id":"inventory_player",
+		"type":"QuestCore::InventorySlot",
+		"quest":"main_quest_list"
+	}
+	]
+}

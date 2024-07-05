@@ -3,7 +3,7 @@
 
 using namespace QuestCore;
 
-Copying::Copying(const std::shared_ptr<Inventory>& source, const std::shared_ptr<Inventory>& target):
+Copying::Copying(Inventory* source, Inventory* target):
 	_source(source),
 	_target(target)
 {

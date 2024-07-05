@@ -5,7 +5,6 @@
 
 namespace Game
 {
-	/// @serializable @abstract
 	class ButtonListBase : public IButtonList
 	{
 	public:
@@ -14,8 +13,6 @@ namespace Game
 			QuestCore::TextString name;
 			Callback callback;
 		};
-
-		using Ptr = std::shared_ptr<ButtonListBase>;
 
 		ButtonListBase(const QuestCore::TextString& error,
 			bool show = true);

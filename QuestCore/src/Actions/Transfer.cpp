@@ -3,9 +3,7 @@
 
 using namespace QuestCore;
 
-Transfer::Transfer(const std::shared_ptr<Inventory>& source, 
-    const std::shared_ptr<Inventory>& target,
-    const std::vector<ItemRecord>& items) :
+Transfer::Transfer(Inventory* source, Inventory* target, const std::vector<ItemRecord>& items) :
     _source(source),
     _target(target),
     _things(items)
@@ -28,13 +26,13 @@ void Transfer::Do()
     }
 }
 
-void Transfer::AddThings(const ItemPtr& thing, int count)
+void Transfer::AddThings(Item* thing, int count)
 {
     ItemRecord item{ thing, count };
     _things.push_back(item);
 }
 
-std::vector<ItemRecord> Transfer::BoundThingsBy(const std::shared_ptr<Inventory>& inventory)
+std::vector<ItemRecord> Transfer::BoundThingsBy(Inventory* inventory)
 {
     std::vector<ItemRecord> things(_things);
     if (_source) {

@@ -8,8 +8,8 @@ using namespace Game;
 
 
 SimpleDialog::SimpleDialog(const QuestCore::TextString& intro,
-	const ParagraphFactoryPtr& paragraphFactory,
-	const std::vector<ButtonListPtr> buttonGroups) :
+	QuestCore::IParagraphFactory* paragraphFactory,
+	const std::vector<IButtonList*> buttonGroups) :
 
 	DialogBase(intro, buttonGroups),
 	_paragraphFactory(paragraphFactory)

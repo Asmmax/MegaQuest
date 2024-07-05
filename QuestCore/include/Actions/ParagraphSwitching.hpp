@@ -7,18 +7,15 @@ namespace QuestCore
 	class ParagraphStateMachine;
 	class IParagraph;
 
-	/// @serializable
 	class ParagraphSwitching : public IAction
 	{
 	public:
-		/// @inject
-		void SetStateMachine(const std::weak_ptr<ParagraphStateMachine>& stateMachine);
-		/// @inject
-		void SetNextParagraph(const std::weak_ptr<IParagraph>& nextParagraph);
+		void SetStateMachine(ParagraphStateMachine* stateMachine);
+		void SetNextParagraph(IParagraph* nextParagraph);
 
 		virtual void Do() override;
 	private:
-		std::weak_ptr<ParagraphStateMachine> _stateMachine;
-		std::weak_ptr<IParagraph> _nextParagraph;
+		ParagraphStateMachine* _stateMachine;
+		IParagraph* _nextParagraph;
 	};
 }

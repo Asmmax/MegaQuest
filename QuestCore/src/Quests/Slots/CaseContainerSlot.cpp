@@ -3,12 +3,12 @@
 
 using namespace QuestCore;
 
-CaseContainerSlot::CaseContainerSlot(const QuestPtr& quest):
+CaseContainerSlot::CaseContainerSlot(Quest* quest):
 	Base(quest)
 {
 }
 
-CaseContainerSlot::CaseContainerPtr CaseContainerSlot::GetCaseContainer() const
+ICaseContainer* CaseContainerSlot::GetCaseContainer() const
 {
 	return Get();
 }

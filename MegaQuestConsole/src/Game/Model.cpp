@@ -4,13 +4,14 @@
 
 using namespace Game;
 
-Model::Model(const DialogPtr& rootDialog, const QuestPtr& quest):
+Model::Model(IDialog* rootDialog, QuestCore::IQuest* quest):
 	_rootDialog(rootDialog),
-	_quest(quest)
+	_quest(quest),
+	_output(nullptr)
 {
 }
 
-void Model::SetOutput(const OutputPtr& output)
+void Model::SetOutput(IOutput* output)
 {
 	_output = output;
 }

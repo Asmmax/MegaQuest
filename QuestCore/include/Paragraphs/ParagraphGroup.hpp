@@ -5,17 +5,16 @@
 
 namespace QuestCore 
 {
-	/// @serializable
 	class ParagraphGroup : public IParagraph
 	{
 	public:
-		ParagraphGroup(const std::vector<std::shared_ptr<IParagraph>>& children, const TextString& gap);
+		ParagraphGroup(const std::vector<IParagraph*>& children, const TextString& gap);
 		void Clear();
-		void AddParagraph(const IParagraph::Ptr& paragraph);
+		void AddParagraph(IParagraph* paragraph);
 
 		virtual void Print(ITextView& view) override;
 	private:
 		TextString _gap;
-		std::vector<IParagraph::Ptr> _paragraphs;
+		std::vector<IParagraph*> _paragraphs;
 	};
 }

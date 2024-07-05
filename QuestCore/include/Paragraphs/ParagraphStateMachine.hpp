@@ -6,20 +6,18 @@ namespace QuestCore
 {
 	class TextString;
 
-	/// @serializable
 	class ParagraphStateMachine : public IParagraph, public QuestInitable
 	{
 	public:
-		ParagraphStateMachine(const QuestPtr& quest);
-		/// @inject
-		void InitState(const std::weak_ptr<IParagraph>& state);
-		void SetState(const std::weak_ptr<IParagraph>& state);
+		ParagraphStateMachine(Quest* quest);
+		void InitState(IParagraph* state);
+		void SetState(IParagraph* state);
 
 		virtual void Print(ITextView& view) override;
 		virtual void Init() override;
 	
 	private:
-		IParagraph::WeakPtr _initState;
-		IParagraph::WeakPtr _state;
+		IParagraph* _initState;
+		IParagraph* _state;
 	};
 }

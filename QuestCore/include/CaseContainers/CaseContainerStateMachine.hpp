@@ -4,20 +4,18 @@
 
 namespace QuestCore
 {
-	/// @serializable
 	class CaseContainerStateMachine : public ICaseContainer, public QuestInitable
 	{
 	public:
-		CaseContainerStateMachine(const QuestPtr& quest);
-		/// @inject
-		void InitState(const ICaseContainer::WeakPtr& state);
-		void SetState(const ICaseContainer::WeakPtr& state);
+		CaseContainerStateMachine(Quest* quest);
+		void InitState(ICaseContainer* state);
+		void SetState(ICaseContainer* state);
 
 		virtual void Print(IButtonGroup& buttons) override;
 		virtual void Init() override;
 
 	private:
-		ICaseContainer::WeakPtr _initState;
-		ICaseContainer::WeakPtr _state;
+		ICaseContainer* _initState;
+		ICaseContainer* _state;
 	};
 }

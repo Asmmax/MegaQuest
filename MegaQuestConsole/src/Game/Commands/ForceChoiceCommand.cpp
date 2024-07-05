@@ -3,7 +3,7 @@
 
 using namespace Game;
 
-ForceChoiceCommand::ForceChoiceCommand(const ButtonListPtr& buttonList, int choiceId) :
+ForceChoiceCommand::ForceChoiceCommand(IButtonList* buttonList, int choiceId) :
 	_buttonList(buttonList),
 	_choiceId(choiceId)
 {

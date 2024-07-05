@@ -5,18 +5,14 @@ namespace Game
 {
 	class CommandManager;
 
-	/// @serializable
 	class AliasCommand :public ICommand
 	{
-		using CommandManagerWeakPtr = std::weak_ptr<CommandManager>;
-
 	public:
-		AliasCommand(const std::string& alias,
-			const CommandManagerWeakPtr& commandManager);
+		AliasCommand(const std::string& alias, CommandManager* commandManager);
 
 		virtual void Run(const std::vector<std::string>& args) override;
 	private:
-		CommandManagerWeakPtr _parent;
+		CommandManager* _parent;
 		std::string _orig;
 	};
 }

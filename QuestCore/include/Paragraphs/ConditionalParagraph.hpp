@@ -7,24 +7,21 @@ namespace QuestCore
 {
 	class ICondition;
 
-	/// @serializable
 	class ConditionalParagraph : public IParagraph
 	{
-		using ConditionPtr = std::shared_ptr<ICondition>;
-
 	public:
-		ConditionalParagraph(const std::shared_ptr<IParagraph>& thenParagraph,
-			const std::shared_ptr<IParagraph>& elseParagraph,
-			const std::vector<std::shared_ptr<ICondition>>& conditions = std::vector<std::shared_ptr<ICondition>>());
+		ConditionalParagraph(IParagraph* thenParagraph,
+			IParagraph* elseParagraph,
+			const std::vector<ICondition*>& conditions = std::vector<ICondition*>());
 
 		virtual void Print(ITextView& view) override;
 		void ClearConditions();
-		void AddCondition(const ConditionPtr& condition);
+		void AddCondition(ICondition* condition);
 		bool IsAllowed() const;
 
 	private:
-		IParagraph::Ptr _thenParagraph;
-		IParagraph::Ptr _elseParagraph;
-		std::vector<ConditionPtr> _conditions;
+		IParagraph* _thenParagraph;
+		IParagraph* _elseParagraph;
+		std::vector<ICondition*> _conditions;
 	};
 }

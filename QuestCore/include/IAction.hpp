@@ -2,7 +2,6 @@
 
 namespace QuestCore
 {
-	/// @serializable @shared actions @abstract
 	class IAction
 	{
 	public:

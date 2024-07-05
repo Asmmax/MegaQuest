@@ -1,34 +1,23 @@
-﻿cmake_minimum_required (VERSION 3.12)
+﻿cmake_minimum_required (VERSION 3.8)
 
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+generate_di_files(TARGET QuestCore)
 
-set(quest_include_dir "include/")
-set(quest_src_dir "src/")
-set(out_include_path "${PROJECT_BINARY_DIR}/.generated/QuestCore/${quest_include_dir}")
-set(out_source_path "${PROJECT_BINARY_DIR}/.generated/QuestCore/${quest_src_dir}")
-set(cache_path "${PROJECT_BINARY_DIR}/.generated/QuestCore")
-set(scripts_dir "${PROJECT_SOURCE_DIR}/scripts")
+file(GLOB_RECURSE cur_include "${DI_CURRENT_INCLUDE_DIR}/*.hpp")
+file(GLOB_RECURSE cur_src "${DI_CURRENT_SOURCE_DIR}/*.cpp")
 
-if (WIN32)
-	message (STATUS "Generating containers for QuestCore")
-	set(in_path "${CMAKE_CURRENT_SOURCE_DIR}/${quest_include_dir}")
-	set(gen_dir "QuestCore")
-	execute_process(
-		COMMAND cmd /C set out_include_dir=${gen_dir} && set out_source_dir=${gen_dir} && set cache_path=${cache_path} && call "${scripts_dir}/win/generate_containers.bat" ${in_path} ${out_include_path} ${out_source_path}
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		)
-endif()
+file(GLOB_RECURSE gen_include "${DI_CURRENT_OUT_INCLUDE_PATH}/*.hpp")
+file(GLOB_RECURSE gen_src "${DI_CURRENT_OUT_SOURCE_PATH}/*.cpp")
 
-file(GLOB_RECURSE quest_include CONFIGURE_DEPENDS "${quest_include_dir}/*.hpp")
-file(GLOB_RECURSE quest_src "${quest_src_dir}/*.cpp")
-
-add_library (QuestCore SHARED 
-${quest_include}  
-${quest_src})
+add_library (QuestCore STATIC
+${cur_include}
+${cur_src}
+${gen_include}
+${gen_src})
 
 target_compile_features (QuestCore PRIVATE cxx_std_17)
-set_target_properties(QuestCore PROPERTIES LINKER_LANGUAGE CXX)
-target_include_directories(QuestCore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/${quest_include_dir}")
+target_include_directories(QuestCore 
+PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
+PUBLIC "${DI_CURRENT_OUT_INCLUDE_PATH}")
 
-install(TARGETS QuestCore LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
-install(FILES ${quest_include} TYPE INCLUDE DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+target_link_libraries(QuestCore PUBLIC DIAssets)
+setup_di_cache(TARGET QuestCore)

@@ -12,19 +12,12 @@ namespace QuestCore
 
 namespace Game
 {
-	/// @serializable
 	class SimpleButtonList : public ButtonListBase, public QuestCore::IButtonGroup
 	{
-		using ContainerFactoryPtr = std::shared_ptr<QuestCore::ICaseContainerFactory>;
-		using CaseContainerPtr = std::shared_ptr<QuestCore::ICaseContainer>;
-
 	public:
-		using Ptr = std::shared_ptr<SimpleButtonList>;
-
 		SimpleButtonList(const QuestCore::TextString& error,
 			bool show,
-			const ContainerFactoryPtr& containerFactory,
-			const std::string& containerName);
+			QuestCore::ICaseContainerFactory* containerFactory);
 
 		virtual void AddButton(const QuestCore::TextString& text, const QuestCore::IButtonGroup::Callback& callback) override;
 
@@ -32,6 +25,6 @@ namespace Game
 		virtual void UpdateImpl() override;
 
 	private:
-		ContainerFactoryPtr _containerFactory;
+		QuestCore::ICaseContainerFactory* _containerFactory;
 	};
 }

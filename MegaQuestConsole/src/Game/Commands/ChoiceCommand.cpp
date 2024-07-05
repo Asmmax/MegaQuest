@@ -3,7 +3,7 @@
 
 using namespace Game;
 
-ChoiceCommand::ChoiceCommand(const ButtonListPtr& buttonList,
+ChoiceCommand::ChoiceCommand(IButtonList* buttonList,
 	const QuestCore::TextString& error) :
 
 	IntCommand(error),

@@ -5,7 +5,7 @@
 
 using namespace Game;
 
-DialogBase::DialogBase(const QuestCore::TextString& intro, const std::vector<ButtonListPtr> buttonGroups) :
+DialogBase::DialogBase(const QuestCore::TextString& intro, const std::vector<IButtonList*> buttonGroups) :
 
 	_intro(intro)
 {
@@ -14,7 +14,7 @@ DialogBase::DialogBase(const QuestCore::TextString& intro, const std::vector<But
 	}
 }
 
-void DialogBase::SetModel(const ModelWeakPtr& model)
+void DialogBase::SetModel(Model* model)
 {
 	_model = model;
 }
@@ -38,19 +38,19 @@ void DialogBase::Draw(IOutput& output)
 	}
 }
 
-void DialogBase::AddButtonList(const IButtonList::Ptr& buttonList)
+void DialogBase::AddButtonList(IButtonList* buttonList)
 {
 	if (buttonList->IsUpdateAfterDone()) {
 		buttonList->AddDoneCallback([this]() {
-			if (auto modelPtr = _model.lock()) {
-				modelPtr->Update();
+			if (_model) {
+				_model->Update();
 			}
 			});
 	}
 	_buttonGroups.push_back(buttonList);
 }
 
-const Model::WeakPtr& DialogBase::GetModel()
+Model* DialogBase::GetModel()
 {
 	return _model;
 }

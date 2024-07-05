@@ -4,27 +4,28 @@
 
 using namespace QuestCore;
 
-ParagraphStateMachine::ParagraphStateMachine(const QuestPtr& quest):
-	QuestInitable(quest)
+ParagraphStateMachine::ParagraphStateMachine(Quest* quest):
+	QuestInitable(quest),
+	_initState(nullptr),
+	_state(nullptr)
 {
 }
 
-void ParagraphStateMachine::InitState(const std::weak_ptr<IParagraph>& state)
+void ParagraphStateMachine::InitState(IParagraph* state)
 {
 	_initState = state;
 }
 
-void ParagraphStateMachine::SetState(const std::weak_ptr<IParagraph>& state)
+void ParagraphStateMachine::SetState(IParagraph* state)
 {
 	_state = state;
 }
 
 void ParagraphStateMachine::Print(ITextView& view)
 {
-	auto statePtr = _state.lock();
-	assert(statePtr);
-	if (statePtr) {
-		statePtr->Print(view);
+	assert(_state);
+	if (_state) {
+		_state->Print(view);
 	}
 }
 

@@ -7,8 +7,7 @@ using namespace Game;
 
 SimpleButtonList::SimpleButtonList(const QuestCore::TextString& error,
 	bool show,
-	const ContainerFactoryPtr& containerFactory,
-	const std::string& containerName):
+	QuestCore::ICaseContainerFactory* containerFactory):
 
 	ButtonListBase(error, show),
 	_containerFactory(containerFactory)

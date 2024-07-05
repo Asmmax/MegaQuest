@@ -3,9 +3,9 @@
 
 using namespace QuestCore;
 
-InventoryInput::InventoryInput(const InventoryPtr& inventory, 
-	const InventorySlotPtr& slot,
-	const QuestPtr& quest) :
+InventoryInput::InventoryInput(Inventory* inventory, 
+	InventorySlot* slot,
+	Quest* quest) :
 
 	Base(inventory, slot, quest)
 {

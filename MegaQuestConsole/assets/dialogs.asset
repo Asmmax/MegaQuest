@@ -1,97 +1,96 @@
 {
-	"contextId":"",
 	"models":[
 	{
 		"id":"root_model",
-		"type":"Model",
-		"rootDialog":"root",
-		"output":"main",
-		"quest":"main"
+		"type":"Game::Model",
+		"rootDialog":"root_dialog",
+		"output":"main_output",
+		"quest":"main_quest_list"
 	}
 	],
 	"buttonLists":[
 	{
 		"id":"root_buttons",
-		"type":"SimpleButtonList",
+		"type":"Game::SimpleButtonList",
 		"containerFactory":"container_main",
 		"show":true,
 		"error":
 		{
-			"type":"TextString",
+			"type":"QuestCore::TextString",
 			"u8":"Вводить можно только цифру из предложенных!"
 		}
 	},
 	{
 		"id":"to_inventory_button",
-		"type":"SimpleButtonList",
+		"type":"Game::SimpleButtonList",
 		"containerFactory":"container_inventory"
 	},
 	{
 		"id":"inventory_buttons",
-		"type":"InventoryButtonList",
+		"type":"Game::InventoryButtonList",
 		"inventoryFactory":"inventory_player",
 		"counts":[1,10],
 		"putMessage":
 		{
-			"type":"TextString",
+			"type":"QuestCore::TextString",
 			"u8":"Добавить "
 		},
 		"throwMessage":
 		{
-			"type":"TextString",
+			"type":"QuestCore::TextString",
 			"u8":"Выкинуть "
 		},
 		"error":
 		{
-			"type":"TextString",
+			"type":"QuestCore::TextString",
 			"u8":"Вводить можно только цифру из предложенных!"
 		}
 	},
 	{
 		"id":"default",
-		"type":"SwitchButtonList",
+		"type":"Game::SwitchButtonList",
 		"targets":["root_buttons", "inventory_buttons"]
 	},
 	{
 		"id":"inventory",
-		"type":"SwitchButtonList",
+		"type":"Game::SwitchButtonList",
 		"targets":["to_inventory_button"]
 	}
 	],
 	"dialogs":[
 	{
-		"id":"main",
-		"type":"SimpleDialog",
+		"id":"main_dialog",
+		"type":"Game::SimpleDialog",
 		"paragraphFactory":"paragraph_main",
 		"intro":
 		{
-			"type":"TextString",
+			"type":"QuestCore::TextString",
 			"u8":"Вы можете ввести Quit, Inventory или цифры."
 		},
 		"buttonGroups":["root_buttons","to_inventory_button"],
 		"model":"root_model"
 	},
 	{
-		"id":"inventory",
-		"type":"InventoryDialog",
+		"id":"inventory_dialog",
+		"type":"Game::InventoryDialog",
 		"inventoryFactory":"inventory_player",
 		"intro":
 		{
-			"type":"TextString",
+			"type":"QuestCore::TextString",
 			"u8":"Инвентарь игрока. Вы можете ввести Quit или цифры."
 		},
 		"buttonGroups":["inventory_buttons"],
 		"model":"root_model"
 	},
 	{
-		"id":"root",
-		"type":"SwitchDialog",
+		"id":"root_dialog",
+		"type":"Game::SwitchDialog",
 		"intro":
 		{
-			"type":"TextString",
+			"type":"QuestCore::TextString",
 			"u8":"Добро пожаловать в квест!"
 		},
-		"dialogs":["main", "inventory"],
+		"dialogs":["main_dialog", "inventory_dialog"],
 		"buttonGroups":["default","inventory"],
 		"model":"root_model"
 	}

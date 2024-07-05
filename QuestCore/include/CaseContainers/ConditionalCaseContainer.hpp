@@ -6,24 +6,21 @@ namespace QuestCore
 {
 	class ICondition;
 
-	/// @serializable
 	class ConditionalCaseContainer : public ICaseContainer
 	{
-		using ConditionPtr = std::shared_ptr<ICondition>;
-
 	public:
-		ConditionalCaseContainer(const std::shared_ptr<ICaseContainer>& thenContainer,
-			const std::shared_ptr<ICaseContainer>& elseContainer,
-			const std::vector<std::shared_ptr<ICondition>>& conditions = std::vector<std::shared_ptr<ICondition>>());
+		ConditionalCaseContainer(ICaseContainer* thenContainer,
+			ICaseContainer* elseContainer,
+			const std::vector<ICondition*>& conditions = std::vector<ICondition*>());
 
 		virtual void Print(IButtonGroup& buttons) override;
 		void ClearConditions();
-		void AddCondition(const ConditionPtr& condition);
+		void AddCondition(ICondition* condition);
 		bool IsAllowed() const;
 
 	private:
-		ICaseContainer::Ptr _thenContainer;
-		ICaseContainer::Ptr _elseContainer;
-		std::vector<ConditionPtr> _conditions;
+		ICaseContainer* _thenContainer;
+		ICaseContainer* _elseContainer;
+		std::vector<ICondition*> _conditions;
 	};
 }

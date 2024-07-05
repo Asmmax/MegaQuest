@@ -3,7 +3,7 @@
 
 using namespace QuestCore;
 
-Inventory::Inventory(const QuestPtr& quest, const std::vector<ItemRecord>& items):
+Inventory::Inventory(Quest* quest, const std::vector<ItemRecord>& items):
     QuestInitable(quest)
 {
     for (auto& item : items) {
@@ -11,7 +11,7 @@ Inventory::Inventory(const QuestPtr& quest, const std::vector<ItemRecord>& items
     }
 }
 
-void Inventory::PutItem(const ItemPtr& item, int count)
+void Inventory::PutItem(Item* item, int count)
 {
     auto res = _items.emplace(item, count);
     if (!res.second) {
@@ -19,7 +19,7 @@ void Inventory::PutItem(const ItemPtr& item, int count)
     }
 }
 
-void Inventory::ThrowItem(const ItemPtr& item, int count)
+void Inventory::ThrowItem(Item* item, int count)
 {
     auto foundItemIt = _items.find(item);
     if (foundItemIt == _items.end()) {

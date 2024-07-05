@@ -3,9 +3,9 @@
 
 using namespace QuestCore;
 
-CaseContainerInput::CaseContainerInput(const CaseContainerPtr& container, 
-	const CaseContainerSlotPtr& slot,
-	const QuestPtr& quest) :
+CaseContainerInput::CaseContainerInput(ICaseContainer* container, 
+	CaseContainerSlot* slot,
+	Quest* quest) :
 
 	Base(container, slot, quest)
 {

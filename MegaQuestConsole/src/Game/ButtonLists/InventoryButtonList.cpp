@@ -7,7 +7,7 @@
 using namespace Game;
 
 InventoryButtonList::InventoryButtonList(const QuestCore::TextString& error,
-	const InventoryFactoryPtr& inventoryFactory,
+	QuestCore::IInventoryFactory* inventoryFactory,
 	const std::vector<int>& counts,
 	const QuestCore::TextString& putMessage,
 	const QuestCore::TextString& throwMessage) :
@@ -36,7 +36,7 @@ void InventoryButtonList::UpdateImpl()
 	}
 }
 
-void InventoryButtonList::AddPutButton(const ItemPtr& item, int count)
+void InventoryButtonList::AddPutButton(QuestCore::Item* item, int count)
 {
 	if (_putMessage.IsEmpty()) {
 		return;
@@ -53,7 +53,7 @@ void InventoryButtonList::AddPutButton(const ItemPtr& item, int count)
 	AddButton(button);
 }
 
-void InventoryButtonList::AddThrowButton(const ItemPtr& item, int count)
+void InventoryButtonList::AddThrowButton(QuestCore::Item* item, int count)
 {
 	if (_throwMessage.IsEmpty()) {
 		return;
@@ -70,9 +70,9 @@ void InventoryButtonList::AddThrowButton(const ItemPtr& item, int count)
 	AddButton(button);
 }
 
-std::vector<std::pair<QuestCore::Item::Ptr, int>> InventoryButtonList::GetOrderedItems()
+std::vector<std::pair<QuestCore::Item*, int>> InventoryButtonList::GetOrderedItems()
 {
-	std::vector<std::pair<QuestCore::Item::Ptr, int>> result;
+	std::vector<std::pair<QuestCore::Item*, int>> result;
 
 	auto inventory = _inventoryFactory->GetInventory();
 	if (!inventory) {

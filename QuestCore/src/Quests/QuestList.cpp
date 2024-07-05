@@ -2,13 +2,14 @@
 
 using namespace QuestCore;
 
-QuestList::QuestList(const std::vector<IQuest::Ptr>& quests):
+QuestList::QuestList(const std::vector<IQuest*>& quests):
 	_currentId(-1),
-	_quests(quests)
+	_quests(quests),
+	_current(nullptr)
 {
 }
 
-void QuestList::SetCurrent(size_t currentId)
+void QuestList::SetCurrent(unsigned int currentId)
 {
 	_currentId = currentId;
 	_current = _quests[_currentId];
@@ -16,13 +17,13 @@ void QuestList::SetCurrent(size_t currentId)
 
 void QuestList::Up()
 {
-	size_t newCurrentId = (_currentId + 1) % _quests.size();
+	unsigned int newCurrentId = (_currentId + 1) % _quests.size();
 	SetCurrent(newCurrentId);
 }
 
 void QuestList::Down()
 {
-	size_t newCurrentId = (_currentId - 1) % _quests.size();
+	unsigned int newCurrentId = (_currentId - 1) % _quests.size();
 	SetCurrent(newCurrentId);
 }
 

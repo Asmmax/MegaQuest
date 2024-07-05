@@ -7,14 +7,12 @@
 namespace QuestCore
 {
 	template <typename T>
-	class Input : public IInput<T>, public QuestInitable, public std::enable_shared_from_this<Input<T>>
+	class Input : public IInput<T>, public QuestInitable
 	{
-		using SlotPtr = std::shared_ptr<Slot<T>>;
-		using TPtr = std::shared_ptr<T>;
 	public:
-		Input(const TPtr& ptr,
-			const SlotPtr& slot,
-			const QuestPtr& quest):
+		Input(T* ptr,
+			Slot<T>* slot,
+			Quest* quest):
 
 			QuestInitable(quest),
 			_ptr(ptr),
@@ -24,16 +22,16 @@ namespace QuestCore
 
 		virtual void Init() override
 		{
-			_slot->SetInput(weak_from_this());
+			_slot->SetInput(this);
 		}
 
-		virtual TPtr Get() const override
+		virtual T* Get() const override
 		{
 			return _ptr;
 		}
 
 	private:
-		SlotPtr _slot;
-		TPtr _ptr;
+		Slot<T>* _slot;
+		T* _ptr;
 	};
 }

@@ -3,7 +3,7 @@
 
 using namespace Game;
 
-ResetCommand::ResetCommand(const ModelPtr& model):
+ResetCommand::ResetCommand(Model* model):
 	_model(model)
 {
 }

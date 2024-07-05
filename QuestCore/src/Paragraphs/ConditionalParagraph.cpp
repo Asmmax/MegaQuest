@@ -5,9 +5,9 @@
 using namespace QuestCore;
 
 ConditionalParagraph::ConditionalParagraph(
-	const std::shared_ptr<IParagraph>& thenParagraph,
-	const std::shared_ptr<IParagraph>& elseParagraph, 
-	const std::vector<std::shared_ptr<ICondition>>& conditions):
+	IParagraph* thenParagraph,
+	IParagraph* elseParagraph, 
+	const std::vector<ICondition*>& conditions):
 
 	_thenParagraph(thenParagraph),
 	_elseParagraph(elseParagraph),
@@ -35,7 +35,7 @@ void ConditionalParagraph::ClearConditions()
 	_conditions.clear();
 }
 
-void ConditionalParagraph::AddCondition(const ICondition::Ptr& condition)
+void ConditionalParagraph::AddCondition(ICondition* condition)
 {
 	_conditions.push_back(condition);
 }

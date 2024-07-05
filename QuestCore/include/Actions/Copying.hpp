@@ -6,14 +6,13 @@ namespace QuestCore
 {
 	class Inventory;
 
-	/// @serializable
 	class Copying : public IAction
 	{
 	public:
-		Copying(const std::shared_ptr<Inventory>& source, const std::shared_ptr<Inventory>& target);
+		Copying(Inventory* source, Inventory* target);
 		virtual void Do() override;
 	private:
-		std::shared_ptr<Inventory> _source;
-		std::shared_ptr<Inventory> _target;
+		Inventory* _source;
+		Inventory* _target;
 	};
 }

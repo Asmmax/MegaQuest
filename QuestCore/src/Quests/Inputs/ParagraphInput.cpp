@@ -3,9 +3,9 @@
 
 using namespace QuestCore;
 
-ParagraphInput::ParagraphInput(const ParagraphPtr& paragraph, 
-	const ParagraphSlotPtr& slot,
-	const QuestPtr& quest):
+ParagraphInput::ParagraphInput(IParagraph* paragraph, 
+	ParagraphSlot* slot,
+	Quest* quest):
 	
 	Base(paragraph, slot, quest)
 {

@@ -7,11 +7,10 @@ namespace QuestCore
 {
 	class IAction;
 
-	/// @serializable
 	struct Case
 	{
 		TextString name;
-		std::vector<std::shared_ptr<IAction>> actions;
+		std::vector<IAction*> actions;
 
 		void Do();
 	};

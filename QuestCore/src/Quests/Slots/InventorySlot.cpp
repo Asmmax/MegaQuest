@@ -3,12 +3,12 @@
 
 using namespace QuestCore;
 
-InventorySlot::InventorySlot(const QuestPtr& quest):
+InventorySlot::InventorySlot(Quest* quest):
 	Base(quest)
 {
 }
 
-InventorySlot::InventoryPtr InventorySlot::GetInventory() const
+Inventory* InventorySlot::GetInventory() const
 {
 	return Get();
 }

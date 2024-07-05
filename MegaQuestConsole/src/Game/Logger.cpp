@@ -7,11 +7,11 @@ using namespace IO;
 
 Logger& Logger::Instance()
 {
-	static std::shared_ptr<Logger> instance = ContextManager::Instance().GetContext().GetContainer<Logger>()->Get();
+	Logger* instance = ContextManager::Instance().GetContext().GetContainer<Logger>().GetRecursive();
 	return *instance;
 }
 
-void Logger::Init(const Game::IOutput::Ptr& output)
+void Logger::Init(Game::IOutput* output)
 {
 	_output = output;
 }

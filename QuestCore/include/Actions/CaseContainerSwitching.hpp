@@ -7,18 +7,15 @@ namespace QuestCore
 	class CaseContainerStateMachine;
 	class ICaseContainer;
 
-	/// @serializable
 	class CaseContainerSwitching : public IAction
 	{
 	public:
-		/// @inject
-		void SetStateMachine(const std::weak_ptr<CaseContainerStateMachine>& stateMachine);
-		/// @inject
-		void SetNextContainer(const std::weak_ptr<ICaseContainer>& nextContainer);
+		void SetStateMachine(CaseContainerStateMachine* stateMachine);
+		void SetNextContainer(ICaseContainer* nextContainer);
 
 		virtual void Do() override;
 	private:
-		std::weak_ptr<CaseContainerStateMachine> _stateMachine;
-		std::weak_ptr<ICaseContainer> _nextContainer;
+		CaseContainerStateMachine* _stateMachine;
+		ICaseContainer* _nextContainer;
 	};
 }

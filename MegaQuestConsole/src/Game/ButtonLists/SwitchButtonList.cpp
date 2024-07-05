@@ -2,9 +2,9 @@
 
 using namespace Game;
 
-SwitchButtonList::SwitchButtonList(const std::vector<IButtonList::Ptr>& targets)
+SwitchButtonList::SwitchButtonList(const std::vector<IButtonList*>& targets)
 {
-	for (auto& target : targets) {
+	for (auto target : targets) {
 		AddButtonList(target);
 	}
 }
@@ -15,15 +15,15 @@ void SwitchButtonList::Draw(IOutput& /*output*/)
 
 void SwitchButtonList::Switch(const IButtonList* buttonList)
 {
-	auto foundIt = std::find_if(_buttonLists.begin(), _buttonLists.end(), [buttonList](const IButtonList::Ptr& buttonListPtr) -> bool {
-		return buttonListPtr.get() == buttonList;
+	auto foundIt = std::find_if(_buttonLists.begin(), _buttonLists.end(), [buttonList](IButtonList* buttonListPtr) -> bool {
+		return buttonListPtr == buttonList;
 		});
 	_currentButtonList = *foundIt;
 }
 
-void SwitchButtonList::AddButtonList(const IButtonList::Ptr& buttonList)
+void SwitchButtonList::AddButtonList(IButtonList* buttonList)
 {
-	buttonList->AddPreUpdateCallback([rawPtr = buttonList.get(), this]() {
+	buttonList->AddPreUpdateCallback([rawPtr = buttonList, this]() {
 		Switch(rawPtr);
 		});
 	_buttonLists.push_back(buttonList);

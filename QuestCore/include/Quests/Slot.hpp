@@ -8,34 +8,32 @@ namespace QuestCore
 	template <typename T>
 	class Slot : public QuestInitable
 	{
-		using TPtr = std::shared_ptr<T>;
-		using InputWeakPtr = std::weak_ptr<IInput<T>>;
 	public:
-		Slot(const QuestPtr& quest):
-			QuestInitable(quest)
+		Slot(Quest* quest):
+			QuestInitable(quest),
+			_input(nullptr)
 		{
 		}
 
 		virtual void Init() override
 		{
-			_input = InputWeakPtr();
+			_input = nullptr;
 		}
 
-		void SetInput(const InputWeakPtr& input)
+		void SetInput(IInput<T>* input)
 		{
 			_input = input;
 		}
 
-		TPtr Get() const
+		T* Get() const
 		{
-			if (_input.expired()) {
+			if (!_input) {
 				return nullptr;
 			}
-			auto inputPtr = _input.lock();
-			return inputPtr->Get();
+			return _input->Get();
 		}
 
 	protected:
-		InputWeakPtr _input;
+		IInput<T>* _input;
 	};
 }

@@ -4,7 +4,7 @@
 
 using namespace Game;
 
-LevelUpCommand::LevelUpCommand(const ModelPtr& model, const QuestListPtr& questList) :
+LevelUpCommand::LevelUpCommand(Model* model, QuestCore::QuestList* questList) :
 	_model(model),
 	_questList(questList)
 {

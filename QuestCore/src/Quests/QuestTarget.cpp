@@ -2,7 +2,7 @@
 
 using namespace QuestCore;
 
-void QuestTarget::SetCurrent(const IQuest::Ptr& current)
+void QuestTarget::SetCurrent(IQuest* current)
 {
 	_current = current;
 }

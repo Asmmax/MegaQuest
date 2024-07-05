@@ -4,12 +4,11 @@
 
 namespace QuestCore
 {
-	/// @serializable @shared slots
 	class ParagraphSlot : public IParagraphFactory, public Slot<IParagraph>
 	{
 		using Base = Slot<IParagraph>;
 	public:
-		ParagraphSlot(const QuestPtr& quest);
-		virtual ParagraphPtr GetParagraph() const override;
+		ParagraphSlot(Quest* quest);
+		IParagraph* GetParagraph() const override;
 	};
 }

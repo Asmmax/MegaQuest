@@ -5,7 +5,7 @@ using namespace QuestCore;
 
 void Case::Do()
 {
-	for (auto& action : actions) {
+	for (auto action : actions) {
 		action->Do();
 	}
 }
